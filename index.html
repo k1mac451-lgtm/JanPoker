@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+            font-weight: bold;
+          <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>真・雀ポーカー デバッグルーム</title>
+    <title>真・雀ポーカー 実戦デバッグルーム</title>
     <style>
         body {
             background-color: #111;
@@ -12,6 +13,7 @@
             text-align: center;
             padding: 10px;
             margin: 0;
+            user-select: none;
         }
         h1 {
             font-size: 20px;
@@ -30,14 +32,14 @@
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .card {
-            width: 55px;
-            height: 85px;
+            width: 58px;
+            height: 88px;
             background-color: #fff;
             color: #000;
-            border-radius: 4px;
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -46,6 +48,14 @@
             font-weight: bold;
             font-size: 14px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .card.selected {
+            transform: translateY(-15px);
+            box-shadow: 0 0 12px #ffcc00;
+            border: 2px solid #ffcc00;
         }
         .card.red { color: #cc0000; }
         .card.joker { 
@@ -54,17 +64,694 @@
         }
         .card-suit { text-align: left; font-size: 16px; }
         .card-rank { text-align: center; font-size: 18px; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        
+        /* 捨て印 */
+        .discard-tag {
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #cc0000;
+            color: white;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            display: none;
+        }
+        .card.selected .discard-tag { display: block; }
+
+        .guide-text {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 15px;
+            height: 15px;
+        }
+
         .btn-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         button {
             background-color: #0066cc;
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 16px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 4px;
+            box-shadow: 0 4px #004499;
+            cursor: pointer;
+        }
+        button:active {
+            box-shadow: 0 2px #004499;
+            transform: translateY(2px);
+        }
+        button:disabled {
+            background-color: #555;
+            box-shadow: none;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        button.action-btn { background-color: #e67e22; box-shadow: 0 4px #d35400; }
+        button.action-btn:active { box-shadow: 0 2px #d35400; }
+        button.agari-btn { background-color: #27ae60; box-shadow: 0 4px #219653; }
+        button.agari-btn:active { box-shadow: 0 2px #219653; }
+
+        .result-area {
+            border: 2px dashed #ffcc00;
+            background-color: #1a1a00;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 80px;
+        }
+        .result-title {
+            font-size: 18px;
+            color: #ffcc00;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result-detail {
+            font-size: 13px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>真・雀ポーカー (Ver 0.2)</h1>
+    
+    <div class="status-area">
+        【自分】 持ち点: <span id="myScore">30</span>点 | 【相手】 持ち点: 30点<br>
+        <span style="color: #00ffcc;" id="gamePhase">【配牌フェーズ】 ボタンを押してください</span>
+    </div>
+
+    <!-- ガイド案内 -->
+    <div class="guide-text" id="guideText">「カードを配る」を押すとスタートします</div>
+
+    <!-- 手札表示エリア -->
+    <div class="card-area" id="handView">
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+    </div>
+
+    <!-- 操作エリア -->
+    <div class="btn-area">
+        <button id="dealBtn" onclick="dealHand()">カードを配る (配牌)</button>
+        <button id="exchangeBtn" class="action-btn" onclick="exchangeCard()" disabled>1枚捨てる (交換)</button>
+        <button id="reachBtn" class="action-btn" onclick="triggerReach()" disabled>リーチ</button>
+        <button id="ronBtn" class="agari-btn" onclick="triggerAgari('ロン')" disabled>ロン！</button>
+        <button id="tsumoBtn" class="agari-btn" onclick="triggerAgari('ツモ')" disabled>ツモ！</button>
+    </div>
+
+    <!-- 判定結果エリア -->
+    <div class="result-area">
+        <div id="resultTitle" class="result-title">スロット脱出テストルーム</div>
+        <div id="resultDetail" class="result-detail">手札を1枚選択して戦略的に入れ替えるデバッグが可能です</div>
+    </div>
+
+<script>
+const suits = ['♠', '♣', '♥', '♦'];
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+let deck = [];
+let currentHand = [];
+let selectedIndex = -1; 
+let hasExchanged = false;
+let isReach = false;
+let myScore = 30;
+
+function logPhase(msg) { document.getElementById('gamePhase').innerText = msg; }
+function logGuide(msg) { document.getElementById('guideText').innerText = msg; }
+
+// デッキ構築＆シャッフル
+function initDeck() {
+    deck = [];
+    for (let s of suits) {
+        for (let r of ranks) {
+            deck.push({ suit: s, rank: r, isJoker: false });
+        }
+    }
+    deck.push({ suit: '🃏', rank: 'JK', isJoker: true }); // ジョーカー
+
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
+
+// 配牌処理
+function dealHand() {
+    initDeck();
+    currentHand = deck.slice(0, 5);
+    deck = deck.slice(5); // 残りを山札に
+    
+    selectedIndex = -1;
+    hasExchanged = false;
+    isReach = false;
+
+    document.getElementById('dealBtn').disabled = true;
+    document.getElementById('exchangeBtn').disabled = true;
+    document.getElementById('reachBtn').disabled = false;
+    document.getElementById('ronBtn').disabled = false;
+    document.getElementById('tsumoBtn').disabled = false;
+
+    logPhase("【打牌フェーズ】カードを1枚選んで交換するか、役があればアガリ！");
+    logGuide("交換したいカードをタップして「1枚捨てる」を押してください（スルーしてアガリも可）");
+
+    renderHand();
+    judgeHand(false);
+}
+
+// 手札クリック時の選択処理
+function selectCard(idx) {
+    if (hasExchanged) return; // 交換は1回きり
+    selectedIndex = (selectedIndex === idx) ? -1 : idx;
+    
+    document.getElementById('exchangeBtn').disabled = (selectedIndex === -1);
+    renderHand();
+}
+
+// 画面表示更新
+function renderHand() {
+    const handView = document.getElementById('handView');
+    handView.innerHTML = '';
+    
+    currentHand.forEach((card, idx) => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        if (idx === selectedIndex) cardDiv.classList.add('selected');
+        
+        if (card.isJoker) {
+            cardDiv.classList.add('joker');
+            cardDiv.innerHTML = `<div class="card-suit">🃏</div><div class="card-rank">ババ</div><div class="discard-tag">捨てる</div>`;
+        } else {
+            if (card.suit === '♥' || card.suit === '♦') cardDiv.classList.add('red');
+            cardDiv.innerHTML = `<div class="card-suit">${card.suit}</div><div class="card-rank">${card.rank}</div><div class="discard-tag">捨てる</div>`;
+        }
+        
+        cardDiv.onclick = () => selectCard(idx);
+        handView.appendChild(cardDiv);
+    });
+}
+
+// 1枚カード交換処理
+function exchangeCard() {
+    if (selectedIndex === -1 || hasExchanged) return;
+
+    // 1枚引いて差し替える
+    const newCard = deck.shift();
+    currentHand[selectedIndex] = newCard;
+    
+    hasExchanged = true;
+    selectedIndex = -1;
+    
+    document.getElementById('exchangeBtn').disabled = true;
+    logPhase("【最終フェーズ】カード交換完了！アガリ判定へ");
+    logGuide("これ以上は交換できません。手札を確認してロンかツモを押してください。");
+
+    renderHand();
+    judgeHand(true); 
+}
+
+// リーチボタン
+function triggerReach() {
+    isReach = true;
+    document.getElementById('reachBtn').disabled = true;
+    logGuide("魂のリーチ！このままツモるか、相手の隙を突いてロンを狙いましょう！");
+    judgeHand(hasExchanged);
+}
+
+// ロン・ツモボタン処理
+function triggerAgari(type) {
+    document.getElementById('dealBtn').disabled = false;
+    document.getElementById('exchangeBtn').disabled = true;
+    document.getElementById('reachBtn').disabled = true;
+    document.getElementById('ronBtn').disabled = true;
+    document.getElementById('tsumoBtn').disabled = true;
+    
+    logPhase("【対局終了】 次のゲームを遊ぶには「カードを配る」を押してください");
+    logGuide(`見事に『${type}』が決まりました！点数計算を行います。`);
+}
+
+// 役判定ロジック (K様監修仕様・一部抜粋デバッグ)
+function judgeHand(finalPhase) {
+    const titleEl = document.getElementById('resultTitle');
+    const detailEl = document.getElementById('resultDetail');
+    
+    const hasJoker = currentHand.some(c => c.isJoker);
+    const normalCards = currentHand.filter(c => !c.isJoker);
+    
+    let counts = {};
+    normalCards.forEach(c => { counts[c.rank] = (counts[c.rank] || 0) + 1; });
+    const countValues = Object.values(counts).sort((a,b) => b-a);
+    
+    let reachBonusText = isReach ? " ＋ 【魂のリーチボーナス適用！】" : "";
+
+    // 1. 酷使苦情 (29点)
+    if (hasJoker && counts['5'] === 1 && counts['9'] === 2 && counts['4'] === 1) {
+        const uniqueSuits = new Set(normalCards.map(c => c.suit));
+        if (uniqueSuits.size === 4) {
+            titleEl.innerHTML = `酷使苦情 (29点)${reachBonusText} 🎉`;
+            detailEl.innerHTML = "5949とジョーカーの完璧な語呂合わせが炸裂！スロット状態を壊して見事ツモ切り成功！";
+            return;
+        }
+    }
+
+    // 2. 5カード (25点)
+    if (hasJoker && countValues[0] === 4) {
+        titleEl.innerHTML = `5カード (25点)${reachBonusText} 👑`;
+        detailEl.innerHTML = "スリーカードから交換を経て見事4カードが揃い、ジョーカーが化けて最高峰の5カードへ進化！";
+        return;
+    }
+
+    // 3. 七三元 (21点)
+    if (!hasJoker && counts['7'] === 3 && counts['A'] === 2) {
+        titleEl.innerHTML = `七三元 (21点)${reachBonusText} 🏮`;
+        detailEl.innerHTML = "自力で777とAAのペアを揃えきった、麻雀大三元超えの芸術役！";
+        return;
+    }
+    if (hasJoker && ((counts['7'] === 3 && counts['A'] === 1) || (counts['7'] === 2 && counts['A'] === 2))) {
+        titleEl.innerHTML = `七三元 (21点 [-1点適用で20点])${reachBonusText} 🏮`;
+        detailEl.innerHTML = "ジョーカーをオールマイティ変身させて七三元が成立！使用料-1点。";
+        return;
+    }
+
+    // 4. トイハウス (14点)
+    const isAllFace = normalCards.every(c => ['J','Q','K','A'].includes(c.rank));
+    if (isAllFace) {
+        if (!hasJoker && countValues[0] === 3 && countValues[1] === 2) {
+            titleEl.innerHTML = `トイハウス (14点)${reachBonusText} 🧸`;
+            detailEl.innerHTML = "全て絵札のフルハウス！子宝に恵まれたハッピーなオチ！";
+            return;
+        }
+        if (hasJoker && ((countValues[0] === 3 && countValues[1] === 1) || (countValues[0] === 2 && countValues[1] === 2))) {
+            titleEl.innerHTML = `トイハウス (14点 [-1点適用で13点])${reachBonusText} 🧸`;
+            detailEl.innerHTML = "ジョーカーを絵札に変身させた見事なトイハウス妥協ルート！";
+            return;
+        }
+    }
+
+    // 暫定ベース
+    if (hasJoker) {
+        titleEl.innerHTML = "手札: ジョーカーあり (戦略思考中) 🎴";
+        detailEl.innerHTML = "1枚交換を使って、4カードからの5カード変化やトイハウス変身を狙える大チャンス状態です。";
+    } else {
+        if (countValues[0] === 3) {
+            titleEl.innerHTML = "手札: スリーカード系統 (テンパイ間近) 🎲";
+            detailEl.innerHTML = "不要な1枚を捨てて、自力4カードやフルハウス（トイハウス）へ進化させるチャンス。";
+        } else {
+            titleEl.innerHTML = "手札: ノーペア〜通常役 (対局中)";
+            detailEl.innerHTML = "カードをタップして「1枚捨てる」を押し、山札から流れを引き込みましょう！";
+        }
+    }
+}
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真・雀ポーカー 実戦デバッグルーム</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 10px;
+            margin: 0;
+            user-select: none;
+        }
+        h1 {
+            font-size: 20px;
+            color: #ffcc00;
+            margin-bottom: 5px;
+        }
+        .status-area {
+            border: 2px solid #444;
+            background-color: #222;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .card-area {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .card {
+            width: 58px;
+            height: 88px;
+            background-color: #fff;
+            color: #000;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            box-sizing: border-box;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .card.selected {
+            transform: translateY(-15px);
+            box-shadow: 0 0 12px #ffcc00;
+            border: 2px solid #ffcc00;
+        }
+        .card.red { color: #cc0000; }
+        .card.joker { 
+            background: linear-gradient(135deg, #fff 0%, #ffcc00 100%);
+            color: #7700aa;
+        }
+        .card-suit { text-align: left; font-size: 16px; }
+        .card-rank { text-align: center; font-size: 18px; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        
+        /* 捨て印 */
+        .discard-tag {
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #cc0000;
+            color: white;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            display: none;
+        }
+        .card.selected .discard-tag { display: block; }
+
+        .guide-text {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 15px;
+            height: 15px;
+        }
+
+        .btn-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 4px #004499;
+            cursor: pointer;
+        }
+        button:active {
+            box-shadow: 0 2px #004499;
+            transform: translateY(2px);
+        }
+        button:disabled {
+            background-color: #555;
+            box-shadow: none;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        button.action-btn { background-color: #e67e22; box-shadow: 0 4px #d35400; }
+        button.action-btn:active { box-shadow: 0 2px #d35400; }
+        button.agari-btn { background-color: #27ae60; box-shadow: 0 4px #219653; }
+        button.agari-btn:active { box-shadow: 0 2px #219653; }
+
+        .result-area {
+            border: 2px dashed #ffcc00;
+            background-color: #1a1a00;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 80px;
+        }
+        .result-title {
+            font-size: 18px;
+            color: #ffcc00;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result-detail {
+            font-size: 13px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>真・雀ポーカー (Ver 0.2)</h1>
+    
+    <div class="status-area">
+        【自分】 持ち点: <span id="myScore">30</span>点 | 【相手】 持ち点: 30点<br>
+        <span style="color: #00ffcc;" id="gamePhase">【配牌フェーズ】 ボタンを押してください</span>
+    </div>
+
+    <!-- ガイド案内 -->
+    <div class="guide-text" id="guideText">「カードを配る」を押すとスタートします</div>
+
+    <!-- 手札表示エリア -->
+    <div class="card-area" id="handView">
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+    </div>
+
+    <!-- 操作エリア -->
+    <div class="btn-area">
+        <button id="dealBtn" onclick="dealHand()">カードを配る (配牌)</button>
+        <button id="exchangeBtn" class="action-btn" onclick="exchangeCard()" disabled>1枚捨てる (交換)</button>
+        <button id="reachBtn" class="action-btn" onclick="triggerReach()" disabled>リーチ</button>
+        <button id="ronBtn" class="agari-btn" onclick="triggerAgari('ロン')" disabled>ロン！</button>
+        <button id="tsumoBtn" class="agari-btn" onclick="triggerAgari('ツモ')" disabled>ツモ！</button>
+    </div>
+
+    <!-- 判定結果エリア -->
+    <div class="result-area">
+        <div id="resultTitle" class="result-title">スロット脱出テストルーム</div>
+        <div id="resultDetail" class="result-detail">手札を1枚選択して戦略的に入れ替えるデバッグが可能です</div>
+    </div>
+
+<script>
+const suits = ['♠', '♣', '♥', '♦'];
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+let deck = [];
+let currentHand = [];
+let selectedIndex = -1; 
+let hasExchanged = false;
+let isReach = false;
+let myScore = 30;
+
+function logPhase(msg) { document.getElementById('gamePhase').innerText = msg; }
+function logGuide(msg) { document.getElementById('guideText').innerText = msg; }
+
+// デッキ構築＆シャッフル
+function initDeck() {
+    deck = [];
+    for (let s of suits) {
+        for (let r of ranks) {
+            deck.push({ suit: s, rank: r, isJoker: false });
+        }
+    }
+    deck.push({ suit: '🃏', rank: 'JK', isJoker: true }); // ジョーカー
+
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
+
+// 配牌処理
+function dealHand() {
+    initDeck();
+    currentHand = deck.slice(0, 5);
+    deck = deck.slice(5); // 残りを山札に
+    
+    selectedIndex = -1;
+    hasExchanged = false;
+    isReach = false;
+
+    document.getElementById('dealBtn').disabled = true;
+    document.getElementById('exchangeBtn').disabled = true;
+    document.getElementById('reachBtn').disabled = false;
+    document.getElementById('ronBtn').disabled = false;
+    document.getElementById('tsumoBtn').disabled = false;
+
+    logPhase("【打牌フェーズ】カードを1枚選んで交換するか、役があればアガリ！");
+    logGuide("交換したいカードをタップして「1枚捨てる」を押してください（スルーしてアガリも可）");
+
+    renderHand();
+    judgeHand(false);
+}
+
+// 手札クリック時の選択処理
+function selectCard(idx) {
+    if (hasExchanged) return; // 交換は1回きり
+    selectedIndex = (selectedIndex === idx) ? -1 : idx;
+    
+    document.getElementById('exchangeBtn').disabled = (selectedIndex === -1);
+    renderHand();
+}
+
+// 画面表示更新
+function renderHand() {
+    const handView = document.getElementById('handView');
+    handView.innerHTML = '';
+    
+    currentHand.forEach((card, idx) => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        if (idx === selectedIndex) cardDiv.classList.add('selected');
+        
+        if (card.isJoker) {
+            cardDiv.classList.add('joker');
+            cardDiv.innerHTML = `<div class="card-suit">🃏</div><div class="card-rank">ババ</div><div class="discard-tag">捨てる</div>`;
+        } else {
+            if (card.suit === '♥' || card.suit === '♦') cardDiv.classList.add('red');
+            cardDiv.innerHTML = `<div class="card-suit">${card.suit}</div><div class="card-rank">${card.rank}</div><div class="discard-tag">捨てる</div>`;
+        }
+        
+        cardDiv.onclick = () => selectCard(idx);
+        handView.appendChild(cardDiv);
+    });
+}
+
+// 1枚カード交換処理
+function exchangeCard() {
+    if (selectedIndex === -1 || hasExchanged) return;
+
+    // 1枚引いて差し替える
+    const newCard = deck.shift();
+    currentHand[selectedIndex] = newCard;
+    
+    hasExchanged = true;
+    selectedIndex = -1;
+    
+    document.getElementById('exchangeBtn').disabled = true;
+    logPhase("【最終フェーズ】カード交換完了！アガリ判定へ");
+    logGuide("これ以上は交換できません。手札を確認してロンかツモを押してください。");
+
+    renderHand();
+    judgeHand(true); 
+}
+
+// リーチボタン
+function triggerReach() {
+    isReach = true;
+    document.getElementById('reachBtn').disabled = true;
+    logGuide("魂のリーチ！このままツモるか、相手の隙を突いてロンを狙いましょう！");
+    judgeHand(hasExchanged);
+}
+
+// ロン・ツモボタン処理
+function triggerAgari(type) {
+    document.getElementById('dealBtn').disabled = false;
+    document.getElementById('exchangeBtn').disabled = true;
+    document.getElementById('reachBtn').disabled = true;
+    document.getElementById('ronBtn').disabled = true;
+    document.getElementById('tsumoBtn').disabled = true;
+    
+    logPhase("【対局終了】 次のゲームを遊ぶには「カードを配る」を押してください");
+    logGuide(`見事に『${type}』が決まりました！点数計算を行います。`);
+}
+
+// 役判定ロジック (K様監修仕様・一部抜粋デバッグ)
+function judgeHand(finalPhase) {
+    const titleEl = document.getElementById('resultTitle');
+    const detailEl = document.getElementById('resultDetail');
+    
+    const hasJoker = currentHand.some(c => c.isJoker);
+    const normalCards = currentHand.filter(c => !c.isJoker);
+    
+    let counts = {};
+    normalCards.forEach(c => { counts[c.rank] = (counts[c.rank] || 0) + 1; });
+    const countValues = Object.values(counts).sort((a,b) => b-a);
+    
+    let reachBonusText = isReach ? " ＋ 【魂のリーチボーナス適用！】" : "";
+
+    // 1. 酷使苦情 (29点)
+    if (hasJoker && counts['5'] === 1 && counts['9'] === 2 && counts['4'] === 1) {
+        const uniqueSuits = new Set(normalCards.map(c => c.suit));
+        if (uniqueSuits.size === 4) {
+            titleEl.innerHTML = `酷使苦情 (29点)${reachBonusText} 🎉`;
+            detailEl.innerHTML = "5949とジョーカーの完璧な語呂合わせが炸裂！スロット状態を壊して見事ツモ切り成功！";
+            return;
+        }
+    }
+
+    // 2. 5カード (25点)
+    if (hasJoker && countValues[0] === 4) {
+        titleEl.innerHTML = `5カード (25点)${reachBonusText} 👑`;
+        detailEl.innerHTML = "スリーカードから交換を経て見事4カードが揃い、ジョーカーが化けて最高峰の5カードへ進化！";
+        return;
+    }
+
+    // 3. 七三元 (21点)
+    if (!hasJoker && counts['7'] === 3 && counts['A'] === 2) {
+        titleEl.innerHTML = `七三元 (21点)${reachBonusText} 🏮`;
+        detailEl.innerHTML = "自力で777とAAのペアを揃えきった、麻雀大三元超えの芸術役！";
+        return;
+    }
+    if (hasJoker && ((counts['7'] === 3 && counts['A'] === 1) || (counts['7'] === 2 && counts['A'] === 2))) {
+        titleEl.innerHTML = `七三元 (21点 [-1点適用で20点])${reachBonusText} 🏮`;
+        detailEl.innerHTML = "ジョーカーをオールマイティ変身させて七三元が成立！使用料-1点。";
+        return;
+    }
+
+    // 4. トイハウス (14点)
+    const isAllFace = normalCards.every(c => ['J','Q','K','A'].includes(c.rank));
+    if (isAllFace) {
+        if (!hasJoker && countValues[0] === 3 && countValues[1] === 2) {
+            titleEl.innerHTML = `トイハウス (14点)${reachBonusText} 🧸`;
+            detailEl.innerHTML = "全て絵札のフルハウス！子宝に恵まれたハッピーなオチ！";
+            return;
+        }
+        if (hasJoker && ((countValues[0] === 3 && countValues[1] === 1) || (countValues[0] === 2 && countValues[1] === 2))) {
+            titleEl.innerHTML = `トイハウス (14点 [-1点適用で13点])${reachBonusText} 🧸`;
+            detailEl.innerHTML = "ジョーカーを絵札に変身させた見事なトイハウス妥協ルート！";
+            return;
+        }
+    }
+
+    // 暫定ベース
+    if (hasJoker) {
+        titleEl.innerHTML = "手札: ジョーカーあり (戦略思考中) 🎴";
+        detailEl.innerHTML = "1枚交換を使って、4カードからの5カード変化やトイハウス変身を狙える大チャンス状態です。";
+    } else {
+        if (countValues[0] === 3) {
+            titleEl.innerHTML = "手札: スリーカード系統 (テンパイ間近) 🎲";
+            detailEl.innerHTML = "不要な1枚を捨てて、自力4カードやフルハウス（トイハウス）へ進化させるチャンス。";
+        } else {
+            titleEl.innerHTML = "手札: ノーペア〜通常役 (対局中)";
+            detailEl.innerHTML = "カードをタップして「1枚捨てる」を押し、山札から流れを引き込みましょう！";
+        }
+    }
+}
+</script>
+</body>
+</html>
+  border-radius: 4px;
             box-shadow: 0 4px #004499;
             cursor: pointer;
         }
@@ -124,34 +811,7 @@
 <script>
 // トランプデータ定義
 const suits = ['♠', '♣', '♥', '♦'];
-const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-
-let currentHand = [];
-
-// 配牌処理
-function dealHand() {
-    let deck = [];
-    // デッキ構築 (52枚)
-    for (let s of suits) {
-        for (let r of ranks) {
-            deck.push({ suit: s, rank: r, isJoker: false });
-        }
-    }
-    // ジョーカーを1枚追加
-    deck.push({ suit: '🃏', rank: 'JK', isJoker: true });
-
-    // シャッフル
-    for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-
-    // 5枚引く
-    currentHand = deck.slice(0, 5);
-    
-    // 画面表示更新
-    renderHand();
-    // 役判定実行
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '    /
     judgeHand();
 }
 
@@ -266,28 +926,4 @@ function judgeHand() {
             return;
         }
         // ジョーカーあり変身フルハウス (絵札3枚+1枚 or 絵札2枚+2枚)
-        if (hasJoker && ((countValues[0] === 3 && countValues[1] === 1) || (countValues[0] === 2 && countValues[1] === 2))) {
-            titleEl.innerHTML = "トイハウス (14点 [-1点適用で13点]) 🧸";
-            detailEl.innerHTML = "拒絶反応なし！スリーカードから絵札を引いてジョーカーをペア化させた見事な妥協ルート！";
-            return;
-        }
-    }
-
-    // 暫定ベース判定（デバッグ用の簡易出力）
-    if (hasJoker) {
-        titleEl.innerHTML = "手札判定中 (ジョーカーあり) 🧪";
-        detailEl.innerHTML = "現在、最難関ロジックのケンカ防止テスト成功。通常役へ流れます。";
-    } else {
-        if (countValues[0] === 3) {
-            titleEl.innerHTML = "スリーカード系統 (判定中) 🎲";
-            detailEl.innerHTML = "ここから4カードや5カード化への分岐テスト用";
-        } else {
-            titleEl.innerHTML = "ノーペア〜その他通常役 🃏";
-            detailEl.innerHTML = "デバッグ用配牌が成功しています。慎重にチェック中。";
-        }
-    }
-}
-</script>
-</body>
-</html>
-
+        if (hasJoker && 
