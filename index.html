@@ -1,1 +1,293 @@
-https://github.com/k1mac451-lgtm/JanPoker.git
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真・雀ポーカー デバッグルーム</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 10px;
+            margin: 0;
+        }
+        h1 {
+            font-size: 20px;
+            color: #ffcc00;
+            margin-bottom: 5px;
+        }
+        .status-area {
+            border: 2px solid #444;
+            background-color: #222;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .card-area {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .card {
+            width: 55px;
+            height: 85px;
+            background-color: #fff;
+            color: #000;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            box-sizing: border-box;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .card.red { color: #cc0000; }
+        .card.joker { 
+            background: linear-gradient(135deg, #fff 0%, #ffcc00 100%);
+            color: #7700aa;
+        }
+        .card-suit { text-align: left; font-size: 16px; }
+        .card-rank { text-align: center; font-size: 18px; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .btn-area {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 4px #004499;
+            cursor: pointer;
+        }
+        button:active {
+            box-shadow: 0 2px #004499;
+            transform: translateY(2px);
+        }
+        .result-area {
+            border: 2px dashed #ffcc00;
+            background-color: #1a1a00;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 80px;
+        }
+        .result-title {
+            font-size: 18px;
+            color: #ffcc00;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result-detail {
+            font-size: 13px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>真・雀ポーカー (Debug Ver)</h1>
+    
+    <!-- 上部ステータスエリア -->
+    <div class="status-area">
+        【自分】 持ち点: 30点 | 【相手】 持ち点: 30点<br>
+        <span style="color: #00ffcc;">ドラ表示牌: [ なし (デバッグ中) ]</span>
+    </div>
+
+    <!-- 手札表示エリア -->
+    <div class="card-area" id="handView">
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+        <div class="card"><div class="card-suit"></div><div class="card-rank">？</div></div>
+    </div>
+
+    <!-- 操作エリア -->
+    <div class="btn-area">
+        <button onclick="dealHand()">カードを配る (配牌)</button>
+    </div>
+
+    <!-- 判定結果エリア -->
+    <div class="result-area">
+        <div id="resultTitle">手札を配ってください</div>
+        <div id="resultDetail" class="result-detail">魂の24役の複合テスト・拒絶反応デバッグ用</div>
+    </div>
+
+<script>
+// トランプデータ定義
+const suits = ['♠', '♣', '♥', '♦'];
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+let currentHand = [];
+
+// 配牌処理
+function dealHand() {
+    let deck = [];
+    // デッキ構築 (52枚)
+    for (let s of suits) {
+        for (let r of ranks) {
+            deck.push({ suit: s, rank: r, isJoker: false });
+        }
+    }
+    // ジョーカーを1枚追加
+    deck.push({ suit: '🃏', rank: 'JK', isJoker: true });
+
+    // シャッフル
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+
+    // 5枚引く
+    currentHand = deck.slice(0, 5);
+    
+    // 画面表示更新
+    renderHand();
+    // 役判定実行
+    judgeHand();
+}
+
+function renderHand() {
+    const handView = document.getElementById('handView');
+    handView.innerHTML = '';
+    
+    currentHand.forEach(card => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        
+        if (card.isJoker) {
+            cardDiv.classList.add('joker');
+            cardDiv.innerHTML = `<div class="card-suit">🃏</div><div class="card-rank">ババ</div>`;
+        } else {
+            if (card.suit === '♥' || card.suit === '♦') {
+                cardDiv.classList.add('red');
+            }
+            cardDiv.innerHTML = `<div class="card-suit">${card.suit}</div><div class="card-rank">${card.rank}</div>`;
+        }
+        handView.appendChild(cardDiv);
+    });
+}
+
+// 判定コアロジック (K様監修)
+function judgeHand() {
+    const titleEl = document.getElementById('resultTitle');
+    const detailEl = document.getElementById('resultDetail');
+    
+    // ジョーカーの有無を確認
+    const hasJoker = currentHand.some(c => c.isJoker);
+    const normalCards = currentHand.filter(c => !c.isJoker);
+    
+    // 各数字の出現数をカウント
+    let counts = {};
+    normalCards.forEach(c => { counts[c.rank] = (counts[c.rank] || 0) + 1; });
+    const countValues = Object.values(counts).sort((a,b) => b-a);
+    
+    // 各スートの出現数をカウント
+    let suitCounts = {};
+    normalCards.forEach(c => { suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1; });
+
+    // --- 【超最優先：ジョーカー必須役レーン】 ---
+    
+    // 1. ロイヤルストレートフラッシュ (30点)
+    // ※通常判定だが最上位のためここに設置 (ジョーカーあり時は後輪でマイナス1点)
+    
+    // 2. 酷使苦情 (29点) - 5,9,4,9 + Joker 且つスートバラバラ
+    if (hasJoker && counts['5'] === 1 && counts['9'] === 2 && counts['4'] === 1) {
+        const uniqueSuits = new Set(normalCards.map(c => c.suit));
+        if (uniqueSuits.size === 4) {
+            titleEl.innerHTML = "酷使苦情 (29点) 🎉";
+            detailEl.innerHTML = "K様渾身の語呂合わせ！スートも全てバラバラ！ジョーカー必須のため減点なし！";
+            return;
+        }
+    }
+
+    // 3. 5カード (25点) - 生4枚 + Joker
+    if (hasJoker && countValues[0] === 4) {
+        titleEl.innerHTML = "5カード (25点) 👑";
+        detailEl.innerHTML = "トランプの限界突破！生カード4枚を集めきった強者のみの特権！減点なし！";
+        return;
+    }
+
+    // 4. AKB48 / シン・AKB48
+    if (hasJoker && counts['A'] === 1 && counts['K'] === 1 && counts['4'] === 1 && counts['8'] === 1) {
+        // ハートの数をチェック
+        const heartCount = normalCards.filter(c => c.suit === '♥').length;
+        if (heartCount === 4) {
+            titleEl.innerHTML = "シン・AKB48 (48点) 🔥🔥🔥";
+            detailEl.innerHTML = "規格外のチート炸裂！ジョーカー以外すべてハート！笑うしかない！";
+        } else {
+            titleEl.innerHTML = "AKB48 (24点) 🌟";
+            detailEl.innerHTML = "洒落から生まれたチート役！ジョーカー必須のため減点なし！";
+        }
+        return;
+    }
+
+    // --- 【第二レーン：通常役およびオールマイティ変身レーン】 ---
+    
+    // 5. 4カード (20点) - ジョーカー無効(自力限定)
+    if (!hasJoker && countValues[0] === 4) {
+        titleEl.innerHTML = "4カード (20点) ⚔️";
+        detailEl.innerHTML = "5枚目はフリー！ダマテンでいつでもアガれる破壊の鉄槌！(ジョーカー無効)";
+        return;
+    }
+
+    // 6. 七三元 (21点) - 777 + AA
+    // ジョーカーなし自力
+    if (!hasJoker && counts['7'] === 3 && counts['A'] === 2) {
+        titleEl.innerHTML = "七三元 (21点) 🏮";
+        detailEl.innerHTML = "麻雀の大三元インスパイア！最高峰の特殊フルハウス！";
+        return;
+    }
+    // ジョーカーあり(変身)
+    if (hasJoker) {
+        // 7が3枚でAが1枚、または7が2枚でAが2枚の場合、Joker変身で七三元が成立
+        if ((counts['7'] === 3 && counts['A'] === 1) || (counts['7'] === 2 && counts['A'] === 2)) {
+            titleEl.innerHTML = "七三元 (21点 [-1点適用で20点]) 🏮";
+            detailEl.innerHTML = "ジョーカーをオールマイティ変身させて七三元が成立！使用料-1点。";
+            return;
+        }
+    }
+
+    // 7. トイハウス (14点) - 全て絵札のフルハウス
+    const isAllFace = normalCards.every(c => ['J','Q','K','A'].includes(c.rank));
+    if (isAllFace) {
+        // 自力フルハウス
+        if (!hasJoker && countValues[0] === 3 && countValues[1] === 2) {
+            titleEl.innerHTML = "トイハウス (14点) 🧸";
+            detailEl.innerHTML = "全て絵札で構成された子宝満載のフルハウス！";
+            return;
+        }
+        // ジョーカーあり変身フルハウス (絵札3枚+1枚 or 絵札2枚+2枚)
+        if (hasJoker && ((countValues[0] === 3 && countValues[1] === 1) || (countValues[0] === 2 && countValues[1] === 2))) {
+            titleEl.innerHTML = "トイハウス (14点 [-1点適用で13点]) 🧸";
+            detailEl.innerHTML = "拒絶反応なし！スリーカードから絵札を引いてジョーカーをペア化させた見事な妥協ルート！";
+            return;
+        }
+    }
+
+    // 暫定ベース判定（デバッグ用の簡易出力）
+    if (hasJoker) {
+        titleEl.innerHTML = "手札判定中 (ジョーカーあり) 🧪";
+        detailEl.innerHTML = "現在、最難関ロジックのケンカ防止テスト成功。通常役へ流れます。";
+    } else {
+        if (countValues[0] === 3) {
+            titleEl.innerHTML = "スリーカード系統 (判定中) 🎲";
+            detailEl.innerHTML = "ここから4カードや5カード化への分岐テスト用";
+        } else {
+            titleEl.innerHTML = "ノーペア〜その他通常役 🃏";
+            detailEl.innerHTML = "デバッグ用配牌が成功しています。慎重にチェック中。";
+        }
+    }
+}
+</script>
+</body>
+</html>
+
