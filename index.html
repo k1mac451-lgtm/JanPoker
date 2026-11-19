@@ -261,6 +261,13 @@
 </div>
 
 <script>
+const CUSTOM_PEER_CONFIG = {
+  host: '451k1-peer-server.onrender.com',
+  port: 443,
+  path: '/',
+  secure: true
+};
+
 const SoundEngine = {
   ctx: null,
   init() {
@@ -832,11 +839,11 @@ function createOnlineRoom() {
   gameState.isPureOnlinePeer = true;
   gameState.isHost = true;
   gameState.roomRule = document.getElementById('host-room-rule-select').value;
-  document.getElementById('online-status-msg').innerText = "🌐 PeerJSサーバー接続中...";
+  document.getElementById('online-status-msg').innerText = "🌐 独自Peerサーバー接続中...";
 
   if (peer) { peer.destroy(); }
   const randomId = 'jp2-' + Math.floor(1000 + Math.random() * 9000);
-  peer = new Peer(randomId);
+  peer = new Peer(randomId, CUSTOM_PEER_CONFIG);
 
   peer.on('open', (id) => {
     document.getElementById('online-room-id-val').innerText = id;
@@ -885,10 +892,10 @@ function joinOnlineRoom() {
   gameState.isOnline = true;
   gameState.isPureOnlinePeer = true;
   gameState.isHost = false;
-  document.getElementById('online-status-msg').innerText = "🌐 ルームに接続を試みています...";
+  document.getElementById('online-status-msg').innerText = "🌐 独自Peerサーバーへ接続を試みています...";
 
   if (peer) { peer.destroy(); }
-  peer = new Peer();
+  peer = new Peer(CUSTOM_PEER_CONFIG);
 
   peer.on('open', () => {
     conn = peer.connect(roomId);
