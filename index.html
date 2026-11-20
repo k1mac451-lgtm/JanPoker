@@ -308,7 +308,7 @@
 
 <script>
 const CUSTOM_PEER_CONFIG = {
-  host: '451k1-peer-server.onrender.com',
+  host: 'four51k1-peer-server.onrender.com',
   port: 443,
   path: '/',
   secure: true
@@ -866,8 +866,8 @@ function switchScreen(screenId) {
 
 function showTitle() { 
   clearInterval(turnTimer); clearInterval(resTimer); 
-  if (conn) { conn.close(); conn = null; }
-  if (peer) { peer.destroy(); peer = null; }
+  if (conn) { try { conn.close(); } catch(e) {} conn = null; }
+  if (peer) { try { peer.destroy(); } catch(e) {} peer = null; }
   switchScreen('screen-title'); 
 }
 function showModeSelect() { 
@@ -919,10 +919,15 @@ function createOnlineRoom() {
   gameState.isHost = true;
   gameState.playerScore = 30; gameState.cpuScore = 30; gameState.streakCount = 0; gameState.kyotaku = 0;
   gameState.roomRule = document.getElementById('host-room-rule-select').value;
-  document.getElementById('online-status-msg').innerText = "🌐 Peerサーバー接続中（初回は30秒ほどかかる場合があります）...";
+  document.getElementById('online-status-msg').innerText = "🌐 Peerサーバー接続中（スリープ復帰時は30〜60秒ほどかかる場合があります）...";
 
-  if (peer) { peer.destroy(); }
-  const randomId = 'jp2-' + Math.floor(1000 + Math.random() * 9000);
+  if (typeof Peer === 'undefined') {
+    document.getElementById('online-status-msg').innerText = "❌ PeerJSライブラリが読み込めませんでした。通信環境や広告ブロックをご確認ください。";
+    return;
+  }
+
+  if (peer) { try { peer.destroy(); } catch(e) {} peer = null; }
+  const randomId = 'jp2-' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.floor(10 + Math.random() * 90);
   peer = new Peer(randomId, CUSTOM_PEER_CONFIG);
 
   peer.on('open', (id) => {
@@ -956,7 +961,8 @@ function createOnlineRoom() {
   });
 
   peer.on('error', (err) => {
-    document.getElementById('online-status-msg').innerText = "❌ 接続エラー: " + err.type;
+    const errType = (err && err.type) ? err.type : 'unknown';
+    document.getElementById('online-status-msg').innerText = "❌ 接続エラー (" + errType + ")：サーバー起動状態やURLをご確認ください";
   });
 }
 
@@ -975,8 +981,13 @@ function joinOnlineRoom() {
   gameState.playerScore = 30; gameState.cpuScore = 30; gameState.streakCount = 0; gameState.kyotaku = 0;
   document.getElementById('online-status-msg').innerText = "🌐 Peerサーバーへ接続を試みています...";
 
-  if (peer) { peer.destroy(); }
-  peer = new Peer(undefined, CUSTOM_PEER_CONFIG);
+  if (typeof Peer === 'undefined') {
+    document.getElementById('online-status-msg').innerText = "❌ PeerJSライブラリが読み込めませんでした。通信環境や広告ブロックをご確認ください。";
+    return;
+  }
+
+  if (peer) { try { peer.destroy(); } catch(e) {} peer = null; }
+  peer = new Peer(CUSTOM_PEER_CONFIG);
 
   peer.on('open', () => {
     conn = peer.connect(roomId);
@@ -987,7 +998,8 @@ function joinOnlineRoom() {
   });
 
   peer.on('error', (err) => {
-    document.getElementById('online-status-msg').innerText = "❌ ルームが見つからないか接続失敗しました (" + err.type + ")";
+    const errType = (err && err.type) ? err.type : 'unknown';
+    document.getElementById('online-status-msg').innerText = "❌ ルームが見つからないか接続失敗しました (" + errType + ")";
   });
 }
 
