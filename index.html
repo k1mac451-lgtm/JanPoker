@@ -192,24 +192,63 @@
   }
   .yaku-tab-btn.active { border-color: #f1c40f; background: rgba(241,196,15,0.25); color: #f1c40f; }
 
+  /* 通常カットイン（一般演出・通常ツモ・通常ロン） */
   #cutin-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.92); display: none; flex-direction: column;
+    background: rgba(0, 0, 0, 0.86); display: none; flex-direction: column;
     justify-content: center; align-items: center; z-index: 200;
     padding: 20px; text-align: center; pointer-events: none;
   }
   @keyframes cutinSlash {
-    0% { transform: scaleX(0.2) scaleY(1.4); opacity: 0; }
-    20% { transform: scaleX(1.04) scaleY(0.98); opacity: 1; }
+    0% { transform: scaleX(0.25) scaleY(1.2); opacity: 0; }
+    20% { transform: scaleX(1.03) scaleY(1); opacity: 1; }
     85% { transform: scaleX(1) scaleY(1); opacity: 1; }
-    100% { transform: scaleX(1.1) scaleY(0.8); opacity: 0; }
+    100% { transform: scaleX(1.06) scaleY(0.9); opacity: 0; }
   }
   .cutin-band {
-    width: 100%; padding: 18px 12px;
-    border-top: 3px solid #f1c40f; border-bottom: 3px solid #f1c40f;
-    background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(28,56,62,0.98) 50%, rgba(0,0,0,0.95) 100%);
-    box-shadow: 0 0 30px rgba(241, 196, 15, 0.6);
-    animation: cutinSlash 2.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    width: 100%; padding: 16px 12px;
+    border-top: 2px solid #f1c40f; border-bottom: 2px solid #f1c40f;
+    background: linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(22,45,50,0.96) 50%, rgba(0,0,0,0.92) 100%);
+    box-shadow: 0 0 22px rgba(241, 196, 15, 0.45);
+    animation: cutinSlash 1.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  /* 一発限定・別格演出オーバーレイ */
+  #ippatsu-grand-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.32) 0%, rgba(120, 10, 10, 0.88) 45%, rgba(0, 0, 0, 0.96) 100%);
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 250; padding: 18px; text-align: center; pointer-events: none; overflow: hidden;
+  }
+  @keyframes grandFlash {
+    0% { opacity: 0; transform: scale(0.75); }
+    15% { opacity: 1; transform: scale(1.06); }
+    30% { opacity: 0.92; transform: scale(1.0); }
+    82% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+  @keyframes auraRotate {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.12); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+  .ippatsu-aura-rays {
+    position: absolute; width: 460px; height: 460px; border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 215, 0, 0.28) 0deg 10deg,
+      rgba(255, 71, 87, 0.05) 10deg 20deg
+    );
+    animation: auraRotate 4.5s linear infinite;
+    filter: blur(2px);
+  }
+  .ippatsu-grand-stage {
+    position: relative; z-index: 2; width: 100%;
+    padding: 20px 14px; border-radius: 14px;
+    background: linear-gradient(145deg, rgba(60, 5, 5, 0.96) 0%, rgba(25, 15, 5, 0.98) 50%, rgba(75, 10, 10, 0.96) 100%);
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 0 3px #ff3838, 0 0 38px rgba(255, 215, 0, 0.95), 0 0 65px rgba(255, 56, 56, 0.75), inset 0 0 24px rgba(255, 215, 0, 0.45);
+    animation: grandFlash 2.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 </style>
 </head>
@@ -420,8 +459,8 @@
           ・連チャンは2連チャン目以降からカウント・表示されます。<br>
           ・全モード第2サイクルがオーラス（表ドラ2枚・裏ドラ2枚）です。<br>
           ・鬼レンチャレンジ（マスターモード）は10連チャン達成が勝利条件。第2オーラスでプレイヤーの親権が途切れるとチャレンジ失敗終了となります。<br><br>
-          <div style="color: #f1c40f; font-weight: bold; margin-bottom: 3px;">【役判定＆リーチ厳密ルール】</div>
-          ・テンパイ判定は実際の成立役（ジョーカー不可の役はジョーカー補完不可）に基づいて正確に判定されます。<br>
+          <div style="color: #f1c40f; font-weight: bold; margin-bottom: 3px;">【役判定＆状態ボーナス】</div>
+          ・親和了で「親権＋1pt」、リーチ直後の和了で「一発＋1pt」が加算されます。<br>
           ・10点以下の基本役（ストレート/フラッシュ/フルハウス/ニューハウス/ロイヤルストレート）はリーチ必須です。<br><br>
           <div style="color: #f1c40f; font-weight: bold; margin-bottom: 3px;">【制約ルール部屋＆通信対戦】</div>
           ・⚔️ 勝負師の部屋：公式全役有効のガチンコ勝負<br>
@@ -432,19 +471,38 @@
     </div>
   </div>
 
-  <!-- 8. 暗転カットイン演出オーバーレイ -->
+  <!-- 8. 通常暗転カットイン演出オーバーレイ -->
   <div id="cutin-overlay">
     <div id="cutin-band" class="cutin-band">
-      <div id="cutin-sub-top" style="font-size: 0.78rem; color: #f1c40f; font-weight: bold; letter-spacing: 2px; margin-bottom: 4px;">ONLINE MATCH</div>
-      <div id="cutin-main-text" style="font-size: 1.55rem; color: #ffffff; font-weight: 900; text-shadow: 0 0 12px rgba(241,196,15,0.9); margin-bottom: 6px;">⚔️ 勝負師の部屋</div>
-      <div id="cutin-rule-desc" style="font-size: 0.85rem; color: #2ecc71; font-weight: bold; line-height: 1.4;">特定ルール：公式ガチンコ勝負（全役有効）</div>
+      <div id="cutin-sub-top" style="font-size: 0.75rem; color: #f1c40f; font-weight: bold; letter-spacing: 2px; margin-bottom: 4px;">MATCH EVENT</div>
+      <div id="cutin-main-text" style="font-size: 1.45rem; color: #ffffff; font-weight: 900; text-shadow: 0 0 10px rgba(241,196,15,0.8); margin-bottom: 5px;">✨ ツモ和了！</div>
+      <div id="cutin-rule-desc" style="font-size: 0.82rem; color: #2ecc71; font-weight: bold; line-height: 1.35;">成立役</div>
+    </div>
+  </div>
+
+  <!-- 9. 一発限定・別格演出オーバーレイ -->
+  <div id="ippatsu-grand-overlay">
+    <div class="ippatsu-aura-rays"></div>
+    <div class="ippatsu-grand-stage">
+      <div style="display: inline-block; background: linear-gradient(90deg, #ff3838, #ffd700, #ff3838); color: #111; font-size: 0.72rem; font-weight: 900; padding: 3px 14px; border-radius: 99px; letter-spacing: 2px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.7);">
+        ★ IPPATSU SPECIAL OVERDRIVE ★
+      </div>
+      <div id="ippatsu-grand-title" style="font-size: 1.85rem; font-weight: 900; color: #ffd700; text-shadow: 0 0 16px rgba(255,215,0,0.95), 0 3px 0 #8e0e00, 0 5px 12px rgba(0,0,0,0.95); letter-spacing: 1px; margin-bottom: 8px;">
+        ⚡ 一発神域和了！ ⚡
+      </div>
+      <div id="ippatsu-grand-yaku" style="font-size: 1.05rem; font-weight: 900; color: #ffffff; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,215,0,0.65); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;">
+        成立役 ＋ 一発 (+1pt)
+      </div>
+      <div id="ippatsu-grand-sub" style="font-size: 0.78rem; color: #ffeaa7; font-weight: bold; letter-spacing: 1px;">
+        リーチ宣言直後の電撃和了！
+      </div>
     </div>
   </div>
 
 </div>
 <script>
 /* ==========================================================================
-   1. カードゲーム向け音響エンジン（通常ラリー時の耳障りさを抑えた上品なSE）
+   1. 音響エンジン（ルーレット専用減速SE＆一発別格ファンファーレ完備）
    ========================================================================== */
 const SoundEngine = {
   ctx: null,
@@ -507,56 +565,70 @@ const SoundEngine = {
       src.stop(now + duration + 0.01);
     } catch (e) {}
   },
-  playSE(name) {
+  // ルーレット回転専用SE：序盤は軽快なハイピッチ、終盤は減速するホイール・ピン音
+  playRouletteTick(progress = 0.5) {
+    const clamped = Math.max(0, Math.min(1, progress));
+    const baseFreq = 760 - clamped * 340;
+    const endFreq = baseFreq * 0.78;
+    const gain = 0.055 + clamped * 0.035;
+    this.playTone(baseFreq, 0.032, 'triangle', gain, 0, endFreq);
+    this.playCardSwipe(0.016, 1700 - clamped * 500, 0.035, 0);
+  },
+  playSE(name, progress = 0.5) {
     if (name === 'select_card') {
-      // 軽くカードを指先で弾くような上品なクリック
       this.playCardSwipe(0.025, 1800, 0.055, 0);
       this.playTone(460, 0.028, 'sine', 0.05, 0, 520);
     } else if (name === 'draw_card') {
-      // 山札からカードをスッと引き抜く柔らかな紙音
       this.playCardSwipe(0.07, 1550, 0.095, 0);
       this.playTone(310, 0.045, 'sine', 0.045, 0.015, 390);
     } else if (name === 'discard_card') {
-      // テーブルにカードを置く落ち着いた「パサッ・コトン」音
       this.playCardSwipe(0.06, 1150, 0.10, 0);
       this.playTone(195, 0.055, 'sine', 0.075, 0.01, 130);
     } else if (name === 'roulette_spin') {
-      // ルーレットの落ち着いたチップ／カード送り音
-      this.playCardSwipe(0.018, 1350, 0.045, 0);
-      this.playTone(280, 0.02, 'sine', 0.04, 0, 210);
+      this.playRouletteTick(progress);
     } else if (name === 'timer_warning_pip') {
       this.playTone(620, 0.055, 'sine', 0.08, 0);
     } else if (name === 'room_cutin') {
-      this.playTone(220, 0.28, 'triangle', 0.13, 0, 220);
-      this.playTone(330, 0.28, 'triangle', 0.13, 0.08, 330);
-      this.playTone(440, 0.45, 'triangle', 0.15, 0.16, 440);
+      this.playTone(220, 0.25, 'triangle', 0.12, 0, 220);
+      this.playTone(330, 0.25, 'triangle', 0.12, 0.07, 330);
+      this.playTone(440, 0.40, 'triangle', 0.14, 0.14, 440);
     } else if (name === 'reach_cutin') {
-      this.playTone(523.25, 0.10, 'triangle', 0.14, 0, 659.25);
-      this.playTone(783.99, 0.16, 'triangle', 0.15, 0.07, 1046.5);
+      this.playTone(523.25, 0.10, 'triangle', 0.13, 0, 659.25);
+      this.playTone(783.99, 0.15, 'triangle', 0.14, 0.07, 1046.5);
       this.playCardSwipe(0.07, 2000, 0.08, 0.05);
     } else if (name === 'tsumo_win') {
       [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-        this.playTone(f, 0.25, 'triangle', 0.14, i * 0.08);
+        this.playTone(f, 0.22, 'triangle', 0.13, i * 0.075);
       });
     } else if (name === 'ron_win') {
-      this.playTone(196.00, 0.22, 'triangle', 0.15, 0, 146.83);
-      this.playTone(392.00, 0.28, 'triangle', 0.14, 0.06, 523.25);
+      this.playTone(220.00, 0.18, 'triangle', 0.14, 0, 164.81);
+      this.playTone(440.00, 0.25, 'triangle', 0.13, 0.06, 587.33);
       this.playCardSwipe(0.08, 1500, 0.09, 0.02);
     } else if (name === 'ippatsu_fanfare') {
-      const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50, 1318.51];
-      const times = [0, 0.09, 0.18, 0.27, 0.40, 0.50, 0.62];
-      notes.forEach((f, idx) => {
-        this.playTone(f, idx === notes.length - 1 ? 0.65 : 0.16, 'triangle', 0.16, times[idx]);
-        this.playTone(f * 0.5, idx === notes.length - 1 ? 0.65 : 0.16, 'sine', 0.12, times[idx]);
+      // 一発限定：重厚な低音＋煌びやかな上昇ファンファーレ
+      this.playTone(130.81, 0.85, 'sawtooth', 0.07, 0);
+      this.playTone(261.63, 0.85, 'triangle', 0.14, 0);
+      const chordSeq = [
+        [523.25, 659.25, 783.99],
+        [587.33, 739.99, 880.00],
+        [659.25, 830.61, 987.77],
+        [1046.50, 1318.51, 1567.98]
+      ];
+      chordSeq.forEach((triad, idx) => {
+        const t = idx * 0.14;
+        const dur = idx === chordSeq.length - 1 ? 0.95 : 0.18;
+        triad.forEach(freq => {
+          this.playTone(freq, dur, 'triangle', 0.13, t);
+        });
       });
     }
   }
 };
 
 /* ==========================================================================
-   2. 暗転カットイン演出コントローラー
+   2. 通常カットイン＆一発限定・別格演出コントローラー
    ========================================================================== */
-function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f', seName = 'room_cutin', duration = 2300) {
+function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f', seName = 'room_cutin', duration = 1750) {
   return new Promise(resolve => {
     const overlay = document.getElementById('cutin-overlay');
     const band = document.getElementById('cutin-band');
@@ -565,7 +637,7 @@ function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f
     document.getElementById('cutin-rule-desc').innerText = ruleDesc;
     band.style.borderTopColor = borderColor;
     band.style.borderBottomColor = borderColor;
-    band.style.boxShadow = `0 0 32px ${borderColor}`;
+    band.style.boxShadow = `0 0 24px ${borderColor}`;
 
     band.style.animation = 'none';
     void band.offsetWidth;
@@ -573,6 +645,29 @@ function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f
 
     overlay.style.display = 'flex';
     if (seName) SoundEngine.playSE(seName);
+
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      resolve();
+    }, duration);
+  });
+}
+
+// 通常ツモ・ロン和了とは別格の一発専用演出
+function triggerIppatsuGrandCutin(whoLabel, winKindLabel, yakuName, duration = 2550) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('ippatsu-grand-overlay');
+    const stage = overlay.querySelector('.ippatsu-grand-stage');
+    document.getElementById('ippatsu-grand-title').innerText = `⚡ ${whoLabel}の電撃一発${winKindLabel}！ ⚡`;
+    document.getElementById('ippatsu-grand-yaku').innerText = `${yakuName} ＋ 一発 (+1pt)`;
+    document.getElementById('ippatsu-grand-sub').innerText = 'リーチ宣言直後の奇跡の一撃！一発ボーナス＋1pt獲得！';
+
+    stage.style.animation = 'none';
+    void stage.offsetWidth;
+    stage.style.animation = `grandFlash ${duration / 1000}s cubic-bezier(0.16, 1, 0.3, 1) forwards`;
+
+    overlay.style.display = 'flex';
+    SoundEngine.playSE('ippatsu_fanfare');
 
     setTimeout(() => {
       overlay.style.display = 'none';
@@ -873,7 +968,7 @@ const YAKU_REGISTRY = [
   },
   {
     name: "一発 / 海底 / 親権", score: 1, catId: 1, catName: "① 状態役", catClass: "cat-1", jokerType: "allowed", requireReach: false,
-    desc: "一発（リーチ後1巡以内和了：+1pt）／海底（山札0枚和了：+1pt）／親権（親の和了：+1pt）。",
+    desc: "一発（リーチ直後の和了：+1pt）／海底（山札0枚和了：+1pt）／親権（親の和了：+1pt）。",
     sample: [{suit:'♠',val:14},{suit:'♥',val:14},{suit:'♦',val:14},{suit:'♣',val:14},{suit:'♠',val:3}],
     check: () => false
   }
@@ -997,8 +1092,10 @@ function createMiniCardElement(card, isReachTile = false) {
     el.innerHTML = `<div class="m-suit">${card.suit}</div><div class="m-val">${formatCardVal(card.val)}</div>`;
   }
   return el;
-}/* ==========================================================================
-   5. ゲーム状態＆画面遷移
+}
+</script>
+/* ==========================================================================
+   5. ゲーム管理エンジン＆画面遷移
    ========================================================================== */
 const gameState = {
   mode: 'beginner',
@@ -1037,6 +1134,25 @@ const gameState = {
   isGameOver: false,
   rematchMe: false,
   rematchOpp: false
+};
+
+const GameEngine = {
+  // 現在の場風（♠場/♥場）と席順から親権を同期する
+  syncParentByField() {
+    const parentWho = (gameState.fieldSuit === '♠') ? gameState.spadePlayer : gameState.heartPlayer;
+    gameState.isPlayerParent = (parentWho === 'YOU');
+    return gameState.isPlayerParent;
+  },
+  // 指定した和了者（'YOU' または '相手'）が現在親かどうかを返す
+  isParentWinner(winner) {
+    const currentParentWho = (gameState.fieldSuit === '♠') ? gameState.spadePlayer : gameState.heartPlayer;
+    return currentParentWho === winner;
+  },
+  // 一発成立判定：リーチ成立ターンとの差が 0 または 1 以内（リーチ直後の和了）
+  isIppatsuAchieved(winner, isReach, reachTurnIndex) {
+    if (!isReach || reachTurnIndex < 0) return false;
+    return (gameState.turnCount - reachTurnIndex) <= 1;
+  }
 };
 
 let turnTimer = null;
@@ -1271,15 +1387,16 @@ function startOnlineAutoRoulette() {
 
   if (gameState.isHost) {
     let count = 0;
+    const totalSteps = 18;
     const suits = ['♠', '♥'];
     const suitEl = document.getElementById('roulette-suit');
     const timer = setInterval(() => {
-      const s = suits[Math.floor(Math.random() * suits.length)];
+      const s = suits[count % suits.length];
       suitEl.innerText = s;
       suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
-      SoundEngine.playSE('roulette_spin');
+      SoundEngine.playSE('roulette_spin', count / totalSteps);
       count++;
-      if (count > 15) {
+      if (count >= totalSteps) {
         clearInterval(timer);
         const isHostSpade = Math.random() < 0.5;
         if (gameState.isPeerMatch && peerConn && peerConn.open) {
@@ -1287,12 +1404,12 @@ function startOnlineAutoRoulette() {
         }
         applyRouletteResult(isHostSpade);
       }
-    }, 90);
+    }, 95);
   }
 }
 
 /* ==========================================================================
-   7. CPUモード選択＆ルーレット処理
+   7. CPUモード選択＆ルーレット処理（減速ホイールSE）
    ========================================================================== */
 function selectMode(mode) {
   gameState.mode = mode;
@@ -1311,24 +1428,33 @@ function selectMode(mode) {
 
 function startCpuManualRoulette() {
   document.getElementById('btn-cpu-spin').disabled = true;
-  let count = 0;
+  let step = 0;
+  const maxSteps = 20;
   const suits = ['♠', '♥'];
   const suitEl = document.getElementById('roulette-suit');
   const resultTextEl = document.getElementById('roulette-result-text');
-  resultTextEl.innerText = '抽選回転中...';
-  const timer = setInterval(() => {
-    const s = suits[Math.floor(Math.random() * suits.length)];
+  resultTextEl.innerText = 'ルーレット回転中...';
+
+  function spinStep() {
+    const progress = step / maxSteps;
+    const s = suits[step % suits.length];
     suitEl.innerText = s;
     suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
-    SoundEngine.playSE('roulette_spin');
-    count++;
-    if (count > 16) {
-      clearInterval(timer);
+    SoundEngine.playSE('roulette_spin', progress);
+    step++;
+
+    if (step >= maxSteps) {
       document.getElementById('btn-cpu-spin').disabled = false;
       const finalSpade = Math.random() < 0.5;
       applyRouletteResult(finalSpade);
+      return;
     }
-  }, 90);
+
+    const nextDelay = Math.round(65 + Math.pow(progress, 2.2) * 195);
+    setTimeout(spinStep, nextDelay);
+  }
+
+  spinStep();
 }
 
 function applyRouletteResult(isHostSpade) {
@@ -1341,7 +1467,7 @@ function applyRouletteResult(isHostSpade) {
   gameState.playerScore = 30;
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
-  gameState.isPlayerParent = (gameState.spadePlayer === 'YOU');
+  GameEngine.syncParentByField();
   gameState.isGameOver = false;
 
   const suitEl = document.getElementById('roulette-suit');
@@ -1365,10 +1491,10 @@ function applyRouletteResult(isHostSpade) {
     setTimeout(async () => {
       if (gameState.isOnline) {
         const info = getRoomRuleInfo(gameState.roomRule);
-        await triggerBlackoutCutin('RULE ROOM MATCH', info.title, info.desc, '#3498db', 'room_cutin', 2400);
+        await triggerBlackoutCutin('RULE ROOM MATCH', info.title, info.desc, '#3498db', 'room_cutin', 2000);
       }
       initNewRound();
-    }, 2000);
+    }, 1800);
   }
 }
 
@@ -1401,6 +1527,7 @@ function initNewRound() {
     return;
   }
 
+  GameEngine.syncParentByField();
   const deck = buildShuffledDeck();
   const isOras = (gameState.cycle === 2);
   const doraCount = isOras ? 2 : 1;
@@ -1465,7 +1592,7 @@ async function receiveHostRoundSync(msg) {
 
   if (gameState.cycle === 1 && gameState.fieldSuit === '♠' && gameState.streakCount === 0) {
     const info = getRoomRuleInfo(gameState.roomRule);
-    await triggerBlackoutCutin('ONLINE MATCH START', info.title, info.desc, '#3498db', 'room_cutin', 2400);
+    await triggerBlackoutCutin('ONLINE MATCH START', info.title, info.desc, '#3498db', 'room_cutin', 2000);
   }
   setupRoundCommonState();
 }
@@ -1473,9 +1600,10 @@ async function receiveHostRoundSync(msg) {
 async function setupRoundCommonState() {
   if (gameState.isPeerMatch && gameState.isHost && gameState.cycle === 1 && gameState.fieldSuit === '♠' && gameState.streakCount === 0) {
     const info = getRoomRuleInfo(gameState.roomRule);
-    await triggerBlackoutCutin('ONLINE MATCH START', info.title, info.desc, '#3498db', 'room_cutin', 2400);
+    await triggerBlackoutCutin('ONLINE MATCH START', info.title, info.desc, '#3498db', 'room_cutin', 2000);
   }
 
+  GameEngine.syncParentByField();
   gameState.playerRiver = [];
   gameState.cpuRiver = [];
   gameState.selectedCardIdx = null;
@@ -1512,7 +1640,6 @@ function renderAllBoard() {
   document.getElementById('board-kyotaku').innerText = `${gameState.kyotaku}pt`;
   document.getElementById('board-deck-count').innerText = `${gameState.deck.length}`;
 
-  // 連チャン表記は2連チャン目以降のみ
   const streakLabelEl = document.getElementById('board-streak-label');
   streakLabelEl.innerText = gameState.streakCount >= 2 ? `(${gameState.streakCount}連チャン)` : '';
 
@@ -1653,8 +1780,20 @@ function canReachWithAnyDiscard(hand5) {
 }
 
 /* ==========================================================================
-   9. プレイヤー操作
+   9. プレイヤー操作＆和了演出振り分け
    ========================================================================== */
+async function presentWinCutin(winner, winType, yakuName, isIppatsu) {
+  const whoLabel = (winner === 'YOU') ? 'YOU' : '相手';
+  const winKindLabel = (winType === 'tsumo') ? 'ツモ和了' : 'ロン和了';
+  if (isIppatsu) {
+    await triggerIppatsuGrandCutin(whoLabel, winKindLabel, yakuName, 2550);
+  } else if (winType === 'ron') {
+    await triggerBlackoutCutin('RON FINISH', `🔥 ${whoLabel}のロン和了！`, `成立役：${yakuName}`, '#e74c3c', 'ron_win', 1650);
+  } else {
+    await triggerBlackoutCutin('TSUMO FINISH', `✨ ${whoLabel}のツモ和了！`, `成立役：${yakuName}`, '#f1c40f', 'tsumo_win', 1650);
+  }
+}
+
 function playerDraw() {
   if (!gameState.isPlayerTurn || gameState.hasDrawn || gameState.playerHand.length !== 4) return;
   if (gameState.deck.length === 0) {
@@ -1723,18 +1862,17 @@ async function onPlayerCardTap(idx) {
 
   gameState.isPlayerTurn = false;
   gameState.hasDrawn = false;
-  gameState.turnCount++;
   clearInterval(turnTimer);
   renderAllBoard();
 
   if (justReached) {
     await triggerBlackoutCutin(
-      gameState.isDoubleReach ? 'DOUBLE REACH!' : 'REACH DECLARATION',
-      gameState.isDoubleReach ? '⚡ ダブルリーチ！ ⚡' : '⚡ リーチ！ / REACH ⚡',
+      gameState.isDoubleReach ? 'DOUBLE REACH' : 'REACH DECLARATION',
+      gameState.isDoubleReach ? '⚡ ダブルリーチ！' : '⚡ リーチ宣言！',
       'テンパイ宣言完了！',
       '#f1c40f',
       'reach_cutin',
-      1500
+      1400
     );
   }
 
@@ -1749,6 +1887,7 @@ async function onPlayerCardTap(idx) {
       kyotaku: gameState.kyotaku,
       senderScore: gameState.playerScore
     });
+    gameState.turnCount++;
     startTurnTimerIfNeeded();
     return;
   }
@@ -1756,12 +1895,15 @@ async function onPlayerCardTap(idx) {
   if (gameState.cpuHand.length === 4) {
     const cpuRonYaku = getBestYaku([...gameState.cpuHand, discarded], gameState.cpuIsReach);
     if (cpuRonYaku && !checkFuriten(gameState.cpuHand, discarded, gameState.cpuRiver)) {
+      const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex);
       const exact5 = [...gameState.cpuHand, discarded];
-      await triggerBlackoutCutin('RON FINISH!', '🔥 相手のロン和了！ / RON 🔥', `相手のロン和了（${cpuRonYaku.name}）`, '#e74c3c', 'ron_win', 1700);
-      executeRoundEnd('ron', '相手', cpuRonYaku, exact5, discarded);
+      await presentWinCutin('相手', 'ron', cpuRonYaku.name, isIppatsu);
+      executeRoundEnd('ron', '相手', cpuRonYaku, exact5, discarded, isIppatsu);
       return;
     }
   }
+
+  gameState.turnCount++;
 
   if (gameState.deck.length === 0) {
     executeDrawReport();
@@ -1787,14 +1929,10 @@ async function playerWin() {
   }
 
   clearInterval(turnTimer);
-  const isIppatsu = gameState.isPlayerReach && (gameState.turnCount - gameState.playerReachTurnIndex <= 1);
+  const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
   const winTile = gameState.playerHand[4];
 
-  if (isIppatsu) {
-    await triggerBlackoutCutin('IPPATSU TSUMO!!', '💥 YOUの一発ツモ和了！ 💥', `${yaku.name}（限定ファンファーレ発動！）`, '#ff9f43', 'ippatsu_fanfare', 2000);
-  } else {
-    await triggerBlackoutCutin('TSUMO FINISH!', '✨ YOUのツモ和了！ / TSUMO ✨', `成立役：${yaku.name}`, '#f1c40f', 'tsumo_win', 1700);
-  }
+  await presentWinCutin('YOU', 'tsumo', yaku.name, isIppatsu);
 
   if (gameState.isPeerMatch && peerConn && peerConn.open) {
     peerConn.send({
@@ -1827,7 +1965,7 @@ async function receiveOpponentDiscard(msg) {
     gameState.cpuIsReach = true;
     gameState.cpuReachTileIndex = gameState.cpuRiver.length - 1;
     gameState.cpuReachTurnIndex = gameState.turnCount;
-    await triggerBlackoutCutin('OPPONENT REACH!', '⚡ 相手がリーチ！ ⚡', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1500);
+    await triggerBlackoutCutin('OPPONENT REACH', '⚡ 相手がリーチ！', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1400);
   }
   gameState.kyotaku = msg.kyotaku;
   gameState.cpuScore = msg.senderScore;
@@ -1838,13 +1976,9 @@ async function receiveOpponentDiscard(msg) {
   if (gameState.playerHand.length === 4) {
     const myRonYaku = getBestYaku([...gameState.playerHand, card], gameState.isPlayerReach);
     if (myRonYaku && !checkFuriten(gameState.playerHand, card, gameState.playerRiver)) {
-      const isIppatsu = gameState.isPlayerReach && (gameState.turnCount - gameState.playerReachTurnIndex <= 1);
+      const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
       const exact5 = [...gameState.playerHand, card];
-      if (isIppatsu) {
-        await triggerBlackoutCutin('IPPATSU RON!!', '💥 YOUの一発ロン和了！ 💥', `${myRonYaku.name}（限定ファンファーレ発動！）`, '#ff9f43', 'ippatsu_fanfare', 2000);
-      } else {
-        await triggerBlackoutCutin('RON FINISH!', '🔥 YOUのロン和了！ / RON 🔥', `成立役：${myRonYaku.name}`, '#e74c3c', 'ron_win', 1700);
-      }
+      await presentWinCutin('YOU', 'ron', myRonYaku.name, isIppatsu);
       if (peerConn && peerConn.open) {
         peerConn.send({
           type: 'OPPONENT_WIN',
@@ -1864,6 +1998,8 @@ async function receiveOpponentDiscard(msg) {
       return;
     }
   }
+
+  gameState.turnCount++;
 
   if (gameState.deck.length === 0) {
     if (peerConn && peerConn.open) peerConn.send({ type: 'OPPONENT_DRAW_REPORT' });
@@ -1886,14 +2022,8 @@ async function receiveOpponentWin(msg) {
     jokerType: msg.jokerType,
     isTenchi: msg.isTenchi
   };
-  if (msg.isIppatsu) {
-    await triggerBlackoutCutin('OPPONENT IPPATSU!', '💥 相手の一発和了！ 💥', `${msg.yakuName}`, '#e74c3c', 'ippatsu_fanfare', 2000);
-  } else if (msg.winType === 'ron') {
-    await triggerBlackoutCutin('OPPONENT RON!', '🔥 相手のロン和了！ 🔥', `${msg.yakuName}`, '#e74c3c', 'ron_win', 1700);
-  } else {
-    await triggerBlackoutCutin('OPPONENT TSUMO!', '✨ 相手のツモ和了！ ✨', `${msg.yakuName}`, '#e74c3c', 'tsumo_win', 1700);
-  }
-  executeRoundEnd(msg.winType, '相手', yakuObj, msg.hand5, msg.winTile, msg.isIppatsu);
+  await presentWinCutin('相手', msg.winType, msg.yakuName, Boolean(msg.isIppatsu));
+  executeRoundEnd(msg.winType, '相手', yakuObj, msg.hand5, msg.winTile, Boolean(msg.isIppatsu));
 }
 
 function startTurnTimerIfNeeded() {
@@ -1946,9 +2076,9 @@ async function runCpuTurn() {
 
   const cpuWinYaku = getBestYaku(gameState.cpuHand, gameState.cpuIsReach);
   if (cpuWinYaku) {
-    const isIppatsu = gameState.cpuIsReach && (gameState.turnCount - gameState.cpuReachTurnIndex <= 1);
+    const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex);
     const winTile = gameState.cpuHand[4];
-    await triggerBlackoutCutin('CPU TSUMO!', '✨ 相手のツモ和了！ ✨', `成立役：${cpuWinYaku.name}`, '#e74c3c', isIppatsu ? 'ippatsu_fanfare' : 'tsumo_win', 1700);
+    await presentWinCutin('相手', 'tsumo', cpuWinYaku.name, isIppatsu);
     executeRoundEnd('tsumo', '相手', cpuWinYaku, [...gameState.cpuHand], winTile, isIppatsu);
     return;
   }
@@ -1991,27 +2121,24 @@ async function runCpuTurn() {
     gameState.kyotaku += 1;
   }
 
-  gameState.turnCount++;
   renderAllBoard();
 
   if (reachAfterDiscard) {
-    await triggerBlackoutCutin('CPU REACH!', '⚡ 相手がリーチ！ ⚡', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1500);
+    await triggerBlackoutCutin('CPU REACH', '⚡ 相手がリーチ！', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1400);
   }
 
   if (gameState.playerHand.length === 4) {
     const myRonYaku = getBestYaku([...gameState.playerHand, discarded], gameState.isPlayerReach);
     if (myRonYaku && !checkFuriten(gameState.playerHand, discarded, gameState.playerRiver)) {
-      const isIppatsu = gameState.isPlayerReach && (gameState.turnCount - gameState.playerReachTurnIndex <= 1);
+      const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
       const exact5 = [...gameState.playerHand, discarded];
-      if (isIppatsu) {
-        await triggerBlackoutCutin('IPPATSU RON!!', '💥 YOUの一発ロン和了！ 💥', `${myRonYaku.name}（限定ファンファーレ発動！）`, '#ff9f43', 'ippatsu_fanfare', 2000);
-      } else {
-        await triggerBlackoutCutin('RON FINISH!', '🔥 YOUのロン和了！ / RON 🔥', `成立役：${myRonYaku.name}`, '#e74c3c', 'ron_win', 1700);
-      }
+      await presentWinCutin('YOU', 'ron', myRonYaku.name, isIppatsu);
       executeRoundEnd('ron', 'YOU', myRonYaku, exact5, discarded, isIppatsu);
       return;
     }
   }
+
+  gameState.turnCount++;
 
   if (gameState.deck.length === 0) {
     executeDrawReport();
@@ -2025,7 +2152,7 @@ async function runCpuTurn() {
 }
 
 /* ==========================================================================
-   12. 得点計算・2連チャン厳密化・和了区別明確化・リザルト表示
+   12. 得点計算（親権＋1・一発＋1確実反映）・2連チャン厳密化・リザルト表示
    ========================================================================== */
 function getNextDoraTargetVal(val) {
   if (val === 14) return 2;
@@ -2074,9 +2201,11 @@ function getWinLabelText(winner, winType) {
 function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIppatsu = false) {
   clearInterval(turnTimer);
   const isWinnerPlayer = (winner === 'YOU');
-  const isWinnerParent = (isWinnerPlayer && gameState.isPlayerParent) || (!isWinnerPlayer && !gameState.isPlayerParent);
+  const isWinnerParent = GameEngine.isParentWinner(winner);
   const winnerReach = isWinnerPlayer ? gameState.isPlayerReach : gameState.cpuIsReach;
   const winnerDoubleReach = isWinnerPlayer ? gameState.isDoubleReach : false;
+  const winnerReachTurn = isWinnerPlayer ? gameState.playerReachTurnIndex : gameState.cpuReachTurnIndex;
+  const finalIppatsu = Boolean(isIppatsu || GameEngine.isIppatsuAchieved(winner, winnerReach, winnerReachTurn));
   const winLabel = getWinLabelText(winner, winType);
 
   const details = [];
@@ -2098,7 +2227,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
     details.push(`・リーチ (+2pt)`);
   }
 
-  if (isIppatsu) {
+  if (finalIppatsu) {
     totalGain += 1;
     details.push(`・一発 (+1pt)`);
   }
@@ -2110,7 +2239,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
 
   if (isWinnerParent) {
     totalGain += 1;
-    details.push(`・親権ボーナス (+1pt)`);
+    details.push(`・親権 (+1pt)`);
   }
 
   const doraInfo = calculateDoraBonus(exactHand5, winner);
@@ -2131,7 +2260,6 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
     details.push(`・スートドラ x${doraInfo.suitDoraCount} (+${doraInfo.suitDoraCount}pt)`);
   }
 
-  // 2連チャン目以降のみ連チャン積み棒を加算
   if (gameState.streakCount >= 2) {
     totalGain += gameState.streakCount;
     details.push(`・連チャン積み棒 (+${gameState.streakCount}pt)`);
@@ -2202,21 +2330,19 @@ function executeDrawReport() {
 function advanceFieldOrCycle() {
   if (gameState.fieldSuit === '♠') {
     gameState.fieldSuit = '♥';
-    gameState.isPlayerParent = (gameState.heartPlayer === 'YOU');
   } else {
     gameState.cycle++;
     if (gameState.cycle > 2) {
       gameState.isGameOver = true;
     } else {
       gameState.fieldSuit = '♠';
-      gameState.isPlayerParent = (gameState.spadePlayer === 'YOU');
     }
   }
+  GameEngine.syncParentByField();
 }
 
 function renderResultScreen({ title, subtitle, hand5, winTile, details, netDiff }) {
   const streakBanner = document.getElementById('res-streak-banner');
-  // 2連チャン目以降のみ連チャンバナーを表示
   if (gameState.streakCount >= 2) {
     const colors = ['#2ecc71', '#3498db', '#f1c40f', '#e67e22', '#ff3838', '#ff00ff'];
     const c = colors[Math.min(gameState.streakCount - 2, colors.length - 1)];
