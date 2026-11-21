@@ -251,37 +251,50 @@
     animation: grandFlash 2.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  /* 特定役ロゴフェードイン演出オーバーレイ */
+  /* テキストロゴ演出オーバーレイ */
   #special-yaku-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, rgba(241, 196, 15, 0.18) 0%, rgba(5, 12, 16, 0.94) 70%);
+    background: radial-gradient(circle at center, rgba(241, 196, 15, 0.16) 0%, rgba(5, 12, 16, 0.94) 72%);
     display: none; flex-direction: column; justify-content: center; align-items: center;
     z-index: 260; padding: 18px; text-align: center; pointer-events: none; overflow: hidden;
   }
   @keyframes specialLogoFadeZoom {
-    0% { opacity: 0; transform: scale(1.45) translateY(14px); letter-spacing: 8px; filter: blur(6px); }
+    0% { opacity: 0; transform: scale(1.35) translateY(12px); letter-spacing: 6px; filter: blur(5px); }
     22% { opacity: 1; transform: scale(1.0) translateY(0); letter-spacing: 2px; filter: blur(0px); }
-    80% { opacity: 1; transform: scale(1.03) translateY(0); letter-spacing: 2.5px; filter: blur(0px); }
-    100% { opacity: 0; transform: scale(0.92) translateY(-10px); letter-spacing: 4px; filter: blur(3px); }
+    80% { opacity: 1; transform: scale(1.02) translateY(0); letter-spacing: 2px; filter: blur(0px); }
+    100% { opacity: 0; transform: scale(0.94) translateY(-8px); letter-spacing: 3px; filter: blur(2px); }
+  }
+  @keyframes simpleLogoFadeIn {
+    0% { opacity: 0; transform: translateY(10px) scale(0.96); }
+    20% { opacity: 1; transform: translateY(0) scale(1.0); }
+    82% { opacity: 1; transform: translateY(0) scale(1.0); }
+    100% { opacity: 0; transform: translateY(-6px) scale(0.98); }
   }
   .special-logo-card {
-    width: 100%; padding: 22px 14px; border-radius: 14px;
+    width: 100%; padding: 20px 14px; border-radius: 14px;
     background: linear-gradient(135deg, rgba(16, 32, 35, 0.96) 0%, rgba(45, 24, 58, 0.96) 50%, rgba(16, 32, 35, 0.96) 100%);
     border: 2px solid #ffd700;
     box-shadow: 0 0 28px rgba(255, 215, 0, 0.65), inset 0 0 18px rgba(255, 255, 255, 0.12);
-    animation: specialLogoFadeZoom 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: specialLogoFadeZoom 2.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .special-logo-card.simple-mode {
+    padding: 16px 14px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(18, 34, 42, 0.96) 0%, rgba(30, 56, 68, 0.96) 100%);
+    border: 2px solid #5dade2;
+    box-shadow: 0 0 20px rgba(93, 173, 226, 0.45);
+    animation: simpleLogoFadeIn 1.75s ease-out forwards;
   }
   .special-logo-emblem {
     display: inline-block; padding: 3px 12px; border-radius: 999px;
-    font-size: 0.7rem; font-weight: 900; letter-spacing: 1.5px;
-    margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.68rem; font-weight: 900; letter-spacing: 1.5px;
+    margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.35);
   }
   .special-logo-title {
-    font-size: 1.9rem; font-weight: 900; line-height: 1.2;
+    font-size: 1.75rem; font-weight: 900; line-height: 1.22;
     margin-bottom: 8px;
   }
   .special-logo-caption {
-    font-size: 0.82rem; font-weight: bold; color: #f5f6fa;
+    font-size: 0.8rem; font-weight: bold; color: #f5f6fa;
     background: rgba(0, 0, 0, 0.45); border-radius: 8px; padding: 6px 10px;
   }
 </style>
@@ -533,7 +546,7 @@
     </div>
   </div>
 
-  <!-- 10. 特定役ロゴフェードイン演出オーバーレイ -->
+  <!-- 10. テキストロゴ演出オーバーレイ -->
   <div id="special-yaku-overlay">
     <div id="special-logo-card" class="special-logo-card">
       <div id="special-logo-emblem" class="special-logo-emblem">SPECIAL YAKU LOGO</div>
@@ -616,13 +629,17 @@ const SoundEngine = {
     this.playTone(baseFreq, 0.032, 'triangle', gain, 0, endFreq);
     this.playCardSwipe(0.016, 1700 - clamped * 500, 0.035, 0);
   },
-  // プレイヤー失点専用SE：はっきり分かる二段下降＋重みのある低音
   playLosePointsSE() {
     this.playTone(311.13, 0.18, 'sawtooth', 0.11, 0, 220.00);
     this.playTone(220.00, 0.34, 'sawtooth', 0.13, 0.14, 110.00);
     this.playTone(110.00, 0.36, 'triangle', 0.15, 0.14, 73.42);
   },
-  playSpecialYakuLogoSE() {
+  playSpecialYakuLogoSE(simple = false) {
+    if (simple) {
+      this.playTone(523.25, 0.14, 'triangle', 0.11, 0);
+      this.playTone(783.99, 0.24, 'triangle', 0.12, 0.08);
+      return;
+    }
     const notes = [440.00, 554.37, 659.25, 880.00];
     notes.forEach((f, idx) => {
       this.playTone(f, idx === notes.length - 1 ? 0.55 : 0.16, 'triangle', 0.14, idx * 0.075);
@@ -643,7 +660,9 @@ const SoundEngine = {
     } else if (name === 'player_lose_pt') {
       this.playLosePointsSE();
     } else if (name === 'special_yaku_logo') {
-      this.playSpecialYakuLogoSE();
+      this.playSpecialYakuLogoSE(false);
+    } else if (name === 'simple_yaku_logo') {
+      this.playSpecialYakuLogoSE(true);
     } else if (name === 'timer_warning_pip') {
       this.playTone(620, 0.055, 'sine', 0.08, 0);
     } else if (name === 'room_cutin') {
@@ -683,76 +702,128 @@ const SoundEngine = {
 };
 
 /* ==========================================================================
-   2. 通常カットイン・一発別格演出・特定役ロゴフェードイン演出
+   2. 通常カットイン・一発別格演出・カテゴリ別/状態役ロゴ演出
    ========================================================================== */
-const SPECIAL_YAKU_LOGOS = [
-  {
-    key: '天地人和',
-    badge: 'HEAVEN & EARTH BLESSING',
-    title: '天地人和',
-    caption: '初手祝福の天啓！祝福ボーナス＋5pt！',
-    color: '#ffd700',
-    bg: 'linear-gradient(135deg, rgba(15, 45, 75, 0.96) 0%, rgba(75, 50, 10, 0.96) 100%)'
-  },
-  {
-    key: 'ブラックジャック',
-    badge: 'BLACK JACK × NOIR',
-    title: 'BLACK JACK',
-    caption: 'ブラックジャック成立！黒の閃光が盤面を貫く！',
-    color: '#5dade2',
-    bg: 'linear-gradient(135deg, rgba(10, 16, 24, 0.98) 0%, rgba(28, 52, 84, 0.96) 100%)'
-  },
-  {
-    key: 'レッドクイーン',
-    badge: 'RED QUEEN × CRIMSON',
-    title: 'RED QUEEN',
-    caption: 'レッドクイーン成立！紅蓮の女王が降臨！',
-    color: '#ff6b81',
-    bg: 'linear-gradient(135deg, rgba(72, 10, 24, 0.96) 0%, rgba(28, 12, 34, 0.96) 100%)'
-  },
-  {
-    key: '黒龍',
-    badge: 'BLACK DRAGON × EVEN',
-    title: '黒 龍',
-    caption: '黒龍覚醒！黒き偶数五枚が闇を裂く！',
-    color: '#bdc3c7',
-    bg: 'linear-gradient(135deg, rgba(12, 15, 18, 0.98) 0%, rgba(44, 48, 56, 0.96) 100%)'
-  },
-  {
-    key: '赤龍',
-    badge: 'RED DRAGON × EVEN',
-    title: '赤 龍',
-    caption: '赤龍覚醒！紅き偶数五枚が灼熱を呼ぶ！',
-    color: '#ff4757',
-    bg: 'linear-gradient(135deg, rgba(85, 12, 12, 0.96) 0%, rgba(35, 10, 15, 0.96) 100%)'
-  },
-  {
-    key: '酷使苦情',
-    badge: 'OVERWORK COMPLAINT',
-    title: '酷 使 苦 情',
-    caption: '酷使苦情（9・4・9・10＋JOKER）炸裂！',
-    color: '#ff9f43',
-    bg: 'linear-gradient(135deg, rgba(70, 32, 8, 0.96) 0%, rgba(25, 18, 36, 0.96) 100%)'
-  },
-  {
-    key: 'シン・AKB48',
-    badge: 'SHIN AKB48 × HEART',
+const INDIVIDUAL_LOGO_MAP = {
+  // JOKER必須役（catId: 5）個別ロゴ
+  'シン・AKB48': {
+    badge: 'JOKER REQUIRED × HEART',
     title: 'シン・AKB48',
-    caption: 'シン・AKB48降臨！♥48ptの極致！',
+    caption: '♥A・K・4・8＋JOKER！極致の48ptロゴ降臨！',
     color: '#ff79c6',
-    bg: 'linear-gradient(135deg, rgba(82, 16, 56, 0.96) 0%, rgba(25, 10, 35, 0.96) 100%)'
-  }
-];
+    bg: 'linear-gradient(135deg, rgba(82, 16, 56, 0.97) 0%, rgba(25, 10, 35, 0.97) 100%)',
+    simple: false
+  },
+  '酷使苦情': {
+    badge: 'JOKER REQUIRED × GORO',
+    title: '酷 使 苦 情',
+    caption: '5・9・4・9＋JOKER（コク・シ・ク・ジョー）炸裂！',
+    color: '#ff9f43',
+    bg: 'linear-gradient(135deg, rgba(75, 32, 8, 0.97) 0%, rgba(22, 16, 34, 0.97) 100%)',
+    simple: false
+  },
+  '5カード': {
+    badge: 'JOKER REQUIRED × FIVE',
+    title: '5 CARD',
+    caption: '同数4枚＋JOKERの5カードロゴ発動！',
+    color: '#ffd700',
+    bg: 'linear-gradient(135deg, rgba(65, 20, 65, 0.97) 0%, rgba(20, 14, 38, 0.97) 100%)',
+    simple: false
+  },
+  'AKB48': {
+    badge: 'JOKER REQUIRED × GORO',
+    title: 'AKB48',
+    caption: 'A・K・4・8＋JOKER（スート不問）成立！',
+    color: '#f8a5c2',
+    bg: 'linear-gradient(135deg, rgba(68, 22, 52, 0.97) 0%, rgba(18, 22, 36, 0.97) 100%)',
+    simple: false
+  },
 
-function findMatchedSpecialYakuLogo(yakuName) {
-  if (!yakuName) return null;
-  for (let item of SPECIAL_YAKU_LOGOS) {
-    if (yakuName.includes(item.key)) return item;
+  // 役満級カテゴリ（catId: 4）個別ロゴ
+  'ロイヤルストレートフラッシュ': {
+    badge: 'YAKUMAN × ROYAL',
+    title: 'ROYAL STRAIGHT FLUSH',
+    caption: '同スート10〜Aの最高位ストレートフラッシュ！',
+    color: '#ffd700',
+    bg: 'linear-gradient(135deg, rgba(90, 12, 12, 0.97) 0%, rgba(45, 25, 5, 0.97) 100%)',
+    simple: false
+  },
+  '七三元': {
+    badge: 'YAKUMAN × 7 & A',
+    title: '七 三 元',
+    caption: '7とAの特殊フルハウス（七三元）成立！',
+    color: '#ff6b6b',
+    bg: 'linear-gradient(135deg, rgba(85, 15, 25, 0.97) 0%, rgba(25, 12, 35, 0.97) 100%)',
+    simple: false
+  },
+  '4カード': {
+    badge: 'YAKUMAN × QUAD',
+    title: '4 CARD',
+    caption: 'JOKER不使用・同数4枚揃い（4カード）！',
+    color: '#ff4757',
+    bg: 'linear-gradient(135deg, rgba(80, 10, 15, 0.97) 0%, rgba(20, 15, 25, 0.97) 100%)',
+    simple: false
+  },
+
+  // 状態役（天地人和 / 海底）専用ロゴ
+  '天地人和': {
+    badge: 'HEAVEN & EARTH × 0-TURN',
+    title: '天 地 人 和',
+    caption: '初手祝福の天啓！天地人和ボーナス＋5pt！',
+    color: '#ffd700',
+    bg: 'linear-gradient(135deg, rgba(15, 45, 75, 0.97) 0%, rgba(75, 50, 10, 0.97) 100%)',
+    simple: false
+  },
+  '海底': {
+    badge: 'HAITEI × LAST DRAW',
+    title: '海 底 撈 月',
+    caption: '山札0枚のラスト一撃！海底ボーナス＋1pt！',
+    color: '#2ecc71',
+    bg: 'linear-gradient(135deg, rgba(10, 52, 48, 0.97) 0%, rgba(16, 28, 46, 0.97) 100%)',
+    simple: false
   }
+};
+
+function getLogoSpecForWin(yaku, isTenchi, isHaitei) {
+  // 1. 天地人和（状態役）
+  if (isTenchi) {
+    return INDIVIDUAL_LOGO_MAP['天地人和'];
+  }
+  // 2. 海底（状態役）
+  if (isHaitei) {
+    return INDIVIDUAL_LOGO_MAP['海底'];
+  }
+  if (!yaku) return null;
+
+  const baseName = yaku.baseYaku ? yaku.baseYaku.name : yaku.name;
+
+  // 3. JOKER必須役（catId: 5）＆ 役満級（catId: 4）は個別ロゴ
+  if (yaku.catId === 5 || yaku.catId === 4) {
+    if (INDIVIDUAL_LOGO_MAP[baseName]) return INDIVIDUAL_LOGO_MAP[baseName];
+    for (let key of Object.keys(INDIVIDUAL_LOGO_MAP)) {
+      if (baseName.includes(key)) return INDIVIDUAL_LOGO_MAP[key];
+    }
+  }
+
+  // 4. 中級役（catId: 3）はシンプルなテキストロゴ演出
+  if (yaku.catId === 3) {
+    return {
+      badge: 'MIDDLE YAKU LOGO',
+      title: baseName,
+      caption: `中級役『${baseName}』成立！`,
+      color: '#5dade2',
+      bg: 'linear-gradient(135deg, rgba(18, 34, 42, 0.96) 0%, rgba(30, 56, 68, 0.96) 100%)',
+      simple: true
+    };
+  }
+
+  // 5. 基本役（catId: 2）はロゴ演出なし
   return null;
 }
 
-function triggerSpecialYakuLogoCutin(logoObj, duration = 2200) {
+function triggerSpecialYakuLogoCutin(logoObj) {
+  const isSimple = Boolean(logoObj.simple);
+  const duration = isSimple ? 1750 : 2100;
   return new Promise(resolve => {
     const overlay = document.getElementById('special-yaku-overlay');
     const card = document.getElementById('special-logo-card');
@@ -760,23 +831,34 @@ function triggerSpecialYakuLogoCutin(logoObj, duration = 2200) {
     const titleEl = document.getElementById('special-logo-title');
     const captionEl = document.getElementById('special-logo-caption');
 
+    card.className = isSimple ? 'special-logo-card simple-mode' : 'special-logo-card';
     card.style.background = logoObj.bg;
     card.style.borderColor = logoObj.color;
-    card.style.boxShadow = `0 0 32px ${logoObj.color}, inset 0 0 18px rgba(255,255,255,0.15)`;
+    card.style.boxShadow = isSimple
+      ? `0 0 20px ${logoObj.color}`
+      : `0 0 32px ${logoObj.color}, inset 0 0 18px rgba(255,255,255,0.15)`;
+
     emblem.innerText = logoObj.badge;
     emblem.style.color = logoObj.color;
     emblem.style.borderColor = logoObj.color;
+
     titleEl.innerText = logoObj.title;
     titleEl.style.color = logoObj.color;
-    titleEl.style.textShadow = `0 0 18px ${logoObj.color}, 0 3px 8px rgba(0,0,0,0.95)`;
+    titleEl.style.fontSize = isSimple ? '1.45rem' : '1.75rem';
+    titleEl.style.textShadow = isSimple
+      ? `0 0 10px ${logoObj.color}`
+      : `0 0 18px ${logoObj.color}, 0 3px 8px rgba(0,0,0,0.95)`;
+
     captionEl.innerText = logoObj.caption;
 
     card.style.animation = 'none';
     void card.offsetWidth;
-    card.style.animation = `specialLogoFadeZoom ${duration / 1000}s cubic-bezier(0.16, 1, 0.3, 1) forwards`;
+    card.style.animation = isSimple
+      ? `simpleLogoFadeIn ${duration / 1000}s ease-out forwards`
+      : `specialLogoFadeZoom ${duration / 1000}s cubic-bezier(0.16, 1, 0.3, 1) forwards`;
 
     overlay.style.display = 'flex';
-    SoundEngine.playSE('special_yaku_logo');
+    SoundEngine.playSE(isSimple ? 'simple_yaku_logo' : 'special_yaku_logo');
 
     setTimeout(() => {
       overlay.style.display = 'none';
@@ -854,7 +936,7 @@ function getRoomRuleInfo(ruleKey) {
 }
 
 /* ==========================================================================
-   3. 全役精査＆厳密判定エンジン
+   3. 全役精査＆厳密判定エンジン（酷使苦情：5・9・4・9 ＋ JOKER）
    ========================================================================== */
 function getSortedCounts(vals) {
   const counts = {};
@@ -930,10 +1012,10 @@ const YAKU_REGISTRY = [
   },
   {
     name: "酷使苦情", score: 29, catId: 5, catName: "⑤ JOKER必須", catClass: "cat-5", jokerType: "required", requireReach: false,
-    desc: "【JOKER必須：-2点免除】9・4・9・10 ＋ JOKERの5枚（スート不問・語呂合わせ役）！",
-    sample: [{suit:'♠',val:9},{suit:'♥',val:4},{suit:'♦',val:9},{suit:'♣',val:10},{suit:'',val:0,isJoker:true}],
+    desc: "【JOKER必須：-2点免除】5・9・4・9 ＋ JOKER（語呂読み：コク・シ・ク・ジョー）の5枚で成立！",
+    sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:9},{suit:'',val:0,isJoker:true}],
     check: (cards, jokers, normals, vals) =>
-      jokers.length === 1 && normals.length === 4 && matchesValMultiset(vals, 0, [9, 4, 9, 10])
+      jokers.length === 1 && normals.length === 4 && matchesValMultiset(vals, 0, [5, 9, 4, 9])
   },
   {
     name: "5カード", score: 25, catId: 5, catName: "⑤ JOKER必須", catClass: "cat-5", jokerType: "required", requireReach: false,
@@ -1106,7 +1188,7 @@ const YAKU_REGISTRY = [
   },
   {
     name: "天地人和", score: 5, catId: 1, catName: "① 状態役", catClass: "cat-1", jokerType: "allowed", requireReach: false,
-    desc: "初手5枚時点（0巡目）でベース役が成立した場合に加算される祝福役（+5pt）！",
+    desc: "初手5枚時点（0巡目）でベース役が成立した場合に加算される祝福役（+5pt・ロゴ演出あり）！",
     sample: [{suit:'♠',val:10},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:14}],
     check: () => false
   },
@@ -1124,7 +1206,7 @@ const YAKU_REGISTRY = [
   },
   {
     name: "一発 / 海底 / 親権", score: 1, catId: 1, catName: "① 状態役", catClass: "cat-1", jokerType: "allowed", requireReach: false,
-    desc: "一発（リーチ直後の和了：+1pt）／海底（山札0枚和了：+1pt）／親権（親の和了：+1pt）。",
+    desc: "一発（リーチ直後の和了：+1pt・別格演出）／海底（山札0枚和了：+1pt・ロゴ演出）／親権（親の和了：+1pt）。",
     sample: [{suit:'♠',val:14},{suit:'♥',val:14},{suit:'♦',val:14},{suit:'♣',val:14},{suit:'♠',val:3}],
     check: () => false
   }
@@ -1947,15 +2029,17 @@ function canReachWithAnyDiscard(hand5) {
 }
 
 /* ==========================================================================
-   9. プレイヤー操作・ロン任意判定・和了演出振り分け
+   9. プレイヤー操作・ロン任意判定・カテゴリ/状態役演出振り分け
    ========================================================================== */
-async function presentWinCutin(winner, winType, yakuName, isIppatsu) {
+async function presentWinCutin(winner, winType, yakuObj, isIppatsu, isHaitei) {
   const whoLabel = (winner === 'YOU') ? 'YOU' : '相手';
   const winKindLabel = (winType === 'tsumo') ? 'ツモ和了' : 'ロン和了';
-  const specialLogo = findMatchedSpecialYakuLogo(yakuName);
+  const yakuName = yakuObj ? yakuObj.name : '役成立';
+  const isTenchi = Boolean(yakuObj && yakuObj.isTenchi);
 
-  if (specialLogo) {
-    await triggerSpecialYakuLogoCutin(specialLogo, 2200);
+  const logoSpec = getLogoSpecForWin(yakuObj, isTenchi, isHaitei);
+  if (logoSpec) {
+    await triggerSpecialYakuLogoCutin(logoSpec);
   }
 
   if (isIppatsu) {
@@ -2089,9 +2173,10 @@ async function onPlayerCardTap(idx) {
     const cpuRonYaku = getBestYaku([...gameState.cpuHand, discarded], gameState.cpuIsReach);
     if (cpuRonYaku && !checkFuriten(gameState.cpuHand, discarded, gameState.cpuRiver)) {
       const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex);
+      const isHaitei = (gameState.deck.length === 0);
       const exact5 = [...gameState.cpuHand, discarded];
-      await presentWinCutin('相手', 'ron', cpuRonYaku.name, isIppatsu);
-      executeRoundEnd('ron', '相手', cpuRonYaku, exact5, discarded, isIppatsu);
+      await presentWinCutin('相手', 'ron', cpuRonYaku, isIppatsu, isHaitei);
+      executeRoundEnd('ron', '相手', cpuRonYaku, exact5, discarded, isIppatsu, isHaitei);
       return;
     }
   }
@@ -2107,7 +2192,6 @@ async function onPlayerCardTap(idx) {
 }
 
 async function playerWin() {
-  // ロンチャンス受付中の任意ロン宣言
   if (gameState.pendingRonCard && GameEngine.canPlayerRonCard(gameState.pendingRonCard)) {
     const ronCard = gameState.pendingRonCard;
     gameState.pendingRonCard = null;
@@ -2115,9 +2199,10 @@ async function playerWin() {
     const ronYaku = getBestYaku([...gameState.playerHand, ronCard], gameState.isPlayerReach);
     if (!ronYaku) return;
     const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
+    const isHaitei = (gameState.deck.length === 0);
     const exact5 = [...gameState.playerHand, ronCard];
 
-    await presentWinCutin('YOU', 'ron', ronYaku.name, isIppatsu);
+    await presentWinCutin('YOU', 'ron', ronYaku, isIppatsu, isHaitei);
 
     if (gameState.isPeerMatch && peerConn && peerConn.open) {
       peerConn.send({
@@ -2125,21 +2210,23 @@ async function playerWin() {
         winType: 'ron',
         yakuName: ronYaku.name,
         yakuScore: ronYaku.score,
+        catId: ronYaku.catId,
         jokerType: ronYaku.jokerType,
         isTenchi: Boolean(ronYaku.isTenchi),
+        baseYaku: ronYaku.baseYaku || null,
         hand5: exact5,
         winTile: ronCard,
         isReach: gameState.isPlayerReach,
         isDoubleReach: gameState.isDoubleReach,
-        isIppatsu
+        isIppatsu,
+        isHaitei
       });
     }
 
-    executeRoundEnd('ron', 'YOU', ronYaku, exact5, ronCard, isIppatsu);
+    executeRoundEnd('ron', 'YOU', ronYaku, exact5, ronCard, isIppatsu, isHaitei);
     return;
   }
 
-  // ツモ和了宣言
   if (!gameState.isPlayerTurn || gameState.playerHand.length !== 5) return;
   const isReachActive = gameState.isPlayerReach || gameState.isPlayerReachPending;
   const yaku = getBestYaku(gameState.playerHand, isReachActive);
@@ -2156,9 +2243,10 @@ async function playerWin() {
 
   clearInterval(turnTimer);
   const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
+  const isHaitei = (gameState.deck.length === 0);
   const winTile = gameState.playerHand[4];
 
-  await presentWinCutin('YOU', 'tsumo', yaku.name, isIppatsu);
+  await presentWinCutin('YOU', 'tsumo', yaku, isIppatsu, isHaitei);
 
   if (gameState.isPeerMatch && peerConn && peerConn.open) {
     peerConn.send({
@@ -2166,17 +2254,20 @@ async function playerWin() {
       winType: 'tsumo',
       yakuName: yaku.name,
       yakuScore: yaku.score,
+      catId: yaku.catId,
       jokerType: yaku.jokerType,
       isTenchi: Boolean(yaku.isTenchi),
+      baseYaku: yaku.baseYaku || null,
       hand5: gameState.playerHand,
       winTile,
       isReach: gameState.isPlayerReach,
       isDoubleReach: gameState.isDoubleReach,
-      isIppatsu
+      isIppatsu,
+      isHaitei
     });
   }
 
-  executeRoundEnd('tsumo', 'YOU', yaku, [...gameState.playerHand], winTile, isIppatsu);
+  executeRoundEnd('tsumo', 'YOU', yaku, [...gameState.playerHand], winTile, isIppatsu, isHaitei);
 }
 
 /* ==========================================================================
@@ -2199,7 +2290,6 @@ async function receiveOpponentDiscard(msg) {
     gameState.deck.splice(msg.deckCount);
   }
 
-  // 自動和了せず、ロンチャンス状態にしてプレイヤーの「和了」パネル押下を待つ
   if (GameEngine.canPlayerRonCard(card)) {
     gameState.pendingRonCard = card;
     gameState.isPlayerTurn = false;
@@ -2228,11 +2318,13 @@ async function receiveOpponentWin(msg) {
   const yakuObj = {
     name: msg.yakuName,
     score: msg.yakuScore,
+    catId: msg.catId,
     jokerType: msg.jokerType,
-    isTenchi: msg.isTenchi
+    isTenchi: msg.isTenchi,
+    baseYaku: msg.baseYaku
   };
-  await presentWinCutin('相手', msg.winType, msg.yakuName, Boolean(msg.isIppatsu));
-  executeRoundEnd(msg.winType, '相手', yakuObj, msg.hand5, msg.winTile, Boolean(msg.isIppatsu));
+  await presentWinCutin('相手', msg.winType, yakuObj, Boolean(msg.isIppatsu), Boolean(msg.isHaitei));
+  executeRoundEnd(msg.winType, '相手', yakuObj, msg.hand5, msg.winTile, Boolean(msg.isIppatsu), Boolean(msg.isHaitei));
 }
 
 function startTurnTimerIfNeeded() {
@@ -2290,9 +2382,10 @@ async function runCpuTurn() {
   const cpuWinYaku = getBestYaku(gameState.cpuHand, gameState.cpuIsReach);
   if (cpuWinYaku) {
     const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex);
+    const isHaitei = (gameState.deck.length === 0);
     const winTile = gameState.cpuHand[4];
-    await presentWinCutin('相手', 'tsumo', cpuWinYaku.name, isIppatsu);
-    executeRoundEnd('tsumo', '相手', cpuWinYaku, [...gameState.cpuHand], winTile, isIppatsu);
+    await presentWinCutin('相手', 'tsumo', cpuWinYaku, isIppatsu, isHaitei);
+    executeRoundEnd('tsumo', '相手', cpuWinYaku, [...gameState.cpuHand], winTile, isIppatsu, isHaitei);
     return;
   }
 
@@ -2340,7 +2433,6 @@ async function runCpuTurn() {
     await triggerBlackoutCutin('CPU REACH', '⚡ 相手がリーチ！', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1400);
   }
 
-  // プレイヤーがロン可能でも自動和了せず、ロンチャンス状態にして「和了」パネル押下を待つ
   if (GameEngine.canPlayerRonCard(discarded)) {
     gameState.pendingRonCard = discarded;
     gameState.isPlayerTurn = false;
@@ -2409,7 +2501,7 @@ function getWinLabelText(winner, winType) {
   return `${who}の${kind}`;
 }
 
-function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIppatsu = false) {
+function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIppatsu = false, isHaitei = false) {
   clearInterval(turnTimer);
   gameState.pendingRonCard = null;
   const isWinnerPlayer = (winner === 'YOU');
@@ -2418,6 +2510,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
   const winnerDoubleReach = isWinnerPlayer ? gameState.isDoubleReach : false;
   const winnerReachTurn = isWinnerPlayer ? gameState.playerReachTurnIndex : gameState.cpuReachTurnIndex;
   const finalIppatsu = Boolean(isIppatsu || GameEngine.isIppatsuAchieved(winner, winnerReach, winnerReachTurn));
+  const finalHaitei = Boolean(isHaitei || gameState.deck.length === 0);
   const winLabel = getWinLabelText(winner, winType);
 
   const details = [];
@@ -2444,7 +2537,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
     details.push(`・一発 (+1pt)`);
   }
 
-  if (gameState.deck.length === 0) {
+  if (finalHaitei) {
     totalGain += 1;
     details.push(`・海底 (+1pt)`);
   }
@@ -2489,7 +2582,6 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
   } else {
     gameState.cpuScore += (totalGain + kyotakuGain);
     gameState.playerScore -= totalGain;
-    // プレイヤー失点時に明確な失点SEを再生
     SoundEngine.playSE('player_lose_pt');
   }
 
