@@ -70,7 +70,6 @@
     text-shadow: 0 1px 3px rgba(0,0,0,0.9);
   }
 
-  /* 通常カードデザイン */
   .card {
     width: 54px; height: 76px; background: #ffffff; border-radius: 6px;
     border: 2px solid #dcdde1; position: relative; flex-shrink: 0;
@@ -107,7 +106,6 @@
   .joker-stairs span:nth-child(4) { transform: translateY(-2px); }
   .joker-stairs span:nth-child(5) { transform: translateY(-4px); }
 
-  /* 5枚固定スロット枠 */
   .hand-slot {
     width: 56px; height: 78px; border-radius: 7px;
     display: flex; justify-content: center; align-items: center;
@@ -123,7 +121,6 @@
   }
   .hand-slot.has-card::before { display: none; }
 
-  /* 役一覧サンプルカード5枚並び固定コンテナ */
   #rule-sample-cards {
     display: grid;
     grid-template-columns: repeat(5, 54px);
@@ -133,7 +130,6 @@
     width: 100%;
   }
 
-  /* ミニカード（ドラ・捨て札河・相手伏せ札用） */
   .mini-card {
     width: 38px; height: 48px; background: #ffffff; border-radius: 5px;
     border: 1.5px solid #95a5a6; position: relative; flex-shrink: 0;
@@ -192,7 +188,6 @@
   }
   .yaku-tab-btn.active { border-color: #f1c40f; background: rgba(241,196,15,0.25); color: #f1c40f; }
 
-  /* 通常カットイン */
   #cutin-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.86); display: none; flex-direction: column;
@@ -213,7 +208,6 @@
     animation: cutinSlash 1.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
-  /* 一発限定・別格演出オーバーレイ */
   #ippatsu-grand-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: radial-gradient(circle at center, rgba(255, 215, 0, 0.32) 0%, rgba(120, 10, 10, 0.88) 45%, rgba(0, 0, 0, 0.96) 100%);
@@ -251,7 +245,6 @@
     animation: grandFlash 2.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  /* テキストロゴ演出オーバーレイ */
   #special-yaku-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: radial-gradient(circle at center, rgba(241, 196, 15, 0.16) 0%, rgba(5, 12, 16, 0.94) 72%);
@@ -508,7 +501,7 @@
           ・鬼レンチャレンジ（マスターモード）は10連チャン達成が勝利条件。第2オーラスでプレイヤーの親権が途切れるとチャレンジ失敗終了となります。<br><br>
           <div style="color: #f1c40f; font-weight: bold; margin-bottom: 3px;">【ロン和了＆状態ボーナス】</div>
           ・相手の捨て札でロン和了できるときは「和了」パネルが点灯します。任意のタイミングで「和了」を押してロン宣言してください（押さずにドローすると見送りになります）。<br>
-          ・親和了で「親権＋1pt」、リーチ直後の和了で「一発＋1pt」が加算されます。<br><br>
+          ・親和了で「親権＋1pt」、リーチ直後の和了で「一発＋1pt」、第1打牌（0巡目）リーチで「ダブルリーチ＋3pt」が加算されます。<br><br>
           <div style="color: #f1c40f; font-weight: bold; margin-bottom: 3px;">【制約ルール部屋＆通信対戦】</div>
           ・⚔️ 勝負師の部屋：公式全役有効のガチンコ勝負<br>
           ・🔥 試練の部屋：要リーチ基本役（10点以下）のみ成立可能<br>
@@ -705,7 +698,6 @@ const SoundEngine = {
    2. 通常カットイン・一発別格演出・カテゴリ別/状態役ロゴ演出
    ========================================================================== */
 const INDIVIDUAL_LOGO_MAP = {
-  // JOKER必須役（catId: 5）個別ロゴ
   'シン・AKB48': {
     badge: 'JOKER REQUIRED × HEART',
     title: 'シン・AKB48',
@@ -715,9 +707,9 @@ const INDIVIDUAL_LOGO_MAP = {
     simple: false
   },
   '酷使苦情': {
-    badge: 'JOKER REQUIRED × GORO',
+    badge: 'JOKER REQUIRED × 4-SUIT GORO',
     title: '酷 使 苦 情',
-    caption: '5・9・4・9＋JOKER（コク・シ・ク・ジョー）炸裂！',
+    caption: '4スート揃い＆5・9・4・9＋JOKER（コク・シ・ク・ジョー）炸裂！',
     color: '#ff9f43',
     bg: 'linear-gradient(135deg, rgba(75, 32, 8, 0.97) 0%, rgba(22, 16, 34, 0.97) 100%)',
     simple: false
@@ -738,8 +730,6 @@ const INDIVIDUAL_LOGO_MAP = {
     bg: 'linear-gradient(135deg, rgba(68, 22, 52, 0.97) 0%, rgba(18, 22, 36, 0.97) 100%)',
     simple: false
   },
-
-  // 役満級カテゴリ（catId: 4）個別ロゴ
   'ロイヤルストレートフラッシュ': {
     badge: 'YAKUMAN × ROYAL',
     title: 'ROYAL STRAIGHT FLUSH',
@@ -764,8 +754,6 @@ const INDIVIDUAL_LOGO_MAP = {
     bg: 'linear-gradient(135deg, rgba(80, 10, 15, 0.97) 0%, rgba(20, 15, 25, 0.97) 100%)',
     simple: false
   },
-
-  // 状態役（天地人和 / 海底）専用ロゴ
   '天地人和': {
     badge: 'HEAVEN & EARTH × 0-TURN',
     title: '天 地 人 和',
@@ -785,19 +773,12 @@ const INDIVIDUAL_LOGO_MAP = {
 };
 
 function getLogoSpecForWin(yaku, isTenchi, isHaitei) {
-  // 1. 天地人和（状態役）
-  if (isTenchi) {
-    return INDIVIDUAL_LOGO_MAP['天地人和'];
-  }
-  // 2. 海底（状態役）
-  if (isHaitei) {
-    return INDIVIDUAL_LOGO_MAP['海底'];
-  }
+  if (isTenchi) return INDIVIDUAL_LOGO_MAP['天地人和'];
+  if (isHaitei) return INDIVIDUAL_LOGO_MAP['海底'];
   if (!yaku) return null;
 
   const baseName = yaku.baseYaku ? yaku.baseYaku.name : yaku.name;
 
-  // 3. JOKER必須役（catId: 5）＆ 役満級（catId: 4）は個別ロゴ
   if (yaku.catId === 5 || yaku.catId === 4) {
     if (INDIVIDUAL_LOGO_MAP[baseName]) return INDIVIDUAL_LOGO_MAP[baseName];
     for (let key of Object.keys(INDIVIDUAL_LOGO_MAP)) {
@@ -805,7 +786,6 @@ function getLogoSpecForWin(yaku, isTenchi, isHaitei) {
     }
   }
 
-  // 4. 中級役（catId: 3）はシンプルなテキストロゴ演出
   if (yaku.catId === 3) {
     return {
       badge: 'MIDDLE YAKU LOGO',
@@ -817,7 +797,6 @@ function getLogoSpecForWin(yaku, isTenchi, isHaitei) {
     };
   }
 
-  // 5. 基本役（catId: 2）はロゴ演出なし
   return null;
 }
 
@@ -936,7 +915,7 @@ function getRoomRuleInfo(ruleKey) {
 }
 
 /* ==========================================================================
-   3. 全役精査＆厳密判定エンジン（酷使苦情：5・9・4・9 ＋ JOKER）
+   3. 全役精査＆厳密判定エンジン（酷使苦情：5・9・4・9 ＋ JOKER ＋ 4スート必須）
    ========================================================================== */
 function getSortedCounts(vals) {
   const counts = {};
@@ -1012,10 +991,10 @@ const YAKU_REGISTRY = [
   },
   {
     name: "酷使苦情", score: 29, catId: 5, catName: "⑤ JOKER必須", catClass: "cat-5", jokerType: "required", requireReach: false,
-    desc: "【JOKER必須：-2点免除】5・9・4・9 ＋ JOKER（語呂読み：コク・シ・ク・ジョー）の5枚で成立！",
+    desc: "【JOKER必須：-2点免除】4スート（♠・♥・♦・♣）揃い＋ 5・9・4・9 ＋ JOKER（語呂読み：コク・シ・ク・ジョー）の5枚で成立！",
     sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:9},{suit:'',val:0,isJoker:true}],
-    check: (cards, jokers, normals, vals) =>
-      jokers.length === 1 && normals.length === 4 && matchesValMultiset(vals, 0, [5, 9, 4, 9])
+    check: (cards, jokers, normals, vals, suits, uniqueSuits) =>
+      jokers.length === 1 && normals.length === 4 && uniqueSuits.length === 4 && matchesValMultiset(vals, 0, [5, 9, 4, 9])
   },
   {
     name: "5カード", score: 25, catId: 5, catName: "⑤ JOKER必須", catClass: "cat-5", jokerType: "required", requireReach: false,
@@ -1283,9 +1262,6 @@ function checkFuriten(hand4, targetCard, river) {
   return false;
 }
 
-/* ==========================================================================
-   4. カードDOM生成ヘルパー
-   ========================================================================== */
 function formatCardVal(val) {
   if (val === 11) return 'J';
   if (val === 12) return 'Q';
@@ -1331,8 +1307,10 @@ function createMiniCardElement(card, isReachTile = false) {
   }
   return el;
 }
+</script>
+<script>
 /* ==========================================================================
-   5. ゲーム管理エンジン＆画面遷移
+   4. ゲーム管理エンジン＆画面遷移
    ========================================================================== */
 const gameState = {
   mode: 'beginner',
@@ -1362,6 +1340,7 @@ const gameState = {
   isPlayerReach: false,
   isPlayerReachPending: false,
   isDoubleReach: false,
+  cpuIsDoubleReach: false,
   turnCount: 0,
   playerReachTurnIndex: -1,
   cpuReachTurnIndex: -1,
@@ -1386,7 +1365,8 @@ const GameEngine = {
   },
   isIppatsuAchieved(winner, isReach, reachTurnIndex) {
     if (!isReach || reachTurnIndex < 0) return false;
-    return (gameState.turnCount - reachTurnIndex) <= 1;
+    const diff = gameState.turnCount - reachTurnIndex;
+    return diff >= 0 && diff <= 1;
   },
   canPlayerRonCard(card) {
     if (!card || gameState.playerHand.length !== 4) return false;
@@ -1431,7 +1411,7 @@ function showOnlineLobby() {
 }
 
 /* ==========================================================================
-   6. Render公開サーバー（four51k1-peer-server.onrender.com）通信対戦
+   5. Render公開サーバー（four51k1-peer-server.onrender.com）通信対戦
    ========================================================================== */
 const CUSTOM_PEER_CONFIG = {
   host: 'four51k1-peer-server.onrender.com',
@@ -1580,6 +1560,8 @@ function setupPeerConnectionEvents() {
       receiveHostRoundSync(msg);
     } else if (msg.type === 'OPPONENT_DISCARD') {
       receiveOpponentDiscard(msg);
+    } else if (msg.type === 'OPPONENT_PASS_RON') {
+      receiveOpponentPassRon();
     } else if (msg.type === 'OPPONENT_WIN') {
       receiveOpponentWin(msg);
     } else if (msg.type === 'OPPONENT_DRAW_REPORT') {
@@ -1591,7 +1573,9 @@ function setupPeerConnectionEvents() {
   });
   peerConn.on('close', () => {
     clearInterval(heartbeatTimer);
-    if (document.getElementById('screen-game').classList.contains('active')) {
+    clearInterval(turnTimer);
+    clearInterval(resTimer);
+    if (document.getElementById('screen-game').classList.contains('active') || document.getElementById('screen-result').classList.contains('active')) {
       alert('相手との通信が切断されました。タイトルへ戻ります。');
       showTitle();
     }
@@ -1649,7 +1633,7 @@ function startOnlineAutoRoulette() {
 }
 
 /* ==========================================================================
-   7. CPUモード選択＆ルーレット処理
+   6. CPUモード選択＆ルーレット処理
    ========================================================================== */
 function selectMode(mode) {
   gameState.mode = mode;
@@ -1741,10 +1725,11 @@ function applyRouletteResult(isHostSpade) {
 async function confirmOnlineGameStart() {
   document.getElementById('btn-online-game-start').style.display = 'none';
   initNewRound();
-}
-
+} 
+</script>
+<script>
 /* ==========================================================================
-   8. 対局初期化・手札5枚固定枠描画・ボード更新
+   7. 対局初期化・手札5枚固定枠描画・ボード更新
    ========================================================================== */
 function buildShuffledDeck() {
   const deck = [];
@@ -1852,6 +1837,7 @@ async function setupRoundCommonState() {
   gameState.isPlayerReach = false;
   gameState.isPlayerReachPending = false;
   gameState.isDoubleReach = false;
+  gameState.cpuIsDoubleReach = false;
   gameState.turnCount = 0;
   gameState.playerReachTurnIndex = -1;
   gameState.cpuReachTurnIndex = -1;
@@ -2029,7 +2015,7 @@ function canReachWithAnyDiscard(hand5) {
 }
 
 /* ==========================================================================
-   9. プレイヤー操作・ロン任意判定・カテゴリ/状態役演出振り分け
+   8. プレイヤー操作・ダブルリーチ＆一発厳密判定・ロン任意操作
    ========================================================================== */
 async function presentWinCutin(winner, winType, yakuObj, isIppatsu, isHaitei) {
   const whoLabel = (winner === 'YOU') ? 'YOU' : '相手';
@@ -2051,8 +2037,11 @@ async function presentWinCutin(winner, winType, yakuObj, isIppatsu, isHaitei) {
   }
 }
 
-function passRonChanceAndStartPlayerTurn() {
+function passRonChanceAndStartPlayerTurn(notifyPeer = false) {
   gameState.pendingRonCard = null;
+  if (notifyPeer && gameState.isPeerMatch && peerConn && peerConn.open) {
+    try { peerConn.send({ type: 'OPPONENT_PASS_RON' }); } catch (e) {}
+  }
   gameState.turnCount++;
   if (gameState.deck.length === 0) {
     executeDrawReport();
@@ -2064,9 +2053,23 @@ function passRonChanceAndStartPlayerTurn() {
   startTurnTimerIfNeeded();
 }
 
+function receiveOpponentPassRon() {
+  if (gameState.cpuHand.length === 4) {
+    if (gameState.deck.length === 0) {
+      executeDrawReport();
+      return;
+    }
+    gameState.cpuHand.push(gameState.deck.pop());
+    SoundEngine.playSE('draw_card');
+    renderAllBoard();
+  }
+  gameState.turnCount++;
+  startTurnTimerIfNeeded();
+}
+
 function playerDraw() {
   if (gameState.pendingRonCard) {
-    passRonChanceAndStartPlayerTurn();
+    passRonChanceAndStartPlayerTurn(true);
     if (!gameState.isPlayerTurn || gameState.deck.length === 0) return;
   }
 
@@ -2096,17 +2099,18 @@ function togglePlayerReach() {
   updateActionButtonsAndGuide();
 }
 
-async function onPlayerCardTap(idx) {
+async function onPlayerCardTap(idx, forceDiscard = false) {
   if (gameState.pendingRonCard || !gameState.isPlayerTurn || gameState.playerHand.length !== 5) return;
 
   if (gameState.isPlayerReach && idx !== 4) {
     SoundEngine.playSE('select_card');
     gameState.selectedCardIdx = 4;
     renderPlayerHand5Slots();
-    return;
+    if (!forceDiscard) return;
+    idx = 4;
   }
 
-  if (gameState.selectedCardIdx !== idx) {
+  if (!forceDiscard && gameState.selectedCardIdx !== idx) {
     SoundEngine.playSE('select_card');
     gameState.selectedCardIdx = idx;
     renderPlayerHand5Slots();
@@ -2115,10 +2119,15 @@ async function onPlayerCardTap(idx) {
 
   const rem4 = gameState.playerHand.filter((_, i) => i !== idx);
   if (gameState.isPlayerReachPending && !checkIsTenpai(rem4, true)) {
-    alert('そのカードを切るとテンパイが崩れるためリーチできません。テンパイを維持するカードを切ってください。');
-    return;
+    if (forceDiscard) {
+      gameState.isPlayerReachPending = false;
+    } else {
+      alert('そのカードを切るとテンパイが崩れるためリーチできません。テンパイを維持するカードを切ってください。');
+      return;
+    }
   }
 
+  const reachDeclaredOnFirstDiscard = gameState.isPlayerReachPending && (gameState.turnCount === 0);
   const discarded = gameState.playerHand.splice(idx, 1)[0];
   gameState.selectedCardIdx = null;
   gameState.playerRiver.push(discarded);
@@ -2128,7 +2137,7 @@ async function onPlayerCardTap(idx) {
   if (gameState.isPlayerReachPending) {
     gameState.isPlayerReachPending = false;
     gameState.isPlayerReach = true;
-    gameState.isDoubleReach = (gameState.turnCount === 0);
+    gameState.isDoubleReach = reachDeclaredOnFirstDiscard;
     gameState.playerReachTurnIndex = gameState.turnCount;
     gameState.playerReachTileIndex = gameState.playerRiver.length - 1;
     gameState.playerScore -= 1;
@@ -2146,7 +2155,7 @@ async function onPlayerCardTap(idx) {
     await triggerBlackoutCutin(
       gameState.isDoubleReach ? 'DOUBLE REACH' : 'REACH DECLARATION',
       gameState.isDoubleReach ? '⚡ ダブルリーチ！' : '⚡ リーチ宣言！',
-      'テンパイ宣言完了！',
+      gameState.isDoubleReach ? '第1打牌リーチ成立（+3pt）！' : 'テンパイ宣言完了！',
       '#f1c40f',
       'reach_cutin',
       1400
@@ -2233,9 +2242,10 @@ async function playerWin() {
   if (!yaku) return;
 
   if (gameState.isPlayerReachPending) {
+    const reachDeclaredOnFirstDiscard = (gameState.turnCount === 0);
     gameState.isPlayerReachPending = false;
     gameState.isPlayerReach = true;
-    gameState.isDoubleReach = (gameState.turnCount === 0);
+    gameState.isDoubleReach = reachDeclaredOnFirstDiscard;
     gameState.playerReachTurnIndex = gameState.turnCount;
     gameState.playerScore -= 1;
     gameState.kyotaku += 1;
@@ -2271,7 +2281,7 @@ async function playerWin() {
 }
 
 /* ==========================================================================
-   10. 通信対戦データ受信＆30秒制限タイマー
+   9. 通信対戦データ受信＆30秒制限タイマー強制進行
    ========================================================================== */
 async function receiveOpponentDiscard(msg) {
   const card = msg.discarded;
@@ -2280,9 +2290,17 @@ async function receiveOpponentDiscard(msg) {
   SoundEngine.playSE('discard_card');
   if (msg.justReached) {
     gameState.cpuIsReach = true;
+    gameState.cpuIsDoubleReach = Boolean(msg.isDoubleReach);
     gameState.cpuReachTileIndex = gameState.cpuRiver.length - 1;
     gameState.cpuReachTurnIndex = gameState.turnCount;
-    await triggerBlackoutCutin('OPPONENT REACH', '⚡ 相手がリーチ！', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1400);
+    await triggerBlackoutCutin(
+      gameState.cpuIsDoubleReach ? 'OPPONENT DOUBLE REACH' : 'OPPONENT REACH',
+      gameState.cpuIsDoubleReach ? '⚡ 相手がダブルリーチ！' : '⚡ 相手がリーチ！',
+      '相手のリーチ宣言！',
+      '#e74c3c',
+      'reach_cutin',
+      1400
+    );
   }
   gameState.kyotaku = msg.kyotaku;
   gameState.cpuScore = msg.senderScore;
@@ -2315,6 +2333,10 @@ async function receiveOpponentDiscard(msg) {
 
 async function receiveOpponentWin(msg) {
   clearInterval(turnTimer);
+  if (msg.isReach) {
+    gameState.cpuIsReach = true;
+    gameState.cpuIsDoubleReach = Boolean(msg.isDoubleReach);
+  }
   const yakuObj = {
     name: msg.yakuName,
     score: msg.yakuScore,
@@ -2325,6 +2347,43 @@ async function receiveOpponentWin(msg) {
   };
   await presentWinCutin('相手', msg.winType, yakuObj, Boolean(msg.isIppatsu), Boolean(msg.isHaitei));
   executeRoundEnd(msg.winType, '相手', yakuObj, msg.hand5, msg.winTile, Boolean(msg.isIppatsu), Boolean(msg.isHaitei));
+}
+
+function forceAdvanceOnTimeout() {
+  if (gameState.pendingRonCard) {
+    passRonChanceAndStartPlayerTurn(true);
+    return;
+  }
+
+  if (gameState.isPlayerTurn) {
+    if (!gameState.hasDrawn && gameState.playerHand.length === 4) {
+      if (gameState.deck.length === 0) {
+        if (gameState.isPeerMatch && peerConn && peerConn.open) {
+          peerConn.send({ type: 'OPPONENT_DRAW_REPORT' });
+        }
+        executeDrawReport();
+        return;
+      }
+      playerDraw();
+    }
+
+    if (gameState.playerHand.length === 5) {
+      let discardIdx = 4;
+      if (gameState.isPlayerReachPending) {
+        for (let i = 0; i < 5; i++) {
+          const rem4 = gameState.playerHand.filter((_, idx) => idx !== i);
+          if (checkIsTenpai(rem4, true)) {
+            discardIdx = i;
+            break;
+          }
+        }
+      }
+      onPlayerCardTap(discardIdx, true);
+    }
+  } else if (gameState.isPeerMatch) {
+    // 相手側ターン中のタイムアウト待機フェイルセーフ：次ターン進行を促す
+    renderAllBoard();
+  }
 }
 
 function startTurnTimerIfNeeded() {
@@ -2340,30 +2399,19 @@ function startTurnTimerIfNeeded() {
 
   turnTimer = setInterval(() => {
     turnTimeLeft--;
+    if (turnTimeLeft < 0) turnTimeLeft = 0;
     timerLabel.innerText = `⏱ ${turnTimeLeft}秒`;
     if (turnTimeLeft <= 3 && turnTimeLeft >= 1) {
       SoundEngine.playSE('timer_warning_pip');
     } else if (turnTimeLeft <= 0) {
       clearInterval(turnTimer);
-      if (gameState.pendingRonCard) {
-        passRonChanceAndStartPlayerTurn();
-        return;
-      }
-      if (gameState.isPlayerTurn) {
-        if (!gameState.hasDrawn && gameState.playerHand.length === 4) {
-          playerDraw();
-        }
-        if (gameState.playerHand.length === 5) {
-          gameState.selectedCardIdx = 4;
-          onPlayerCardTap(4);
-        }
-      }
+      forceAdvanceOnTimeout();
     }
   }, 1000);
 }
 
 /* ==========================================================================
-   11. CPU思考ロジック（CPU打牌時のロンは自動進行せずロンチャンス受付へ）
+   10. CPU思考ロジック（ダブルリーチ＆一発厳密判定・ロン任意操作）
    ========================================================================== */
 async function runCpuTurn() {
   if (gameState.isPlayerTurn || gameState.isPeerMatch || gameState.pendingRonCard) return;
@@ -2421,6 +2469,7 @@ async function runCpuTurn() {
 
   if (reachAfterDiscard) {
     gameState.cpuIsReach = true;
+    gameState.cpuIsDoubleReach = (gameState.turnCount === 0);
     gameState.cpuReachTurnIndex = gameState.turnCount;
     gameState.cpuReachTileIndex = gameState.cpuRiver.length - 1;
     gameState.cpuScore -= 1;
@@ -2430,7 +2479,14 @@ async function runCpuTurn() {
   renderAllBoard();
 
   if (reachAfterDiscard) {
-    await triggerBlackoutCutin('CPU REACH', '⚡ 相手がリーチ！', '相手のリーチ宣言！', '#e74c3c', 'reach_cutin', 1400);
+    await triggerBlackoutCutin(
+      gameState.cpuIsDoubleReach ? 'CPU DOUBLE REACH' : 'CPU REACH',
+      gameState.cpuIsDoubleReach ? '⚡ 相手がダブルリーチ！' : '⚡ 相手がリーチ！',
+      gameState.cpuIsDoubleReach ? '第1打牌リーチ成立（+3pt）！' : '相手のリーチ宣言！',
+      '#e74c3c',
+      'reach_cutin',
+      1400
+    );
   }
 
   if (GameEngine.canPlayerRonCard(discarded)) {
@@ -2455,7 +2511,7 @@ async function runCpuTurn() {
 }
 
 /* ==========================================================================
-   12. 得点計算・失点SE・2連チャン厳密化・リザルト表示
+   11. 得点計算・失点SE・2連チャン厳密化・リザルト・役一覧モーダル
    ========================================================================== */
 function getNextDoraTargetVal(val) {
   if (val === 14) return 2;
@@ -2507,7 +2563,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
   const isWinnerPlayer = (winner === 'YOU');
   const isWinnerParent = GameEngine.isParentWinner(winner);
   const winnerReach = isWinnerPlayer ? gameState.isPlayerReach : gameState.cpuIsReach;
-  const winnerDoubleReach = isWinnerPlayer ? gameState.isDoubleReach : false;
+  const winnerDoubleReach = isWinnerPlayer ? gameState.isDoubleReach : gameState.cpuIsDoubleReach;
   const winnerReachTurn = isWinnerPlayer ? gameState.playerReachTurnIndex : gameState.cpuReachTurnIndex;
   const finalIppatsu = Boolean(isIppatsu || GameEngine.isIppatsuAchieved(winner, winnerReach, winnerReachTurn));
   const finalHaitei = Boolean(isHaitei || gameState.deck.length === 0);
@@ -2726,6 +2782,7 @@ function renderResultScreen({ title, subtitle, hand5, winTile, details, netDiff 
 
 function handleResultNextAction() {
   clearInterval(resTimer);
+  if (gameState.isGameOver) return;
   initNewRound();
 }
 
@@ -2741,6 +2798,7 @@ function startResTimerIfNeeded() {
   badge.innerText = `⏱ 次の操作まで: ${resTimeLeft}秒`;
   resTimer = setInterval(() => {
     resTimeLeft--;
+    if (resTimeLeft < 0) resTimeLeft = 0;
     badge.innerText = `⏱ 次の操作まで: ${resTimeLeft}秒`;
     if (resTimeLeft <= 3 && resTimeLeft >= 1) {
       SoundEngine.playSE('timer_warning_pip');
@@ -2768,9 +2826,6 @@ function checkBothRematchReady() {
   }
 }
 
-/* ==========================================================================
-   13. 全役一覧データベース（サンプル5枚並び固定）＆マニュアルモーダル
-   ========================================================================== */
 function openRuleModal(mode = 'yaku') {
   const modal = document.getElementById('rule-modal');
   const yakuCats = document.getElementById('rule-category-panels');
