@@ -303,7 +303,7 @@
     <div style="font-size: 0.8rem; color: #2ecc71; font-weight: bold; margin-bottom: 14px;">『麻雀✕ポーカーの融合したオリジナル５枚役！』</div>
 
     <div style="background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; padding: 7px 14px; border-radius: 6px; margin-bottom: 16px; width: 100%; max-width: 280px;">
-      <div style="font-size: 0.78rem; color: #ffffff; font-weight: bold;">制作／ボドゲ厨房：美理滋庵</div>
+      <div style="font-size: 0.78rem; color: #ffffff; font-weight: bold;">制作／ボドゲ厨房：美理慈庵</div>
       <div style="font-size: 0.78rem; color: #ffffff; font-weight: bold; margin-top: 3px;">企画：料理長K</div>
     </div>
 
@@ -551,7 +551,7 @@
 </div>
 <script>
 /* ==========================================================================
-   1. 音響エンジン（失点SE明確化・ルーレット減速SE・一発/特定役サウンド）
+   1. 音響エンジン（チップレイズ金属音SE・失点SE明確分離・ルーレット減速SE）
    ========================================================================== */
 const SoundEngine = {
   ctx: null,
@@ -614,6 +614,17 @@ const SoundEngine = {
       src.stop(now + duration + 0.01);
     } catch (e) {}
   },
+  playChipRaiseMetallicSE() {
+    // カジノでチップをレイズするイメージの明るい金属音「チャリーン！」
+    this.playCardSwipe(0.035, 3600, 0.08, 0.00);
+    this.playTone(2349.32, 0.24, 'sine', 0.11, 0.01);
+    this.playTone(3520.00, 0.22, 'sine', 0.085, 0.015);
+    this.playTone(4698.63, 0.18, 'triangle', 0.06, 0.02);
+    // 重なったチップの余韻「リンッ」
+    this.playTone(2793.83, 0.34, 'sine', 0.10, 0.085);
+    this.playTone(4186.01, 0.28, 'sine', 0.075, 0.09);
+    this.playCardSwipe(0.03, 4200, 0.06, 0.085);
+  },
   playRouletteTick(progress = 0.5) {
     const clamped = Math.max(0, Math.min(1, progress));
     const baseFreq = 760 - clamped * 340;
@@ -663,9 +674,7 @@ const SoundEngine = {
       this.playTone(330, 0.25, 'triangle', 0.12, 0.07, 330);
       this.playTone(440, 0.40, 'triangle', 0.14, 0.14, 440);
     } else if (name === 'reach_cutin') {
-      this.playTone(523.25, 0.10, 'triangle', 0.13, 0, 659.25);
-      this.playTone(783.99, 0.15, 'triangle', 0.14, 0.07, 1046.5);
-      this.playCardSwipe(0.07, 2000, 0.08, 0.05);
+      this.playChipRaiseMetallicSE();
     } else if (name === 'tsumo_win') {
       [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
         this.playTone(f, 0.22, 'triangle', 0.13, i * 0.075);
@@ -915,7 +924,7 @@ function getRoomRuleInfo(ruleKey) {
 }
 
 /* ==========================================================================
-   3. 全役精査＆厳密判定エンジン（ストレート・リーチ判定強化）
+   3. 精査済み全役判定エンジン
    ========================================================================== */
 function getSortedCounts(vals) {
   const counts = {};
@@ -936,6 +945,7 @@ function isValid5SequenceWithJokers(vals, jokerCount) {
 
 function hasSuited3Sequence(normals, jokerCount, allowedSuits = null) {
   const filtered = allowedSuits ? normals.filter(c => allowedSuits.includes(c.suit)) : normals;
+  if (filtered.length + jokerCount < 3) return false;
   const suits = [...new Set(filtered.map(c => c.suit))];
   const seq3Patterns = [
     [14, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7],
@@ -944,13 +954,10 @@ function hasSuited3Sequence(normals, jokerCount, allowedSuits = null) {
   ];
   for (let s of suits) {
     const sVals = [...new Set(filtered.filter(c => c.suit === s).map(c => c.val))];
-    if (sVals.length + jokerCount < 3) continue;
     for (let pat of seq3Patterns) {
-      let match = 0;
-      for (let p of pat) {
-        if (sVals.includes(p)) match++;
+      if (sVals.every(v => pat.includes(v)) && (sVals.length + jokerCount >= 3)) {
+        return true;
       }
-      if (match + jokerCount >= 3 && sVals.every(v => pat.includes(v))) return true;
     }
   }
   return false;
@@ -1189,7 +1196,7 @@ const YAKU_REGISTRY = [
   },
   {
     name: "一発 / 海底 / 親権", score: 1, catId: 1, catName: "① 状態役", catClass: "cat-1", jokerType: "allowed", requireReach: false,
-    desc: "一発（リーチ直後の和了：+1pt・別格演出）／海底（山札0枚和了：+1pt・ロゴ演出）／親権（親の和了：+1pt）。",
+    desc: "一発（リーチ直後のツモ／ロン和了：+1pt・別格演出）／海底（山札0枚和了：+1pt・ロゴ演出）／親権（親の和了：+1pt）。",
     sample: [{suit:'♠',val:14},{suit:'♥',val:14},{suit:'♦',val:14},{suit:'♣',val:14},{suit:'♠',val:3}],
     check: () => false
   }
@@ -1367,9 +1374,434 @@ const GameEngine = {
     const currentParentWho = (gameState.fieldSuit === '♠') ? gameState.spadePlayer : gameState.heartPlayer;
     return currentParentWho === winner;
   },
-  isIppatsuAchieved(winner, isReach, reachTurnIndex) {
+  isIppatsuAchieved(winner, isReach, reachTurnIndex, winType = null) {
     if (!isReach || reachTurnIndex < 0) return false;
     const diff = gameState.turnCount - reachTurnIndex;
+    if (winType === 'ron') {
+      return diff >= 0 && diff <= 2;
+    }
+    return diff >= 0 && diff <= 1;
+  },
+  canPlayerRonCard(card) {
+    if (!card || gameState.playerHand.length !== 4) return false;
+    if (checkFuriten(gameState.playerHand, card, gameState.playerRiver)) return false;
+    return Boolean(getBestYaku([...gameState.playerHand, card], gameState.isPlayerReach));
+  }
+};
+
+let turnTimer = null;
+let turnTimeLeft = 30;
+let resTimer = null;
+let resTimeLeft = 30;
+let rematchTimer = null;
+
+function switchScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(screenId);
+  if (target) target.classList.add('active');
+}
+
+function showTitle() {
+  clearInterval(turnTimer);
+  clearInterval(resTimer);
+  clearInterval(rematchTimer);
+  switchScreen('screen-title');
+}
+
+function showModeSelect() {
+  gameState.isOnline = false;
+  gameState.isPeerMatch = false;
+  gameState.roomRule = 'shoushi';
+  gameState.spadePlayer = 'YOU';
+  gameState.heartPlayer = '相手';
+  switchScreen('screen-mode');
+}
+
+function showOnlineLobby() {
+  gameState.isOnline = true;
+  gameState.isPeerMatch = false;
+  document.getElementById('online-status-msg').innerText = '';
+  switchScreen('screen-online');
+}
+
+/* ==========================================================================
+   5. Render公開サーバー（four51k1-peer-server.onrender.com）通信対戦
+   ========================================================================== */
+const CUSTOM_PEER_CONFIG = {
+  host: 'four51k1-peer-server.onrender.com',
+  port: 443,
+  path: '/',
+  secure: true,
+  debug: 1
+};
+
+let peerInstance = null;
+let peerConn = null;
+let heartbeatTimer = null;
+
+function cleanupPeer() {
+  clearInterval(heartbeatTimer);
+  if (peerConn) { try { peerConn.close(); } catch (e) {} peerConn = null; }
+  if (peerInstance) { try { peerInstance.destroy(); } catch (e) {} peerInstance = null; }
+}
+
+function startHeartbeat() {
+  clearInterval(heartbeatTimer);
+  heartbeatTimer = setInterval(() => {
+    if (peerConn && peerConn.open) {
+      try { peerConn.send({ type: 'PING' }); } catch (e) {}
+    }
+  }, 15000);
+}
+
+function createOnlineRoom() {
+  SoundEngine.playSE('select_card');
+  const statusEl = document.getElementById('online-status-msg');
+  if (typeof Peer === 'undefined') {
+    statusEl.innerText = '⚠️ Peer通信ライブラリを読み込み中です。数秒後にお試しください。';
+    return;
+  }
+  cleanupPeer();
+  gameState.isOnline = true;
+  gameState.isPeerMatch = true;
+  gameState.isHost = true;
+  gameState.mode = 'beginner';
+  gameState.roomRule = document.getElementById('host-room-rule-select').value;
+
+  const randPart = Math.floor(1000 + Math.random() * 9000);
+  const randSub = Math.floor(10 + Math.random() * 89);
+  const roomId = `jp2-${randPart}-${randSub}`;
+
+  statusEl.style.color = '#f1c40f';
+  statusEl.innerText = '⏳ four51k1-peer-server へ接続中（初回起動時は最大20秒ほどかかります）...';
+
+  try {
+    peerInstance = new Peer(roomId, CUSTOM_PEER_CONFIG);
+  } catch (e) {
+    statusEl.style.color = '#e74c3c';
+    statusEl.innerText = '❌ Peer初期化エラー: ' + e.message;
+    return;
+  }
+
+  peerInstance.on('open', (id) => {
+    document.getElementById('online-room-id-val').innerText = id;
+    document.getElementById('online-room-id-box').style.display = 'flex';
+    statusEl.style.color = '#2ecc71';
+    statusEl.innerText = '✅ ルーム開設完了！IDを友達に送って参加を待っています...';
+  });
+
+  peerInstance.on('connection', (conn) => {
+    peerConn = conn;
+    setupPeerConnectionEvents();
+    statusEl.style.color = '#2ecc71';
+    statusEl.innerText = '✨ 友達が合流しました！ルーレット画面へ移行します...';
+    setTimeout(() => {
+      conn.send({ type: 'ROOM_JOINED', roomRule: gameState.roomRule });
+      startOnlineAutoRoulette();
+    }, 800);
+  });
+
+  peerInstance.on('error', (err) => {
+    statusEl.style.color = '#e74c3c';
+    statusEl.innerText = `❌ 通信エラー (${err.type || 'error'}): 再試行してください`;
+  });
+}
+
+function copyOnlineRoomId() {
+  const txt = document.getElementById('online-room-id-val').innerText;
+  if (!txt || txt === '-') return;
+  navigator.clipboard.writeText(txt).then(() => {
+    alert('ルームIDをコピーしました: ' + txt);
+  }).catch(() => {
+    alert('ルームID: ' + txt);
+  });
+}
+
+function joinOnlineRoom() {
+  const targetId = document.getElementById('online-join-input').value.trim();
+  const statusEl = document.getElementById('online-status-msg');
+  if (!targetId) { alert('友達のルームIDを入力してください'); return; }
+  if (typeof Peer === 'undefined') {
+    statusEl.innerText = '⚠️ Peer通信ライブラリを読み込み中です。数秒後にお試しください。';
+    return;
+  }
+  SoundEngine.playSE('select_card');
+  cleanupPeer();
+  gameState.isOnline = true;
+  gameState.isPeerMatch = true;
+  gameState.isHost = false;
+  gameState.mode = 'beginner';
+
+  statusEl.style.color = '#f1c40f';
+  statusEl.innerText = '⏳ four51k1-peer-server 経由でルームへ接続中...';
+
+  try {
+    peerInstance = new Peer(undefined, CUSTOM_PEER_CONFIG);
+  } catch (e) {
+    statusEl.style.color = '#e74c3c';
+    statusEl.innerText = '❌ Peer初期化エラー: ' + e.message;
+    return;
+  }
+
+  peerInstance.on('open', () => {
+    peerConn = peerInstance.connect(targetId, { reliable: true });
+    setupPeerConnectionEvents();
+    peerConn.on('open', () => {
+      statusEl.style.color = '#2ecc71';
+      statusEl.innerText = '✨ 接続成功！ホストの応答を待っています...';
+    });
+  });
+
+  peerInstance.on('error', (err) => {
+    statusEl.style.color = '#e74c3c';
+    statusEl.innerText = `❌ 接続失敗 (${err.type || 'error'}): IDを確認してください`;
+  });
+}
+
+function setupPeerConnectionEvents() {
+  if (!peerConn) return;
+  startHeartbeat();
+  peerConn.on('data', (msg) => {
+    if (!msg || !msg.type) return;
+    if (msg.type === 'PING') {
+      peerConn.send({ type: 'PONG' });
+    } else if (msg.type === 'ROOM_JOINED') {
+      gameState.roomRule = msg.roomRule || 'shoushi';
+      startOnlineAutoRoulette();
+    } else if (msg.type === 'ROULETTE_RESULT') {
+      applyRouletteResult(msg.isHostSpade);
+    } else if (msg.type === 'START_ROUND_SYNC') {
+      receiveHostRoundSync(msg);
+    } else if (msg.type === 'OPPONENT_DISCARD') {
+      receiveOpponentDiscard(msg);
+    } else if (msg.type === 'OPPONENT_PASS_RON') {
+      receiveOpponentPassRon();
+    } else if (msg.type === 'OPPONENT_WIN') {
+      receiveOpponentWin(msg);
+    } else if (msg.type === 'OPPONENT_DRAW_REPORT') {
+      executeDrawReport();
+    } else if (msg.type === 'REMATCH_REQ') {
+      gameState.rematchOpp = true;
+      checkBothRematchReady();
+    }
+  });
+  peerConn.on('close', () => {
+    clearInterval(heartbeatTimer);
+    clearInterval(turnTimer);
+    clearInterval(resTimer);
+    if (document.getElementById('screen-game').classList.contains('active') || document.getElementById('screen-result').classList.contains('active')) {
+      alert('相手との通信が切断されました。タイトルへ戻ります。');
+      showTitle();
+    }
+  });
+}
+
+function startRoomMatch(roomRule) {
+  SoundEngine.playSE('select_card');
+  gameState.isOnline = true;
+  gameState.isPeerMatch = false;
+  gameState.isHost = true;
+  gameState.mode = 'beginner';
+  gameState.roomRule = roomRule;
+  const info = getRoomRuleInfo(roomRule);
+  document.getElementById('online-status-msg').innerText = `✨ ${info.title} の主が待ち構える部屋に入室中...`;
+  setTimeout(() => {
+    startOnlineAutoRoulette();
+  }, 700);
+}
+
+function startOnlineAutoRoulette() {
+  switchScreen('screen-roulette');
+  const info = getRoomRuleInfo(gameState.roomRule);
+  const roomInfoEl = document.getElementById('roulette-room-info');
+  roomInfoEl.innerText = `${info.title}（${info.short}）`;
+  roomInfoEl.style.display = 'block';
+
+  document.getElementById('roulette-warning-banner').style.display = 'block';
+  document.getElementById('btn-cpu-spin').style.display = 'none';
+  document.getElementById('btn-online-game-start').style.display = 'none';
+  document.getElementById('roulette-wait-msg').style.display = 'none';
+  document.getElementById('roulette-result-text').innerText = '自動席順・親決め抽選中...';
+
+  if (gameState.isHost) {
+    let count = 0;
+    const totalSteps = 18;
+    const suits = ['♠', '♥'];
+    const suitEl = document.getElementById('roulette-suit');
+    const timer = setInterval(() => {
+      const s = suits[count % suits.length];
+      suitEl.innerText = s;
+      suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+      SoundEngine.playSE('roulette_spin', count / totalSteps);
+      count++;
+      if (count >= totalSteps) {
+        clearInterval(timer);
+        const isHostSpade = Math.random() < 0.5;
+        if (gameState.isPeerMatch && peerConn && peerConn.open) {
+          peerConn.send({ type: 'ROULETTE_RESULT', isHostSpade });
+        }
+        applyRouletteResult(isHostSpade);
+      }
+    }, 95);
+  }
+}
+
+/* ==========================================================================
+   6. CPUモード選択＆ルーレット処理
+   ========================================================================== */
+function selectMode(mode) {
+  gameState.mode = mode;
+  gameState.isOnline = false;
+  gameState.isPeerMatch = false;
+  gameState.isHost = true;
+  gameState.roomRule = 'shoushi';
+  switchScreen('screen-roulette');
+  document.getElementById('roulette-room-info').style.display = 'none';
+  document.getElementById('roulette-warning-banner').style.display = 'none';
+  document.getElementById('btn-cpu-spin').style.display = 'inline-block';
+  document.getElementById('btn-online-game-start').style.display = 'none';
+  document.getElementById('roulette-wait-msg').style.display = 'none';
+  document.getElementById('roulette-result-text').innerText = '「ルーレットスタート」ボタンを押してください';
+}
+
+function startCpuManualRoulette() {
+  document.getElementById('btn-cpu-spin').disabled = true;
+  let step = 0;
+  const maxSteps = 20;
+  const suits = ['♠', '♥'];
+  const suitEl = document.getElementById('roulette-suit');
+  const resultTextEl = document.getElementById('roulette-result-text');
+  resultTextEl.innerText = 'ルーレット回転中...';
+
+  function spinStep() {
+    const progress = step / maxSteps;
+    const s = suits[step % suits.length];
+    suitEl.innerText = s;
+    suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+    SoundEngine.playSE('roulette_spin', progress);
+    step++;
+
+    if (step >= maxSteps) {
+      document.getElementById('btn-cpu-spin').disabled = false;
+      const finalSpade = Math.random() < 0.5;
+      applyRouletteResult(finalSpade);
+      return;
+    }
+
+    const nextDelay = Math.round(65 + Math.pow(progress, 2.2) * 195);
+    setTimeout(spinStep, nextDelay);
+  }
+
+  spinStep();
+}
+
+function applyRouletteResult(isHostSpade) {
+  const isYouSpade = gameState.isPeerMatch ? (gameState.isHost ? isHostSpade : !isHostSpade) : isHostSpade;
+  gameState.spadePlayer = isYouSpade ? 'YOU' : '相手';
+  gameState.heartPlayer = isYouSpade ? '相手' : 'YOU';
+  gameState.cycle = 1;
+  gameState.fieldSuit = '♠';
+  gameState.streakCount = 0;
+  gameState.playerScore = 30;
+  gameState.cpuScore = 30;
+  gameState.kyotaku = 0;
+  GameEngine.syncParentByField();
+  gameState.isGameOver = false;
+
+  const suitEl = document.getElementById('roulette-suit');
+  suitEl.innerText = isYouSpade ? '♠' : '♥';
+  suitEl.style.color = isYouSpade ? '#3498db' : '#e74c3c';
+
+  const roleMsg = isYouSpade
+    ? 'あなたは【♠席：先親】に決定しました！'
+    : 'あなたは【♥席：後親】に決定しました！（♠相手の先親スタート）';
+  document.getElementById('roulette-result-text').innerHTML = roleMsg;
+
+  if (gameState.isPeerMatch) {
+    if (gameState.isHost) {
+      document.getElementById('btn-online-game-start').style.display = 'inline-block';
+      document.getElementById('roulette-wait-msg').style.display = 'none';
+    } else {
+      document.getElementById('btn-online-game-start').style.display = 'none';
+      document.getElementById('roulette-wait-msg').style.display = 'block';
+    }
+  } else {
+    setTimeout(async () => {
+      if (gameState.isOnline) {
+        const info = getRoomRuleInfo(gameState.roomRule);
+        await triggerBlackoutCutin('RULE ROOM MATCH', info.title, info.desc, '#3498db', 'room_cutin', 2000);
+      }
+      initNewRound();
+    }, 1800);
+  }
+}
+
+async function confirmOnlineGameStart() {
+  document.getElementById('btn-online-game-start').style.display = 'none';
+  initNewRound();
+}
+</script>
+<script>
+/* ==========================================================================
+   4. ゲーム管理エンジン＆画面遷移
+   ========================================================================== */
+const gameState = {
+  mode: 'beginner',
+  roomRule: 'shoushi',
+  isOnline: false,
+  isPeerMatch: false,
+  isHost: true,
+  cycle: 1,
+  fieldSuit: '♠',
+  streakCount: 0,
+  isPlayerParent: true,
+  spadePlayer: 'YOU',
+  heartPlayer: '相手',
+  playerScore: 30,
+  cpuScore: 30,
+  kyotaku: 0,
+  deck: [],
+  doraCards: [],
+  uraDoraCards: [],
+  playerHand: [],
+  cpuHand: [],
+  playerRiver: [],
+  cpuRiver: [],
+  selectedCardIdx: null,
+  hasDrawn: false,
+  isPlayerTurn: false,
+  isPlayerReach: false,
+  isPlayerReachPending: false,
+  isDoubleReach: false,
+  cpuIsDoubleReach: false,
+  turnCount: 0,
+  playerReachTurnIndex: -1,
+  cpuReachTurnIndex: -1,
+  playerReachTileIndex: null,
+  cpuReachTileIndex: null,
+  cpuIsReach: false,
+  pendingRonCard: null,
+  isGameOver: false,
+  rematchMe: false,
+  rematchOpp: false
+};
+
+const GameEngine = {
+  syncParentByField() {
+    const parentWho = (gameState.fieldSuit === '♠') ? gameState.spadePlayer : gameState.heartPlayer;
+    gameState.isPlayerParent = (parentWho === 'YOU');
+    return gameState.isPlayerParent;
+  },
+  isParentWinner(winner) {
+    const currentParentWho = (gameState.fieldSuit === '♠') ? gameState.spadePlayer : gameState.heartPlayer;
+    return currentParentWho === winner;
+  },
+  isIppatsuAchieved(winner, isReach, reachTurnIndex, winType = null) {
+    if (!isReach || reachTurnIndex < 0) return false;
+    const diff = gameState.turnCount - reachTurnIndex;
+    if (winType === 'ron') {
+      return diff >= 0 && diff <= 2;
+    }
     return diff >= 0 && diff <= 1;
   },
   canPlayerRonCard(card) {
@@ -2186,7 +2618,7 @@ async function onPlayerCardTap(idx, forceDiscard = false) {
   if (gameState.cpuHand.length === 4) {
     const cpuRonYaku = getBestYaku([...gameState.cpuHand, discarded], gameState.cpuIsReach);
     if (cpuRonYaku && !checkFuriten(gameState.cpuHand, discarded, gameState.cpuRiver)) {
-      const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex);
+      const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex, 'ron');
       const isHaitei = (gameState.deck.length === 0);
       const exact5 = [...gameState.cpuHand, discarded];
       await presentWinCutin('相手', 'ron', cpuRonYaku, isIppatsu, isHaitei);
@@ -2212,7 +2644,7 @@ async function playerWin() {
     clearInterval(turnTimer);
     const ronYaku = getBestYaku([...gameState.playerHand, ronCard], gameState.isPlayerReach);
     if (!ronYaku) return;
-    const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
+    const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex, 'ron');
     const isHaitei = (gameState.deck.length === 0);
     const exact5 = [...gameState.playerHand, ronCard];
 
@@ -2257,7 +2689,7 @@ async function playerWin() {
   }
 
   clearInterval(turnTimer);
-  const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex);
+  const isIppatsu = GameEngine.isIppatsuAchieved('YOU', gameState.isPlayerReach, gameState.playerReachTurnIndex, 'tsumo');
   const isHaitei = (gameState.deck.length === 0);
   const winTile = gameState.playerHand[4];
 
@@ -2433,7 +2865,7 @@ async function runCpuTurn() {
 
   const cpuWinYaku = getBestYaku(gameState.cpuHand, gameState.cpuIsReach);
   if (cpuWinYaku) {
-    const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex);
+    const isIppatsu = GameEngine.isIppatsuAchieved('相手', gameState.cpuIsReach, gameState.cpuReachTurnIndex, 'tsumo');
     const isHaitei = (gameState.deck.length === 0);
     const winTile = gameState.cpuHand[4];
     await presentWinCutin('相手', 'tsumo', cpuWinYaku, isIppatsu, isHaitei);
@@ -2576,7 +3008,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
   const winnerReach = isWinnerPlayer ? gameState.isPlayerReach : gameState.cpuIsReach;
   const winnerDoubleReach = isWinnerPlayer ? gameState.isDoubleReach : gameState.cpuIsDoubleReach;
   const winnerReachTurn = isWinnerPlayer ? gameState.playerReachTurnIndex : gameState.cpuReachTurnIndex;
-  const finalIppatsu = Boolean(isIppatsu || GameEngine.isIppatsuAchieved(winner, winnerReach, winnerReachTurn));
+  const finalIppatsu = Boolean(isIppatsu || GameEngine.isIppatsuAchieved(winner, winnerReach, winnerReachTurn, winType));
   const finalHaitei = Boolean(isHaitei || gameState.deck.length === 0);
   const winLabel = getWinLabelText(winner, winType);
 
