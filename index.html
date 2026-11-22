@@ -915,7 +915,7 @@ function getRoomRuleInfo(ruleKey) {
 }
 
 /* ==========================================================================
-   3. 全役精査＆厳密判定エンジン（酷使苦情：5・9・4・9 ＋ JOKER ＋ 4スート必須）
+   3. 全役精査＆厳密判定エンジン（ストレート・リーチ判定強化）
    ========================================================================== */
 function getSortedCounts(vals) {
   const counts = {};
@@ -924,7 +924,7 @@ function getSortedCounts(vals) {
 }
 
 function isValid5SequenceWithJokers(vals, jokerCount) {
-  if (vals.length + jokerCount !== 5) return false;
+  if (!Array.isArray(vals) || vals.length + jokerCount !== 5) return false;
   if (new Set(vals).size !== vals.length) return false;
   const patterns = [
     [14, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 4, 5, 6, 7], [4, 5, 6, 7, 8],
@@ -1163,7 +1163,11 @@ const YAKU_REGISTRY = [
     desc: "【要リーチ・JOKER不可❌】連番5枚 ＋ 絵札（J・Q・K・A）1枚以上！（2〜10のみの連番は役無し）",
     sample: [{suit:'♠',val:7},{suit:'♥',val:8},{suit:'♦',val:9},{suit:'♣',val:10},{suit:'♠',val:11}],
     check: (cards, jokers, normals, vals, suits, uniqueSuits) =>
-      jokers.length === 0 && uniqueSuits.length > 1 && !matchesValMultiset(vals, 0, [10, 11, 12, 13, 14]) && vals.some(v => v >= 11) && isValid5SequenceWithJokers(vals, 0)
+      jokers.length === 0 &&
+      uniqueSuits.length > 1 &&
+      !matchesValMultiset(vals, 0, [10, 11, 12, 13, 14]) &&
+      vals.some(v => v >= 11) &&
+      isValid5SequenceWithJokers(vals, 0)
   },
   {
     name: "天地人和", score: 5, catId: 1, catName: "① 状態役", catClass: "cat-1", jokerType: "allowed", requireReach: false,
@@ -1725,7 +1729,7 @@ function applyRouletteResult(isHostSpade) {
 async function confirmOnlineGameStart() {
   document.getElementById('btn-online-game-start').style.display = 'none';
   initNewRound();
-} 
+}
 </script>
 <script>
 /* ==========================================================================
@@ -1938,6 +1942,15 @@ function renderPlayerHand5Slots() {
   }
 }
 
+function canReachWithAnyDiscard(hand5) {
+  if (!hand5 || hand5.length !== 5) return false;
+  for (let i = 0; i < 5; i++) {
+    const rem4 = hand5.filter((_, idx) => idx !== i);
+    if (checkIsTenpai(rem4, true)) return true;
+  }
+  return false;
+}
+
 function updateActionButtonsAndGuide() {
   const btnReach = document.getElementById('btn-reach');
   const btnWin = document.getElementById('btn-win');
@@ -1952,8 +1965,7 @@ function updateActionButtonsAndGuide() {
   const canWinNow = hasPendingRon || canTsumoWin;
 
   const canReachNow = !hasPendingRon && !isDamatenRoom && gameState.isPlayerTurn && !gameState.isPlayerReach &&
-    gameState.playerHand.length === 5 && gameState.playerScore >= 1 &&
-    canReachWithAnyDiscard(gameState.playerHand);
+    gameState.playerHand.length === 5 && canReachWithAnyDiscard(gameState.playerHand);
 
   const canDrawNow = (hasPendingRon || (gameState.isPlayerTurn && !gameState.hasDrawn && gameState.playerHand.length === 4)) &&
     gameState.deck.length > 0;
@@ -1982,6 +1994,8 @@ function updateActionButtonsAndGuide() {
     statusEl.innerText = '✨ ツモ和了可能です！「和了」パネルを押して和了できます。';
   } else if (gameState.isPlayerReach) {
     statusEl.innerText = 'リーチ中：ツモ和了できない場合は右端のツモ札を2回タップして打牌します。';
+  } else if (canReachNow) {
+    statusEl.innerText = 'テンパイ可能！「リーチ」を押してから不要牌を2回タップして打牌してください。';
   } else {
     statusEl.innerText = '不要なカードを2回タップして打牌してください。';
   }
@@ -2003,15 +2017,6 @@ function updateActionButtonsAndGuide() {
   } else {
     guideBox.style.display = 'none';
   }
-}
-
-function canReachWithAnyDiscard(hand5) {
-  if (!hand5 || hand5.length !== 5) return false;
-  for (let i = 0; i < 5; i++) {
-    const rem4 = hand5.filter((_, idx) => idx !== i);
-    if (checkIsTenpai(rem4, true)) return true;
-  }
-  return false;
 }
 
 /* ==========================================================================
@@ -2381,7 +2386,6 @@ function forceAdvanceOnTimeout() {
       onPlayerCardTap(discardIdx, true);
     }
   } else if (gameState.isPeerMatch) {
-    // 相手側ターン中のタイムアウト待機フェイルセーフ：次ターン進行を促す
     renderAllBoard();
   }
 }
@@ -2411,7 +2415,7 @@ function startTurnTimerIfNeeded() {
 }
 
 /* ==========================================================================
-   10. CPU思考ロジック（ダブルリーチ＆一発厳密判定・ロン任意操作）
+   10. CPU思考ロジック（ビギナーモードは0巡目ダブルリーチ禁止・控えめ調整）
    ========================================================================== */
 async function runCpuTurn() {
   if (gameState.isPlayerTurn || gameState.isPeerMatch || gameState.pendingRonCard) return;
@@ -2447,18 +2451,25 @@ async function runCpuTurn() {
       const card = gameState.cpuHand[i];
       const rem4 = gameState.cpuHand.filter((_, idx) => idx !== i);
       let evalPt = 0;
-      if (card.isJoker) evalPt -= 500;
-      if (card.val >= 11) evalPt -= 5;
-      if (checkIsTenpai(rem4, true)) evalPt += 120;
+      if (card.isJoker) evalPt -= (gameState.mode === 'beginner' ? 120 : 500);
+      if (card.val >= 11) evalPt -= (gameState.mode === 'beginner' ? 1 : 5);
+      if (checkIsTenpai(rem4, true)) evalPt += (gameState.mode === 'beginner' ? 40 : 120);
       if (evalPt > bestScore) {
         bestScore = evalPt;
         discardIdx = i;
       }
     }
     const rem4Best = gameState.cpuHand.filter((_, idx) => idx !== discardIdx);
-    if (!isDamatenRoom && checkIsTenpai(rem4Best, true) && gameState.cpuScore >= 1) {
-      if (gameState.mode === 'master' || (gameState.mode === 'main' && Math.random() < 0.55) || gameState.mode === 'beginner') {
+    const canDeclareDoubleReach = (gameState.mode !== 'beginner');
+    const isFirstDiscard = (gameState.turnCount === 0);
+
+    if (!isDamatenRoom && checkIsTenpai(rem4Best, true) && (!isFirstDiscard || canDeclareDoubleReach)) {
+      if (gameState.mode === 'master') {
         reachAfterDiscard = true;
+      } else if (gameState.mode === 'main') {
+        reachAfterDiscard = (Math.random() < 0.55);
+      } else {
+        reachAfterDiscard = (gameState.turnCount >= 2 && Math.random() < 0.25);
       }
     }
   }
@@ -2469,7 +2480,7 @@ async function runCpuTurn() {
 
   if (reachAfterDiscard) {
     gameState.cpuIsReach = true;
-    gameState.cpuIsDoubleReach = (gameState.turnCount === 0);
+    gameState.cpuIsDoubleReach = (gameState.mode !== 'beginner' && gameState.turnCount === 0);
     gameState.cpuReachTurnIndex = gameState.turnCount;
     gameState.cpuReachTileIndex = gameState.cpuRiver.length - 1;
     gameState.cpuScore -= 1;
