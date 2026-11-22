@@ -551,7 +551,7 @@
 </div>
 <script>
 /* ==========================================================================
-   1. 音響エンジン（チップレイズ金属音SE・失点SE明確分離・ルーレット減速SE）
+   1. 音響エンジン（リーチはチャリーン単体／失点SEは相手和了時のみ）
    ========================================================================== */
 const SoundEngine = {
   ctx: null,
@@ -614,16 +614,14 @@ const SoundEngine = {
       src.stop(now + duration + 0.01);
     } catch (e) {}
   },
+  // カジノでチップをレイズする明るい金属音「チャリーン！」（低音・下降音は一切不使用）
   playChipRaiseMetallicSE() {
-    // カジノでチップをレイズするイメージの明るい金属音「チャリーン！」
-    this.playCardSwipe(0.035, 3600, 0.08, 0.00);
-    this.playTone(2349.32, 0.24, 'sine', 0.11, 0.01);
-    this.playTone(3520.00, 0.22, 'sine', 0.085, 0.015);
-    this.playTone(4698.63, 0.18, 'triangle', 0.06, 0.02);
-    // 重なったチップの余韻「リンッ」
-    this.playTone(2793.83, 0.34, 'sine', 0.10, 0.085);
-    this.playTone(4186.01, 0.28, 'sine', 0.075, 0.09);
-    this.playCardSwipe(0.03, 4200, 0.06, 0.085);
+    this.playCardSwipe(0.028, 3800, 0.065, 0.00);
+    this.playTone(2637.02, 0.22, 'sine', 0.11, 0.005);
+    this.playTone(3951.07, 0.20, 'sine', 0.08, 0.01);
+    this.playTone(3135.96, 0.30, 'sine', 0.095, 0.075);
+    this.playTone(4698.63, 0.24, 'sine', 0.065, 0.08);
+    this.playCardSwipe(0.025, 4400, 0.05, 0.075);
   },
   playRouletteTick(progress = 0.5) {
     const clamped = Math.max(0, Math.min(1, progress));
@@ -633,10 +631,16 @@ const SoundEngine = {
     this.playTone(baseFreq, 0.032, 'triangle', gain, 0, endFreq);
     this.playCardSwipe(0.016, 1700 - clamped * 500, 0.035, 0);
   },
-  playLosePointsSE() {
-    this.playTone(311.13, 0.18, 'sawtooth', 0.11, 0, 220.00);
-    this.playTone(220.00, 0.34, 'sawtooth', 0.13, 0.14, 110.00);
-    this.playTone(110.00, 0.36, 'triangle', 0.15, 0.14, 73.42);
+  playLosePointsSE(isYakumanLoss = false) {
+    if (isYakumanLoss) {
+      this.playTone(220.00, 0.25, 'sawtooth', 0.14, 0, 146.83);
+      this.playTone(146.83, 0.45, 'sawtooth', 0.16, 0.18, 73.42);
+      this.playTone(73.42, 0.50, 'triangle', 0.18, 0.18, 55.00);
+    } else {
+      this.playTone(311.13, 0.18, 'sawtooth', 0.11, 0, 220.00);
+      this.playTone(220.00, 0.34, 'sawtooth', 0.13, 0.14, 110.00);
+      this.playTone(110.00, 0.36, 'triangle', 0.15, 0.14, 73.42);
+    }
   },
   playSpecialYakuLogoSE(simple = false) {
     if (simple) {
@@ -648,6 +652,31 @@ const SoundEngine = {
     notes.forEach((f, idx) => {
       this.playTone(f, idx === notes.length - 1 ? 0.55 : 0.16, 'triangle', 0.14, idx * 0.075);
     });
+  },
+  playYakuFanfareByCategory(yakuObj) {
+    if (!yakuObj) return;
+    if (yakuObj.catId === 5) {
+      // JOKER必須役ファンファーレ
+      [587.33, 739.99, 880.00, 1174.66, 1479.98].forEach((f, i) => {
+        this.playTone(f, i === 4 ? 0.65 : 0.15, 'triangle', 0.15, i * 0.07);
+      });
+    } else if (yakuObj.catId === 4 || yakuObj.score >= 20) {
+      // 役満級ファンファーレ
+      [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
+        this.playTone(f, i === 4 ? 0.6 : 0.16, 'sawtooth', 0.09, i * 0.075);
+        this.playTone(f, i === 4 ? 0.6 : 0.16, 'triangle', 0.13, i * 0.075);
+      });
+    } else if (yakuObj.catId === 3 || yakuObj.score >= 12) {
+      // 中級役ファンファーレ
+      [440.00, 554.37, 659.25, 880.00].forEach((f, i) => {
+        this.playTone(f, i === 3 ? 0.42 : 0.14, 'triangle', 0.13, i * 0.075);
+      });
+    } else {
+      // 基本役（10点以下）和了音
+      [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+        this.playTone(f, 0.20, 'triangle', 0.12, i * 0.075);
+      });
+    }
   },
   playSE(name, progress = 0.5) {
     if (name === 'select_card') {
@@ -662,7 +691,9 @@ const SoundEngine = {
     } else if (name === 'roulette_spin') {
       this.playRouletteTick(progress);
     } else if (name === 'player_lose_pt') {
-      this.playLosePointsSE();
+      this.playLosePointsSE(false);
+    } else if (name === 'player_lose_yakuman') {
+      this.playLosePointsSE(true);
     } else if (name === 'special_yaku_logo') {
       this.playSpecialYakuLogoSE(false);
     } else if (name === 'simple_yaku_logo') {
@@ -683,6 +714,10 @@ const SoundEngine = {
       this.playTone(220.00, 0.18, 'triangle', 0.14, 0, 164.81);
       this.playTone(440.00, 0.25, 'triangle', 0.13, 0.06, 587.33);
       this.playCardSwipe(0.08, 1500, 0.09, 0.02);
+    } else if (name === 'ippatsu_confirm_only') {
+      // 一発確定音（間を置いて該当和了ファンファーレへ連続）
+      this.playTone(880.00, 0.14, 'triangle', 0.15, 0.00);
+      this.playTone(1318.51, 0.28, 'sine', 0.15, 0.09);
     } else if (name === 'ippatsu_fanfare') {
       this.playTone(130.81, 0.85, 'sawtooth', 0.07, 0);
       this.playTone(261.63, 0.85, 'triangle', 0.14, 0);
@@ -704,7 +739,11 @@ const SoundEngine = {
 };
 
 /* ==========================================================================
-   2. 通常カットイン・一発別格演出・カテゴリ別/状態役ロゴ演出
+   2. カテゴリ別・状態役別 和了演出体系
+   - JOKER必須役（catId:5）＆ 役満級（catId:4）：全役個別テキストロゴ演出
+   - 中級役（catId:3）：シンプルテキストロゴ演出
+   - 基本役（catId:2）：特定役ロゴ演出なし（通常カットインのみ）
+   - 状態役：天地人和／一発／海底 に専用演出
    ========================================================================== */
 const INDIVIDUAL_LOGO_MAP = {
   'シン・AKB48': {
@@ -783,19 +822,21 @@ const INDIVIDUAL_LOGO_MAP = {
 
 function getLogoSpecForWin(yaku, isTenchi, isHaitei) {
   if (isTenchi) return INDIVIDUAL_LOGO_MAP['天地人和'];
-  if (isHaitei) return INDIVIDUAL_LOGO_MAP['海底'];
-  if (!yaku) return null;
+  if (!yaku) return isHaitei ? INDIVIDUAL_LOGO_MAP['海底'] : null;
 
   const baseName = yaku.baseYaku ? yaku.baseYaku.name : yaku.name;
+  const baseCatId = yaku.baseYaku ? yaku.baseYaku.catId : yaku.catId;
 
-  if (yaku.catId === 5 || yaku.catId === 4) {
+  // JOKER必須役（5）＆ 役満級（4）は全役個別ロゴ演出
+  if (baseCatId === 5 || baseCatId === 4) {
     if (INDIVIDUAL_LOGO_MAP[baseName]) return INDIVIDUAL_LOGO_MAP[baseName];
     for (let key of Object.keys(INDIVIDUAL_LOGO_MAP)) {
       if (baseName.includes(key)) return INDIVIDUAL_LOGO_MAP[key];
     }
   }
 
-  if (yaku.catId === 3) {
+  // 中級役（3）はシンプルテキストロゴ演出
+  if (baseCatId === 3) {
     return {
       badge: 'MIDDLE YAKU LOGO',
       title: baseName,
@@ -806,12 +847,18 @@ function getLogoSpecForWin(yaku, isTenchi, isHaitei) {
     };
   }
 
+  // 海底は状態役ロゴ演出
+  if (isHaitei) {
+    return INDIVIDUAL_LOGO_MAP['海底'];
+  }
+
+  // 基本役（2）は特定役ロゴ演出なし
   return null;
 }
 
 function triggerSpecialYakuLogoCutin(logoObj) {
   const isSimple = Boolean(logoObj.simple);
-  const duration = isSimple ? 1750 : 2100;
+  const duration = isSimple ? 1650 : 2000;
   return new Promise(resolve => {
     const overlay = document.getElementById('special-yaku-overlay');
     const card = document.getElementById('special-logo-card');
@@ -855,7 +902,7 @@ function triggerSpecialYakuLogoCutin(logoObj) {
   });
 }
 
-function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f', seName = 'room_cutin', duration = 1750) {
+function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f', seName = 'room_cutin', duration = 1650) {
   return new Promise(resolve => {
     const overlay = document.getElementById('cutin-overlay');
     const band = document.getElementById('cutin-band');
@@ -880,20 +927,25 @@ function triggerBlackoutCutin(subTop, mainText, ruleDesc, borderColor = '#f1c40f
   });
 }
 
-function triggerIppatsuGrandCutin(whoLabel, winKindLabel, yakuName, duration = 2550) {
+function triggerIppatsuGrandCutin(whoLabel, winKindLabel, yakuObj, duration = 2500) {
+  const yakuName = yakuObj ? yakuObj.name : '役成立';
   return new Promise(resolve => {
     const overlay = document.getElementById('ippatsu-grand-overlay');
     const stage = overlay.querySelector('.ippatsu-grand-stage');
     document.getElementById('ippatsu-grand-title').innerText = `⚡ ${whoLabel}の電撃一発${winKindLabel}！ ⚡`;
     document.getElementById('ippatsu-grand-yaku').innerText = `${yakuName} ＋ 一発 (+1pt)`;
-    document.getElementById('ippatsu-grand-sub').innerText = 'リーチ宣言直後の奇跡の一撃！一発ボーナス＋1pt獲得！';
+    document.getElementById('ippatsu-grand-sub').innerText = 'リーチ宣言直後の電撃和了！一発ボーナス＋1pt獲得！';
 
     stage.style.animation = 'none';
     void stage.offsetWidth;
     stage.style.animation = `grandFlash ${duration / 1000}s cubic-bezier(0.16, 1, 0.3, 1) forwards`;
 
     overlay.style.display = 'flex';
-    SoundEngine.playSE('ippatsu_fanfare');
+    // 一発確定音から間を置いて → 該当和了ファンファーレへ連続
+    SoundEngine.playSE('ippatsu_confirm_only');
+    setTimeout(() => {
+      SoundEngine.playYakuFanfareByCategory(yakuObj);
+    }, 360);
 
     setTimeout(() => {
       overlay.style.display = 'none';
@@ -924,7 +976,7 @@ function getRoomRuleInfo(ruleKey) {
 }
 
 /* ==========================================================================
-   3. 精査済み全役判定エンジン
+   3. 全役判定エンジン
    ========================================================================== */
 function getSortedCounts(vals) {
   const counts = {};
@@ -1374,11 +1426,12 @@ const GameEngine = {
     const currentParentWho = (gameState.fieldSuit === '♠') ? gameState.spadePlayer : gameState.heartPlayer;
     return currentParentWho === winner;
   },
+  // リーチ宣言時のターン番号（reachTurnIndex）を基準に、直後の相手打牌ロン／自分の次ツモまでを有効とする
   isIppatsuAchieved(winner, isReach, reachTurnIndex, winType = null) {
     if (!isReach || reachTurnIndex < 0) return false;
     const diff = gameState.turnCount - reachTurnIndex;
     if (winType === 'ron') {
-      return diff >= 0 && diff <= 2;
+      return diff >= 0 && diff <= 1;
     }
     return diff >= 0 && diff <= 1;
   },
@@ -2030,7 +2083,7 @@ function updateActionButtonsAndGuide() {
 }
 
 /* ==========================================================================
-   8. プレイヤー操作・ダブルリーチ＆一発厳密判定・ロン任意操作
+   8. プレイヤー操作・リーチ一発判定厳密化・和了演出呼び出し
    ========================================================================== */
 async function presentWinCutin(winner, winType, yakuObj, isIppatsu, isHaitei) {
   const whoLabel = (winner === 'YOU') ? 'YOU' : '相手';
@@ -2044,11 +2097,15 @@ async function presentWinCutin(winner, winType, yakuObj, isIppatsu, isHaitei) {
   }
 
   if (isIppatsu) {
-    await triggerIppatsuGrandCutin(whoLabel, winKindLabel, yakuName, 2550);
+    await triggerIppatsuGrandCutin(whoLabel, winKindLabel, yakuObj, 2500);
   } else if (winType === 'ron') {
-    await triggerBlackoutCutin('RON FINISH', `🔥 ${whoLabel}のロン和了！`, `成立役：${yakuName}`, '#e74c3c', 'ron_win', 1650);
+    SoundEngine.playSE('ron_win');
+    setTimeout(() => SoundEngine.playYakuFanfareByCategory(yakuObj), 220);
+    await triggerBlackoutCutin('RON FINISH', `🔥 ${whoLabel}のロン和了！`, `成立役：${yakuName}`, '#e74c3c', null, 1650);
   } else {
-    await triggerBlackoutCutin('TSUMO FINISH', `✨ ${whoLabel}のツモ和了！`, `成立役：${yakuName}`, '#f1c40f', 'tsumo_win', 1650);
+    SoundEngine.playSE('tsumo_win');
+    setTimeout(() => SoundEngine.playYakuFanfareByCategory(yakuObj), 220);
+    await triggerBlackoutCutin('TSUMO FINISH', `✨ ${whoLabel}のツモ和了！`, `成立役：${yakuName}`, '#f1c40f', null, 1650);
   }
 }
 
@@ -2153,11 +2210,11 @@ async function onPlayerCardTap(idx, forceDiscard = false) {
     gameState.isPlayerReachPending = false;
     gameState.isPlayerReach = true;
     gameState.isDoubleReach = reachDeclaredOnFirstDiscard;
+    // リーチ宣言時のターン番号を記録（この直後の相手打牌ロン・自分の次ツモまでが一発有効）
     gameState.playerReachTurnIndex = gameState.turnCount;
     gameState.playerReachTileIndex = gameState.playerRiver.length - 1;
     gameState.playerScore -= 1;
     gameState.kyotaku += 1;
-    SoundEngine.playSE('player_lose_pt');
     justReached = true;
   }
 
@@ -2166,6 +2223,7 @@ async function onPlayerCardTap(idx, forceDiscard = false) {
   clearInterval(turnTimer);
   renderAllBoard();
 
+  // リーチ時はチップレイズ金属音（チャリーン）のみを再生し、失点SEは同時に鳴らさない
   if (justReached) {
     await triggerBlackoutCutin(
       gameState.isDoubleReach ? 'DOUBLE REACH' : 'REACH DECLARATION',
@@ -2193,6 +2251,7 @@ async function onPlayerCardTap(idx, forceDiscard = false) {
     return;
   }
 
+  // 相手（CPU）のロン判定（自分のリーチ直後の相手打牌ロンなら一発成立）
   if (gameState.cpuHand.length === 4) {
     const cpuRonYaku = getBestYaku([...gameState.cpuHand, discarded], gameState.cpuIsReach);
     if (cpuRonYaku && !checkFuriten(gameState.cpuHand, discarded, gameState.cpuRiver)) {
@@ -2216,6 +2275,7 @@ async function onPlayerCardTap(idx, forceDiscard = false) {
 }
 
 async function playerWin() {
+  // ロン和了（相手の捨て札による和了：リーチ直後なら確実に一発成立）
   if (gameState.pendingRonCard && GameEngine.canPlayerRonCard(gameState.pendingRonCard)) {
     const ronCard = gameState.pendingRonCard;
     gameState.pendingRonCard = null;
@@ -2251,6 +2311,7 @@ async function playerWin() {
     return;
   }
 
+  // ツモ和了
   if (!gameState.isPlayerTurn || gameState.playerHand.length !== 5) return;
   const isReachActive = gameState.isPlayerReach || gameState.isPlayerReachPending;
   const yaku = getBestYaku(gameState.playerHand, isReachActive);
@@ -2323,6 +2384,7 @@ async function receiveOpponentDiscard(msg) {
     gameState.deck.splice(msg.deckCount);
   }
 
+  // 相手が切った捨て札で自分がロンできる場合（リーチ直後なら isIppatsuAchieved が true になる）
   if (GameEngine.canPlayerRonCard(card)) {
     gameState.pendingRonCard = card;
     gameState.isPlayerTurn = false;
@@ -2425,7 +2487,7 @@ function startTurnTimerIfNeeded() {
 }
 
 /* ==========================================================================
-   10. CPU思考ロジック（ビギナーモードは0巡目ダブルリーチ禁止・控えめ調整）
+   10. CPU思考ロジック
    ========================================================================== */
 async function runCpuTurn() {
   if (gameState.isPlayerTurn || gameState.isPeerMatch || gameState.pendingRonCard) return;
@@ -2510,6 +2572,7 @@ async function runCpuTurn() {
     );
   }
 
+  // CPUが捨てた牌で自分がロンできる場合（リーチ宣言直後なら gameState.turnCount === gameState.playerReachTurnIndex なので一発成立）
   if (GameEngine.canPlayerRonCard(discarded)) {
     gameState.pendingRonCard = discarded;
     gameState.isPlayerTurn = false;
@@ -2532,7 +2595,7 @@ async function runCpuTurn() {
 }
 
 /* ==========================================================================
-   11. 得点計算・失点SE・2連チャン厳密化・リザルト・役一覧モーダル
+   11. 得点計算・失点SE（相手和了時のみ）・リザルト・役一覧モーダル
    ========================================================================== */
 function getNextDoraTargetVal(val) {
   if (val === 14) return 2;
@@ -2659,7 +2722,8 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
   } else {
     gameState.cpuScore += (totalGain + kyotakuGain);
     gameState.playerScore -= totalGain;
-    SoundEngine.playSE('player_lose_pt');
+    // 失点SEは相手の和了（自分が失点）時のみ鳴らす
+    SoundEngine.playSE(yaku.catId >= 4 || yaku.score >= 20 ? 'player_lose_yakuman' : 'player_lose_pt');
   }
 
   if (isWinnerParent) {
@@ -2671,7 +2735,7 @@ function executeRoundEnd(winType, winner, yaku, exactHand5, winTile = null, isIp
 
   renderResultScreen({
     title: isWinnerPlayer ? `🎉 ${winLabel}！` : `💀 ${winLabel}！`,
-    subtitle: `【${winLabel}】 成立役：${yaku.name}`,
+    subtitle: `【${winLabel}】 成立役：${yaku.name}${finalIppatsu ? ' ＋ 一発' : ''}`,
     hand5: exactHand5,
     winTile,
     details,
