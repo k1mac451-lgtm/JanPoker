@@ -53,28 +53,35 @@ body {
   border-radius: 8px;
 }
 
-/* 鬼レンチャレンジ（マスターモード）専用演出パネル */
-@keyframes oniPulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(245, 196, 0, 0.35), inset 0 0 8px rgba(231, 76, 60, 0.25); }
-  50% { box-shadow: 0 0 20px rgba(245, 196, 0, 0.75), inset 0 0 14px rgba(231, 76, 60, 0.45); }
+/* 鬼レンチャレンジ（鬼＆炎演出） */
+@keyframes oniFlamePulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(255, 87, 34, 0.55), 0 0 22px rgba(255, 215, 0, 0.35), inset 0 0 10px rgba(220, 38, 38, 0.35);
+    border-color: #ffd700;
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 69, 0, 0.85), 0 0 34px rgba(255, 215, 0, 0.65), inset 0 0 16px rgba(239, 68, 68, 0.55);
+    border-color: #ff9f1a;
+  }
 }
 .panel-oni {
-  background: linear-gradient(135deg, #2a1215 0%, #1b1710 55%, #2b1416 100%);
+  background: linear-gradient(135deg, #3b0d11 0%, #1d140c 52%, #420e12 100%);
   border: 2px solid #ffd700;
   border-radius: 9px;
-  animation: oniPulse 2.1s infinite ease-in-out;
+  animation: oniFlamePulse 1.8s infinite ease-in-out;
   position: relative;
   overflow: hidden;
 }
 .panel-oni::before {
-  content: "🔥 10連チャン極限 🔥";
+  content: "👹🔥 10連チャン鬼 🔥👹";
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 5px;
+  right: 7px;
   font-size: 0.58rem;
   font-weight: 900;
-  color: #11181a;
-  background: linear-gradient(90deg, #ffd700, #ff9f1a);
+  color: #fffbeb;
+  background: linear-gradient(90deg, #dc2626, #ea580c);
+  border: 1px solid #fde047;
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -82,27 +89,25 @@ body {
 .btn-gold {
   background: linear-gradient(180deg, #f5c400 0%, #d99b00 100%);
   color: #11181a;
-  font-weight: 800;
+  font-weight: 900;
   border: 1px solid #ffe47a;
   border-radius: 7px;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-  transition: transform 0.08s, opacity 0.15s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.45);
+  transition: opacity 0.12s;
 }
-.btn-gold:active:not(:disabled) { transform: scale(0.97); }
 .btn-gold:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .action-btn {
   flex: 1;
   height: 36px;
   border-radius: 6px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.76rem;
   border: 1px solid #35585e;
   background: #1a3236;
   color: #ecf0f1;
   cursor: pointer;
-  transition: all 0.12s;
 }
 .action-btn:first-child {
   background: linear-gradient(180deg, #f5c400 0%, #d99b00 100%);
@@ -114,115 +119,116 @@ body {
   cursor: not-allowed;
 }
 .action-btn.active-win {
-  background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%);
+  background: linear-gradient(180deg, #ff3b30 0%, #b91c1c 100%);
   color: #fff;
-  border-color: #ff9ff3;
-  box-shadow: 0 0 12px rgba(255,71,87,0.75);
+  border-color: #fde047;
+  box-shadow: 0 0 14px rgba(255, 59, 48, 0.85);
 }
 
-/* スクショ準拠トランプカードデザイン（上部スート・下部大きめ数字） */
+/* 高視認性太字トランプカード（上下ズレなし・スート＆数字はっきり） */
 .card {
-  width: 54px;
-  height: 74px;
-  background: #f8f9fa;
+  width: 55px;
+  height: 76px;
+  background: #ffffff;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 4px 6px;
-  font-weight: 800;
+  font-weight: 900;
   position: relative;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.55);
-  border: 1.5px solid #cbd5e1;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+  border: 1.5px solid #94a3b8;
   cursor: pointer;
-  transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
   flex-shrink: 0;
 }
 .card.selected {
-  transform: translateY(-6px);
-  border: 2px dashed #f5c400;
-  box-shadow: 0 6px 14px rgba(245,196,0,0.45);
+  border: 2.5px dashed #f5c400;
+  background: #fffdf0;
+  box-shadow: 0 0 0 2px rgba(245,196,0,0.45), 0 4px 10px rgba(0,0,0,0.65);
 }
 .card.locked {
-  opacity: 0.85;
+  opacity: 0.88;
   border-color: #e74c3c;
 }
-.card.red { color: #d62828; }
-.card.black { color: #111827; }
+.card.red { color: #dc2626; }
+.card.black { color: #090d16; }
 .card.joker {
-  background: linear-gradient(135deg, #1b2228 0%, #090c0e 100%);
-  color: #f5c400;
-  border: 1.5px solid #f5c400;
+  background: linear-gradient(135deg, #1e293b 0%, #090d16 100%);
+  color: #ffd700;
+  border: 2px solid #ffd700;
   justify-content: center;
   align-items: center;
 }
 .card-top-suit {
-  font-size: 0.88rem;
+  font-size: 1.05rem;
   line-height: 1;
+  font-weight: 900;
 }
 .card-bot-val {
-  font-size: 1.2rem;
-  line-height: 1;
+  font-size: 1.38rem;
+  line-height: 0.95;
   text-align: right;
-  letter-spacing: -0.03em;
+  font-weight: 900;
+  letter-spacing: -0.04em;
 }
 
-/* 4枚時の右端5枚目空きスロット（点線枠・画面ガタつき防止） */
+/* 4枚時の右端5枚目空きスロット（固定サイズでカクつき防止） */
 .card-slot-empty {
-  width: 54px;
-  height: 74px;
+  width: 55px;
+  height: 76px;
   border-radius: 6px;
-  border: 1.5px dashed #475569;
-  background: rgba(9, 21, 24, 0.55);
+  border: 2px dashed #64748b;
+  background: rgba(9, 21, 24, 0.65);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #64748b;
-  font-size: 0.58rem;
-  font-weight: 800;
+  color: #94a3b8;
+  font-size: 0.62rem;
+  font-weight: 900;
   letter-spacing: 0.04em;
   flex-shrink: 0;
 }
 
-/* 役一覧モーダル内のサンプル5枚カード（左右見切れ防止サイズ） */
+/* 役一覧サンプル5枚カード */
 #yaku-sample-cards .card {
-  width: 46px;
-  height: 62px;
+  width: 48px;
+  height: 66px;
   padding: 3px 5px;
   cursor: default;
 }
 #yaku-sample-cards .card-top-suit {
-  font-size: 0.78rem;
+  font-size: 0.92rem;
 }
 #yaku-sample-cards .card-bot-val {
-  font-size: 1.02rem;
+  font-size: 1.18rem;
 }
 
 .card-mini {
-  width: 34px;
-  height: 46px;
-  background: #f8f9fa;
+  width: 36px;
+  height: 49px;
+  background: #ffffff;
   border-radius: 4px;
   display: inline-flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 2px 4px;
-  font-weight: 800;
-  border: 1px solid #94a3b8;
+  font-weight: 900;
+  border: 1.5px solid #94a3b8;
   flex-shrink: 0;
 }
-.card-mini.red { color: #d62828; }
-.card-mini.black { color: #111827; }
+.card-mini.red { color: #dc2626; }
+.card-mini.black { color: #090d16; }
 .card-mini.joker {
-  background: linear-gradient(135deg, #1b2228 0%, #090c0e 100%);
-  color: #f5c400;
-  border-color: #f5c400;
+  background: linear-gradient(135deg, #1e293b 0%, #090d16 100%);
+  color: #ffd700;
+  border-color: #ffd700;
   justify-content: center;
   align-items: center;
 }
-.card-mini-suit { font-size: 0.65rem; line-height: 1; }
-.card-mini-val { font-size: 0.78rem; line-height: 1; text-align: right; }
+.card-mini-suit { font-size: 0.78rem; line-height: 1; font-weight: 900; }
+.card-mini-val { font-size: 0.95rem; line-height: 1; text-align: right; font-weight: 900; }
 
 .card-back-mini {
   width: 24px;
@@ -240,37 +246,37 @@ body {
 }
 
 .river-card {
-  width: 34px;
-  height: 43px;
-  background: #f8f9fa;
+  width: 36px;
+  height: 45px;
+  background: #ffffff;
   border-radius: 4px;
   display: inline-flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 2px 4px;
-  font-weight: 800;
-  border: 1px solid #94a3b8;
+  font-weight: 900;
+  border: 1.5px solid #94a3b8;
   margin-right: 4px;
   flex-shrink: 0;
   position: relative;
 }
-.river-card.red { color: #d62828; }
-.river-card.black { color: #111827; }
+.river-card.red { color: #dc2626; }
+.river-card.black { color: #090d16; }
 .river-card.joker {
-  background: #111827;
-  color: #f5c400;
-  border-color: #f5c400;
+  background: #0f172a;
+  color: #ffd700;
+  border-color: #ffd700;
   justify-content: center;
   align-items: center;
 }
 .river-card.reach-tile {
-  border: 2px solid #e74c3c;
-  box-shadow: 0 0 6px rgba(231,76,60,0.75);
+  border: 2px solid #ef4444;
+  box-shadow: 0 0 7px rgba(239,68,68,0.8);
 }
-.river-suit { font-size: 0.62rem; line-height: 1; }
-.river-val { font-size: 0.78rem; line-height: 1; text-align: right; }
+.river-suit { font-size: 0.74rem; line-height: 1; font-weight: 900; }
+.river-val { font-size: 0.92rem; line-height: 1; text-align: right; font-weight: 900; }
 
-/* 中央ボード上下のシグナル吹き出し（河に隣接） */
+/* 中央ボード上下のシグナル吹き出し */
 .signal-bubble-strip {
   min-height: 22px;
   display: flex;
@@ -303,16 +309,14 @@ body {
   transform: scale(1);
 }
 .signal-bubble.cpu-bubble {
-  background: rgba(52, 152, 219, 0.22);
+  background: rgba(52, 152, 219, 0.24);
   border: 1px solid #5dade2;
   color: #e0f2fe;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
 }
 .signal-bubble.player-bubble {
-  background: rgba(245, 196, 0, 0.20);
+  background: rgba(245, 196, 0, 0.22);
   border: 1px solid #f5c400;
   color: #fef08a;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
 }
 
 /* 最下段横スライド式シグナルメニューバー */
@@ -335,7 +339,6 @@ body {
   color: #e2e8f0;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.1s;
 }
 .signal-chip.active-signal {
   background: linear-gradient(180deg, #f5c400 0%, #d99b00 100%);
@@ -360,52 +363,64 @@ body {
 }
 
 @keyframes specialLogoPop {
-  0% { opacity: 0; transform: translate(-50%, -40%) scale(0.7); }
-  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+  0% { opacity: 0; transform: translate(-50%, -40%) scale(0.65); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
   80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -60%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -62%) scale(1.12); }
 }
 .special-logo-banner {
   position: absolute;
-  top: 36%;
+  top: 35%;
   left: 50%;
   z-index: 140;
   pointer-events: none;
+  white-space: nowrap;
+  display: none;
+  animation: specialLogoPop 1.55s ease-out forwards;
+}
+.special-logo-banner.logo-simple {
   padding: 8px 16px;
   border-radius: 8px;
   background: rgba(15, 23, 42, 0.96);
-  border: 2px solid #f5c400;
-  box-shadow: 0 0 22px rgba(245, 196, 0, 0.75);
-  color: #ffeaa7;
-  font-size: 1.02rem;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.55);
+  color: #fde68a;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+.special-logo-banner.logo-grand {
+  padding: 11px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(127, 29, 29, 0.98));
+  border: 2.5px solid #ffd700;
+  box-shadow: 0 0 28px rgba(255, 215, 0, 0.9), 0 0 42px rgba(239, 68, 68, 0.65);
+  color: #fef08a;
+  font-size: 1.12rem;
   font-weight: 900;
-  white-space: nowrap;
-  display: none;
-  animation: specialLogoPop 1.45s ease-out forwards;
 }
 
 @keyframes modeCutinAnim {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(0.75) skewX(-6deg); }
-  22% { opacity: 1; transform: translate(-50%, -50%) scale(1.04) skewX(-4deg); }
+  22% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) skewX(-4deg); }
   78% { opacity: 1; transform: translate(-50%, -50%) scale(1) skewX(-2deg); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.08) skewX(0deg); }
 }
 .mode-transition-cutin {
   position: absolute;
-  top: 46%;
+  top: 45%;
   left: 50%;
   z-index: 145;
   pointer-events: none;
-  padding: 10px 20px;
+  padding: 11px 22px;
   border-radius: 8px;
-  background: linear-gradient(90deg, rgba(12,29,32,0.96), rgba(30,58,64,0.98), rgba(12,29,32,0.96));
-  border-top: 2px solid #f5c400;
-  border-bottom: 2px solid #f5c400;
-  box-shadow: 0 0 24px rgba(245, 196, 0, 0.65);
-  color: #fff;
-  font-size: 1.05rem;
+  background: linear-gradient(90deg, rgba(69,10,10,0.97), rgba(15,23,42,0.98), rgba(69,10,10,0.97));
+  border-top: 2.5px solid #ffd700;
+  border-bottom: 2.5px solid #ffd700;
+  box-shadow: 0 0 28px rgba(255, 215, 0, 0.75);
+  color: #fffbeb;
+  font-size: 1.06rem;
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   display: none;
   animation: modeCutinAnim 1.15s ease-out forwards;
@@ -413,27 +428,27 @@ body {
 
 @keyframes ippatsuFlash {
   0% { opacity: 0; transform: translate(-50%, -40%) scale(0.75); }
-  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
   82% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -60%) scale(1.15); }
 }
 .ippatsu-grand-cutin {
   position: absolute;
-  top: 28%;
+  top: 26%;
   left: 50%;
   z-index: 150;
   pointer-events: none;
-  padding: 10px 18px;
+  padding: 11px 20px;
   border-radius: 10px;
-  background: linear-gradient(135deg, rgba(153,27,27,0.98), rgba(180,83,9,0.98));
+  background: linear-gradient(135deg, rgba(185,28,28,0.99), rgba(217,119,6,0.99));
   border: 2.5px solid #fde047;
-  box-shadow: 0 0 28px rgba(250,204,21,0.9);
+  box-shadow: 0 0 32px rgba(250,204,21,0.95);
   color: #fffbeb;
-  font-size: 1.15rem;
+  font-size: 1.18rem;
   font-weight: 900;
   white-space: nowrap;
   display: none;
-  animation: ippatsuFlash 1.75s ease-out forwards;
+  animation: ippatsuFlash 1.8s ease-out forwards;
 }
 </style>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -441,15 +456,15 @@ body {
 <body>
 <div id="game-wrapper">
   <div id="mode-transition-cutin" class="mode-transition-cutin"></div>
-  <div id="special-logo-banner" class="special-logo-banner"></div>
-  <div id="ippatsu-grand-cutin" class="ippatsu-grand-cutin">⚡ 一発別格和了 ⚡</div>
+  <div id="special-logo-banner" class="special-logo-banner logo-grand"></div>
+  <div id="ippatsu-grand-cutin" class="ippatsu-grand-cutin">⚡🔥 一発別格和了 🔥⚡</div>
 
   <!-- 1. タイトル画面 -->
   <div id="screen-title" class="screen active" style="justify-content: center; align-items: center; padding: 16px; text-align: center; gap: 10px;">
-    <div style="font-size: 0.95rem; color: #f5c40f; font-weight: 700; letter-spacing: 2px;">２人打ち</div>
+    <div style="font-size: 0.95rem; color: #f5c40f; font-weight: 800; letter-spacing: 2px;">２人打ち</div>
     <div style="font-size: 2.1rem; font-weight: 900; color: #fff; line-height: 1.15;">ジャンポーカー</div>
-    <div style="font-size: 0.95rem; color: #f5c40f; font-weight: 700; letter-spacing: 2px;">〜 ジャンＰ２ 〜</div>
-    <div style="font-size: 0.78rem; color: #2ecc71; font-weight: 700; margin-bottom: 4px;">『麻雀✕ポーカーの融合したオリジナル５枚役！』</div>
+    <div style="font-size: 0.95rem; color: #f5c40f; font-weight: 800; letter-spacing: 2px;">〜 ジャンＰ２ 〜</div>
+    <div style="font-size: 0.78rem; color: #2ecc71; font-weight: 800; margin-bottom: 4px;">『麻雀✕ポーカーの融合したオリジナル５枚役！』</div>
 
     <div class="panel-gold" style="padding: 8px 14px; width: 100%; max-width: 290px; font-size: 0.75rem; line-height: 1.5; margin-bottom: 6px;">
       <div>制作／ボドゲ厨房：<strong>美理慈庵</strong></div>
@@ -460,8 +475,8 @@ body {
     <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showOnlineLobby();" style="width: 230px; height: 42px; font-size: 0.92rem; background: linear-gradient(180deg, #3498db 0%, #1f618d 100%); border-color: #85c1e9; color: #fff;">🌐 通信・ルール部屋へ参戦</button>
 
     <div style="display: flex; gap: 8px; margin-top: 4px;">
-      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="background: #12262a; color: #f5c40f; border: 1px solid #f5c40f; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">役一覧確認</button>
-      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('manual');" style="background: #12262a; color: #2ecc71; border: 1px solid #2ecc71; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">jp2マニュアル</button>
+      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="background: #12262a; color: #f5c40f; border: 1px solid #f5c40f; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 800; cursor: pointer;">役一覧確認</button>
+      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('manual');" style="background: #12262a; color: #2ecc71; border: 1px solid #2ecc71; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 800; cursor: pointer;">jp2マニュアル</button>
     </div>
   </div>
 
@@ -471,7 +486,7 @@ body {
     <div style="font-size: 0.68rem; color: #cbd5e1; text-align: center; max-width: 340px;">画面分割不要！IDや招待URLを送って戻った際も再接続・再開設アシストで復帰できます。</div>
 
     <div class="panel-gold" style="padding: 8px; width: 100%; max-width: 350px; text-align: center;">
-      <div style="font-size: 0.75rem; color: #f5c40f; font-weight: 700; margin-bottom: 5px;">🎯 各ルール部屋へシングル参戦</div>
+      <div style="font-size: 0.75rem; color: #f5c40f; font-weight: 800; margin-bottom: 5px;">🎯 各ルール部屋へシングル参戦</div>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
         <button class="btn-gold" onclick="startRoomMatch('shiren')" style="font-size: 0.7rem; padding: 6px 2px; background: #b03a2e; color: #fff; border-color: #ec7063;">🔥 試練の部屋<br><span style="font-size:0.55rem; font-weight:normal;">(要リーチ基本)</span></button>
         <button class="btn-gold" onclick="startRoomMatch('damaten')" style="font-size: 0.7rem; padding: 6px 2px; background: #7d3c98; color: #fff; border-color: #bb8fce;">🧠 ダマテン部屋<br><span style="font-size:0.55rem; font-weight:normal;">(リーチ禁止)</span></button>
@@ -480,7 +495,7 @@ body {
     </div>
 
     <div class="panel-box" style="padding: 8px; width: 100%; max-width: 350px; border-color: #2e86c1; text-align: center;">
-      <div style="font-size: 0.75rem; color: #fff; font-weight: 700; margin-bottom: 5px;">【通信対戦ホスト】 ルール選択して作成</div>
+      <div style="font-size: 0.75rem; color: #fff; font-weight: 800; margin-bottom: 5px;">【通信対戦ホスト】 ルール選択して作成</div>
       <select id="host-room-rule-select" style="width: 100%; height: 28px; border-radius: 5px; font-size: 0.72rem; margin-bottom: 5px; background: #091518; color: #fff; border: 1px solid #3498db; text-align: center;">
         <option value="shoushi">⚔️ 勝負師の部屋（ガチンコ勝負）</option>
         <option value="shiren">🔥 試練の部屋（要リーチ基本役のみ）</option>
@@ -499,7 +514,7 @@ body {
     </div>
 
     <div class="panel-box" style="padding: 8px; width: 100%; max-width: 350px; text-align: center;">
-      <div style="font-size: 0.75rem; color: #fff; font-weight: 700; margin-bottom: 5px;">【通信対戦ゲスト】 IDでルームに参加</div>
+      <div style="font-size: 0.75rem; color: #fff; font-weight: 800; margin-bottom: 5px;">【通信対戦ゲスト】 IDでルームに参加</div>
       <input type="text" id="online-join-input" placeholder="友達のルームIDを入力" style="width: 100%; height: 30px; border-radius: 5px; border: 1px solid #94a3b8; padding: 0 8px; font-size: 0.75rem; margin-bottom: 5px; text-align: center; background: #fff; color: #111;">
       <button class="btn-gold" onclick="joinOnlineRoom()" style="width: 100%; height: 32px; font-size: 0.8rem;">ルームに参加する</button>
     </div>
@@ -510,21 +525,21 @@ body {
 
   <!-- 3. CPU対戦モード選択画面 -->
   <div id="screen-mode" class="screen" style="justify-content: center; align-items: center; padding: 16px; gap: 10px;">
-    <div style="font-size: 1.15rem; font-weight: 800; color: #f5c40f; margin-bottom: 4px;">モードを選択してください</div>
+    <div style="font-size: 1.15rem; font-weight: 900; color: #f5c40f; margin-bottom: 4px;">モードを選択してください</div>
 
     <button class="panel-box" onclick="selectMode('beginner');" style="width: 100%; max-width: 315px; padding: 10px 12px; text-align: left; cursor: pointer; color: #fff;">
-      <div style="font-size: 0.88rem; font-weight: 800; color: #2ecc71;">① ビギナーモード</div>
-      <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">基本役優先・ガイドあり・サクサク体験</div>
+      <div style="font-size: 0.88rem; font-weight: 900; color: #2ecc71;">① ビギナーモード</div>
+      <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">基本役優先・ガイドあり・第2サイクルオーラス</div>
     </button>
 
     <button class="panel-box" onclick="selectMode('main');" style="width: 100%; max-width: 315px; padding: 10px 12px; text-align: left; cursor: pointer; color: #fff;">
-      <div style="font-size: 0.88rem; font-weight: 800; color: #5dade2;">② メインモード</div>
-      <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">バランス思考・好敵手との本格2サイクル勝負</div>
+      <div style="font-size: 0.88rem; font-weight: 900; color: #5dade2;">② メインモード</div>
+      <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">バランス思考・第2サイクルオーラス（ドラ倍増）</div>
     </button>
 
     <button class="panel-oni" onclick="selectMode('master');" style="width: 100%; max-width: 315px; padding: 12px 12px; text-align: left; cursor: pointer; color: #fff;">
-      <div style="font-size: 0.94rem; font-weight: 900; color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);">👑 ③ 鬼レンチャレンジ</div>
-      <div style="font-size: 0.7rem; color: #fde68a; margin-top: 3px; font-weight: 700;">10連チャン達成を目指す高難度マスターモード！</div>
+      <div style="font-size: 0.95rem; font-weight: 900; color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.65);">👹🔥 ③ 鬼レンチャレンジ</div>
+      <div style="font-size: 0.7rem; color: #fde68a; margin-top: 3px; font-weight: 800;">10連チャン達成を目指す極限鬼モード！</div>
     </button>
 
     <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #cbd5e1; border: none; margin-top: 6px; cursor: pointer; font-size: 0.82rem;">＜ タイトルに戻る</button>
@@ -545,33 +560,29 @@ body {
     </div>
   </div>
 
-  <!-- 5. メイン対戦画面（5枚固定スロット＋中央ボード上下吹き出し＋最下段横スライドシグナルバー） -->
+  <!-- 5. メイン対戦画面 -->
   <div id="screen-game" class="screen" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; padding: 6px 9px;">
-    <!-- 上段：相手手札 -->
     <div class="panel-box" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px;">
-      <span style="font-size: 0.8rem; color: #e74c3c; font-weight: 700;">相手手札</span>
+      <span style="font-size: 0.8rem; color: #e74c3c; font-weight: 800;">相手手札</span>
       <div id="cpu-hand-mini" style="display: flex; gap: 4px;"></div>
     </div>
 
-    <!-- 相手河 -->
-    <div class="panel-box" style="background: #091518; padding: 4px 6px; height: 50px; display: flex; align-items: center; overflow-x: auto;" id="cpu-river-scroll"></div>
+    <div class="panel-box" style="background: #091518; padding: 4px 6px; height: 52px; display: flex; align-items: center; overflow-x: auto;" id="cpu-river-scroll"></div>
 
-    <!-- 中央ボード上側吹き出し（相手河と中央ボードの間） -->
     <div class="signal-bubble-strip" id="cpu-signal-strip">
       <div id="cpu-signal-bubble" class="signal-bubble cpu-bubble"></div>
     </div>
 
-    <!-- 中央ステータス枠 -->
     <div class="panel-gold" style="padding: 7px 10px; display: flex; flex-direction: column; gap: 5px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span id="game-info-cycle" style="color: #f5c40f; font-weight: 800; font-size: 0.88rem;">第1サイクル ♠場</span>
+        <span id="game-info-cycle" style="color: #f5c40f; font-weight: 900; font-size: 0.88rem;">第1サイクル ♠場</span>
         <div style="display: flex; align-items: center; gap: 6px;">
           <span id="game-info-timer" style="color: #ff6b6b; font-weight: 800; font-size: 0.8rem; display: none;">30s</span>
           <span id="game-info-kyotaku" style="color: #e2e8f0; font-size: 0.73rem; font-weight: 700;">供託: 0pt | 山札: 36枚</span>
         </div>
       </div>
 
-      <div id="game-info-streak" style="background: #0b181b; border: 1px solid #234248; border-radius: 5px; padding: 2px 8px; font-size: 0.7rem; color: #f5c40f; font-weight: 700; min-height: 19px; display: flex; align-items: center;"></div>
+      <div id="game-info-streak" style="background: #0b181b; border: 1px solid #234248; border-radius: 5px; padding: 2px 8px; font-size: 0.7rem; color: #f5c40f; font-weight: 800; min-height: 19px; display: flex; align-items: center;"></div>
 
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
         <div style="flex: 1; font-size: 0.76rem; font-weight: 800; line-height: 1.25;">
@@ -580,7 +591,7 @@ body {
         </div>
 
         <div style="display: flex; align-items: center; gap: 6px; background: #091518; border: 1px solid #2e5258; border-radius: 6px; padding: 3px 8px;">
-          <span style="font-size: 0.7rem; color: #cbd5e1; font-weight: 700;">ドラ:</span>
+          <span style="font-size: 0.7rem; color: #cbd5e1; font-weight: 800;">ドラ:</span>
           <div id="game-dora-container" style="display: inline-flex; gap: 3px; align-items: center;"></div>
         </div>
 
@@ -591,15 +602,12 @@ body {
       </div>
     </div>
 
-    <!-- 中央ボード下側吹き出し（中央ボードと自分河の間） -->
     <div class="signal-bubble-strip player-side" id="player-signal-strip">
       <div id="player-signal-bubble" class="signal-bubble player-bubble"></div>
     </div>
 
-    <!-- 自分河 -->
-    <div class="panel-box" style="background: #091518; padding: 4px 6px; height: 50px; display: flex; align-items: center; overflow-x: auto;" id="player-river-scroll"></div>
+    <div class="panel-box" style="background: #091518; padding: 4px 6px; height: 52px; display: flex; align-items: center; overflow-x: auto;" id="player-river-scroll"></div>
 
-    <!-- 操作ボタン4つ -->
     <div style="display: flex; gap: 6px;">
       <button id="btn-yaku-list" class="action-btn" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');">役一覧</button>
       <button id="btn-reach" class="action-btn" onclick="SoundEngine.playSE('select_card'); toggleReachMode();" disabled>リーチ</button>
@@ -607,10 +615,10 @@ body {
       <button id="btn-draw" class="action-btn" onclick="playerDraw();" disabled>ドロー</button>
     </div>
 
-    <!-- 下段：手札5枚固定枠＆ガイド＆操作案内＆横スライド式シグナルコマンドバー -->
+    <!-- 手札5枚完全固定エリア（上下ズレゼロ） -->
     <div class="panel-box" style="padding: 6px 5px 5px 5px; display: flex; flex-direction: column; gap: 4px; margin-top: auto;">
-      <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; min-height: 80px; align-items: flex-end; padding-top: 4px;"></div>
-      <div id="beginner-guide-box" style="background: rgba(245, 196, 0, 0.14); border: 1px solid #e6b800; border-radius: 5px; padding: 3px 8px; font-size: 0.7rem; color: #f5c40f; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none;"></div>
+      <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; height: 78px; align-items: center; overflow: hidden;"></div>
+      <div id="beginner-guide-box" style="background: rgba(245, 196, 0, 0.14); border: 1px solid #e6b800; border-radius: 5px; padding: 3px 8px; font-size: 0.7rem; color: #f5c40f; text-align: center; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none;"></div>
       <div id="hand-status-msg" style="font-size: 0.66rem; color: #cbd5e1; text-align: center;">カードを2回タップして打牌します</div>
       <div id="signal-slide-bar" class="signal-slide-bar" aria-label="定型シグナル選択"></div>
     </div>
@@ -619,25 +627,25 @@ body {
   <!-- 6. リザルト画面 -->
   <div id="screen-result" class="screen" style="justify-content: center; align-items: center; padding: 14px; text-align: center; gap: 8px;">
     <div id="res-title" style="font-size: 1.25rem; font-weight: 900; color: #f5c40f;">リザルト</div>
-    <div id="res-win-type-badge" style="font-size: 0.78rem; font-weight: 700; color: #ffeaa7;"></div>
-    <div id="res-timer" style="font-size: 0.78rem; color: #ff6b6b; font-weight: 700; display: none;">次局へ: 30s</div>
+    <div id="res-win-type-badge" style="font-size: 0.78rem; font-weight: 800; color: #ffeaa7;"></div>
+    <div id="res-timer" style="font-size: 0.78rem; color: #ff6b6b; font-weight: 800; display: none;">次局へ: 30s</div>
 
     <div class="panel-box" style="padding: 10px; width: 100%; max-width: 345px; display: flex; flex-direction: column; gap: 6px;">
-      <div id="res-yaku-name" style="font-size: 0.85rem; font-weight: 800; color: #f5c40f;">成立役: -</div>
+      <div id="res-yaku-name" style="font-size: 0.85rem; font-weight: 900; color: #f5c40f;">成立役: -</div>
 
       <div style="font-size: 0.68rem; color: #cbd5e1;">和了手札</div>
-      <div id="res-hand-container" style="display: flex; justify-content: center; gap: 4px; min-height: 48px; align-items: center;"></div>
+      <div id="res-hand-container" style="display: flex; justify-content: center; gap: 4px; min-height: 50px; align-items: center;"></div>
 
-      <div style="font-size: 0.68rem; color: #cbd5e1;">表ドラ / 裏ドラ開示（常時オープン）</div>
-      <div id="res-dora-container" style="display: flex; justify-content: center; gap: 4px; min-height: 48px; align-items: center;"></div>
+      <div id="res-dora-label" style="font-size: 0.68rem; color: #cbd5e1;">表ドラ / 裏ドラ開示（常時オープン）</div>
+      <div id="res-dora-container" style="display: flex; justify-content: center; gap: 6px; min-height: 50px; align-items: center;"></div>
 
-      <div style="border-top: 1px solid #234248; padding-top: 6px; font-size: 0.72rem; color: #f5c40f; font-weight: 700;">役の内訳詳細</div>
+      <div style="border-top: 1px solid #234248; padding-top: 6px; font-size: 0.72rem; color: #f5c40f; font-weight: 800;">役の内訳詳細</div>
       <div id="res-details" style="font-size: 0.7rem; color: #f1f5f9; line-height: 1.45; max-height: 85px; overflow-y: auto;"></div>
 
-      <div id="res-total-score-badge" style="font-size: 0.78rem; color: #f5c40f; font-weight: 800; border-top: 1px solid #234248; padding-top: 4px;">今回の獲得合計点: +0 pt</div>
+      <div id="res-total-score-badge" style="font-size: 0.78rem; color: #f5c40f; font-weight: 900; border-top: 1px solid #234248; padding-top: 4px;">今回の獲得合計点: +0 pt</div>
     </div>
 
-    <div id="res-total-pt" style="font-size: 0.88rem; color: #2ecc71; font-weight: 800;">持点: YOU (30pt) vs 相手 (30pt)</div>
+    <div id="res-total-pt" style="font-size: 0.88rem; color: #2ecc71; font-weight: 900;">持点: YOU (30pt) vs 相手 (30pt)</div>
 
     <div id="res-action-area" style="display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 240px;">
       <button id="btn-next-round" class="btn-gold" onclick="SoundEngine.playSE('select_card'); nextRound();" style="height: 38px; font-size: 0.85rem;">次の局へ進む</button>
@@ -646,7 +654,7 @@ body {
     </div>
   </div>
 
-  <!-- 7. 全役一覧データベース＆jp2マニュアル モーダル（枠内左右収まり最適化済み） -->
+  <!-- 7. 全役一覧データベース＆jp2マニュアル モーダル -->
   <div id="modal-rule" class="modal-overlay">
     <div class="panel-gold" style="width: 100%; max-width: 360px; max-height: 88%; display: flex; flex-direction: column; padding: 9px; gap: 7px; background: #0e2024;">
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">
@@ -680,13 +688,11 @@ body {
       </div>
 
       <div id="rule-manual-content" style="overflow-y: auto; display: none; font-size: 0.72rem; line-height: 1.45; color: #ecf0f1; flex-direction: column; gap: 6px; padding: 4px;">
-        <div style="font-weight: 800; color: #f5c40f;">【基本進行】</div>
-        <div>・手札4枚からツモで5枚にし、不要な牌を2回タップして打牌します。第2サイクルオーラス終了（表ドラ2枚・裏ドラ2枚）。</div>
-        <div>・リーチはテンパイ状態で宣言（供託-1pt、第1打牌ダブルリーチ+3pt、通常リーチ+2pt）。一発（+1pt）はリーチ直後1巡以内の和了で成立。</div>
-        <div style="font-weight: 800; color: #2ecc71; margin-top: 4px;">【JOKER＆酷使苦情】</div>
-        <div>・JOKER使用時は通常-2ptペナルティ（JOKER必須役は免除）。酷使苦情（29pt）は5・9・4・9＋JOKER＋4スート揃い。</div>
-        <div style="font-weight: 800; color: #5dade2; margin-top: 4px;">【定型シグナル＆通信対戦】</div>
-        <div>・画面下段の横スライドバーから8種のシグナルを中央ボード上下の吹き出しへセット・送信できます。</div>
+        <div style="font-weight: 800; color: #f5c40f;">【基本進行・ドラ仕様】</div>
+        <div>・手札4枚からツモで5枚にし、不要な牌を2回タップして打牌します。第1サイクルは表ドラ1枚・裏ドラ1枚、第2サイクル（オーラス）から表ドラ2枚・裏ドラ2枚になります[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span)。</div>
+        <div>・リーチ（+2pt・供託1pt）、ダブルリーチ（+3pt・第1打牌限定・供託1pt）、一発（+1pt・リーチ直後1巡以内）[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)。</div>
+        <div style="font-weight: 800; color: #2ecc71; margin-top: 4px;">【JOKER＆酷使苦情＆シン・AKB48】</div>
+        <div>・JOKER使用時は通常-2pt（JOKER必須役は免除）[span_13](start_span)[span_13](end_span)。酷使苦情（29pt）は5・9・4・9＋JOKER＋4スート[span_14](start_span)[span_14](end_span)、シン・AKB48（48pt）はJOKER＋♥A・K・4・8[span_15](start_span)[span_15](end_span)。</div>
       </div>
     </div>
   </div>
@@ -703,7 +709,7 @@ const SoundEngine = {
       this.ctx.resume().catch(() => {});
     }
   },
-  playTone(freq, duration, type = 'sine', gainVal = 0.12, delay = 0, endFreq = null) {
+  playTone(freq, duration, type = 'sine', gainVal = 0.13, delay = 0, endFreq = null) {
     this.init();
     if (!this.ctx) return;
     try {
@@ -716,7 +722,7 @@ const SoundEngine = {
         osc.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), startTime + duration);
       }
       gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.linearRampToValueAtTime(gainVal, startTime + 0.01);
+      gain.gain.linearRampToValueAtTime(gainVal, startTime + 0.012);
       gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -727,52 +733,57 @@ const SoundEngine = {
   playSE(type, stepIndex = 0) {
     switch (type) {
       case 'select_card':
-        this.playTone(680, 0.05, 'triangle', 0.08, 0, 820);
+        this.playTone(740, 0.055, 'triangle', 0.10, 0, 920);
         break;
       case 'draw_card':
-        this.playTone(420, 0.07, 'sine', 0.09, 0, 560);
+        this.playTone(460, 0.075, 'sine', 0.11, 0, 660);
         break;
       case 'discard_card':
-        this.playTone(260, 0.08, 'triangle', 0.11, 0, 160);
+        this.playTone(290, 0.085, 'triangle', 0.13, 0, 150);
         break;
       case 'roulette_spin': {
-        const baseFreq = 520 + (stepIndex % 6) * 65;
-        this.playTone(baseFreq, 0.05, 'sine', 0.08, 0, baseFreq * 1.12);
+        const baseFreq = 540 + (stepIndex % 7) * 75;
+        this.playTone(baseFreq, 0.055, 'sine', 0.10, 0, baseFreq * 1.15);
         break;
       }
       case 'reach_cutin':
-        this.playTone(2480, 0.18, 'sine', 0.13, 0, 2640);
-        this.playTone(3320, 0.24, 'triangle', 0.09, 0.035, 3950);
-        this.playTone(4430, 0.28, 'sine', 0.06, 0.06, 4978);
+        this.playTone(2489, 0.22, 'sine', 0.15, 0, 2793);
+        this.playTone(3322, 0.28, 'triangle', 0.12, 0.035, 4186);
+        this.playTone(4698, 0.32, 'sine', 0.09, 0.065, 5274);
         break;
       case 'player_lose_pt':
-        this.playTone(210, 0.26, 'sawtooth', 0.11, 0, 95);
-        this.playTone(145, 0.30, 'triangle', 0.13, 0.05, 72);
+        this.playTone(220, 0.28, 'sawtooth', 0.13, 0, 90);
+        this.playTone(150, 0.34, 'triangle', 0.15, 0.05, 65);
         break;
       case 'ippatsu_shout':
-        this.playTone(880, 0.12, 'square', 0.09, 0, 1174);
-        this.playTone(1318, 0.22, 'triangle', 0.11, 0.09, 1760);
+        this.playTone(880, 0.11, 'square', 0.11, 0, 1174.66);
+        this.playTone(1174.66, 0.11, 'square', 0.11, 0.09, 1567.98);
+        this.playTone(1760, 0.26, 'triangle', 0.14, 0.18, 2093);
         break;
       case 'win_basic':
-        this.playTone(523.25, 0.11, 'triangle', 0.11, 0);
-        this.playTone(659.25, 0.11, 'triangle', 0.11, 0.10);
-        this.playTone(783.99, 0.20, 'triangle', 0.12, 0.20);
+        this.playTone(523.25, 0.11, 'triangle', 0.12, 0);
+        this.playTone(659.25, 0.11, 'triangle', 0.12, 0.10);
+        this.playTone(783.99, 0.11, 'triangle', 0.13, 0.20);
+        this.playTone(1046.50, 0.24, 'sine', 0.14, 0.30);
         break;
       case 'win_mid':
-        this.playTone(587.33, 0.11, 'triangle', 0.12, 0);
-        this.playTone(739.99, 0.11, 'triangle', 0.12, 0.10);
-        this.playTone(880.00, 0.11, 'triangle', 0.12, 0.20);
-        this.playTone(1174.66, 0.26, 'sine', 0.13, 0.30);
+        this.playTone(587.33, 0.11, 'triangle', 0.13, 0);
+        this.playTone(739.99, 0.11, 'triangle', 0.13, 0.10);
+        this.playTone(880.00, 0.11, 'triangle', 0.14, 0.20);
+        this.playTone(1174.66, 0.14, 'sine', 0.15, 0.30);
+        this.playTone(1479.98, 0.28, 'sine', 0.15, 0.41);
         break;
       case 'win_joker':
       case 'win_yakuman':
-        this.playTone(523.25, 0.12, 'triangle', 0.13, 0);
-        this.playTone(659.25, 0.12, 'triangle', 0.13, 0.11);
-        this.playTone(783.99, 0.12, 'triangle', 0.13, 0.22);
-        this.playTone(1046.50, 0.35, 'sine', 0.14, 0.33);
+        this.playTone(523.25, 0.11, 'sawtooth', 0.11, 0);
+        this.playTone(659.25, 0.11, 'triangle', 0.14, 0.10);
+        this.playTone(783.99, 0.11, 'triangle', 0.14, 0.20);
+        this.playTone(1046.50, 0.14, 'sine', 0.16, 0.30);
+        this.playTone(1318.51, 0.14, 'sine', 0.16, 0.42);
+        this.playTone(1567.98, 0.36, 'sine', 0.18, 0.54);
         break;
       case 'timer_warn':
-        this.playTone(920, 0.08, 'sine', 0.10, 0);
+        this.playTone(960, 0.08, 'sine', 0.11, 0);
         break;
     }
   }
@@ -811,8 +822,8 @@ function createCardElement(card, isMini = false) {
   if (card.isJoker) {
     el.className = (isMini ? 'card-mini' : 'card') + ' joker';
     el.innerHTML = isMini
-      ? '<span style="font-size:0.65rem; font-weight:900;">JK</span>'
-      : '<span style="font-size:0.78rem; font-weight:900; transform:rotate(-12deg);">JOKER</span>';
+      ? '<span style="font-size:0.75rem; font-weight:900;">JK</span>'
+      : '<span style="font-size:0.86rem; font-weight:900; transform:rotate(-10deg);">JOKER</span>';
     return el;
   }
   const colorClass = isRedSuit(card.suit) ? 'red' : 'black';
@@ -831,7 +842,7 @@ function createRiverCardElement(card, isReachTile = false) {
   if (!card) return el;
   if (card.isJoker) {
     el.className = 'river-card joker' + (isReachTile ? ' reach-tile' : '');
-    el.innerHTML = '<span style="font-size:0.58rem; font-weight:900;">JK</span>';
+    el.innerHTML = '<span style="font-size:0.68rem; font-weight:900;">JK</span>';
     return el;
   }
   const colorClass = isRedSuit(card.suit) ? 'red' : 'black';
@@ -898,29 +909,30 @@ function checkKushiKujou5(cards) {
   return uniqueSuits.size === 4;
 }
 
+/* シン・AKB48：JOKER 1枚 ＋ ハート（♥）の A・K・4・8（4枚） */
 function checkShinAkb48(cards) {
   if (!Array.isArray(cards) || cards.length !== 5) return false;
   const jokers = cards.filter(c => c.isJoker);
   const normals = cards.filter(c => !c.isJoker);
-  if (jokers.length < 1) return false;
-  const targetSet = [1, 2, 4, 8, 13];
-  const allVals = [...normals.map(c => c.val), ...jokers.map(() => 1)].sort((a, b) => a - b);
-  return JSON.stringify(allVals) === JSON.stringify(targetSet);
+  if (jokers.length !== 1 || normals.length !== 4) return false;
+  if (!normals.every(c => c.suit === '♥')) return false;
+  const vals = normals.map(c => c.val).sort((a, b) => a - b);
+  return JSON.stringify(vals) === JSON.stringify([1, 4, 8, 13]);
 }
 
 const YAKU_REGISTRY = [
-  // catId: 5 (JOKER必須役)
+  // catId: 5 (JOKER必須役：個別ロゴ演出あり)
   {
     id: 'shin_akb48', name: 'シン・AKB48', score: 48, catId: 5, catName: '⑤ JOKER必須役', catClass: 'cat-5',
-    jokerType: 'required', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'required', requireReach: false, logoMode: 'grand',
     catHeader: '【JOKER必須・個別ロゴ演出・阿漕免除】規格外最強JOKER役',
-    desc: 'A・K・2・4・8 と JOKER の組み合わせで成立する特殊役（JOKER必須のため-2pt免除）。',
+    desc: 'JOKER 1枚 ＋ ハート（♥）の A・K・4・8 で成立する特殊役（JOKER必須のため-2pt免除）。',
     sample: [{suit:'♥',val:1},{suit:'♥',val:13},{isJoker:true},{suit:'♥',val:4},{suit:'♥',val:8}],
     check: (cards) => checkShinAkb48(cards)
   },
   {
     id: 'kushi_kujou', name: '酷使苦情', score: 29, catId: 5, catName: '⑤ JOKER必須役', catClass: 'cat-5',
-    jokerType: 'required', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'required', requireReach: false, logoMode: 'grand',
     catHeader: '【JOKER必須・個別ロゴ演出・阿漕免除】5・9・4・9＋JOKER＋4スート',
     desc: '5・9・4・9（コク・シ・ク・ジョー）＋ JOKER かつ通常4枚のスート4種（♠♥♦♣）揃いで成立。',
     sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:9},{isJoker:true}],
@@ -928,37 +940,38 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'five_card', name: '5カード', score: 25, catId: 5, catName: '⑤ JOKER必須役', catClass: 'cat-5',
-    jokerType: 'required', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'required', requireReach: false, logoMode: 'grand',
     catHeader: '【JOKER必須・個別ロゴ演出・阿漕免除】5枚同数役',
     desc: '同一数字＋JOKERで5枚同数構成を作る役（JOKER必須のため-2pt免除）。',
     sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:7},{isJoker:true}],
     check: (cards) => {
       const jokers = cards.filter(c => c.isJoker);
-      if (jokers.length === 0) return false;
+      if (jokers.length !== 1) return false;
       const counts = {};
       cards.filter(c => !c.isJoker).forEach(c => { counts[c.val] = (counts[c.val] || 0) + 1; });
-      return Object.values(counts).some(cnt => cnt + jokers.length >= 5);
+      return Object.values(counts).some(cnt => cnt === 4);
     }
   },
   {
     id: 'akb48', name: 'AKB48', score: 24, catId: 5, catName: '⑤ JOKER必須役', catClass: 'cat-5',
-    jokerType: 'required', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'required', requireReach: false, logoMode: 'grand',
     catHeader: '【JOKER必須・個別ロゴ演出・阿漕免除】JOKER絡みAKB役',
-    desc: 'A・K・2・4・8 の構成（JOKER使用）で成立する役（JOKER必須のため-2pt免除）。',
-    sample: [{suit:'♠',val:1},{suit:'♣',val:13},{suit:'♥',val:2},{suit:'♦',val:4},{isJoker:true}],
+    desc: 'A・K・4・8 の4枚＋JOKER（スート不問・♥単色以外）で成立する役（-2pt免除）。',
+    sample: [{suit:'♠',val:1},{suit:'♣',val:13},{isJoker:true},{suit:'♦',val:4},{suit:'♠',val:8}],
     check: (cards) => {
+      if (checkShinAkb48(cards)) return false;
       const jokers = cards.filter(c => c.isJoker);
-      if (jokers.length === 0) return false;
-      const vals = cards.filter(c => !c.isJoker).map(c => c.val);
-      const allowed = [1, 2, 4, 8, 13];
-      return vals.every(v => allowed.includes(v)) && new Set(vals).size === vals.length && vals.length + jokers.length === 5;
+      const normals = cards.filter(c => !c.isJoker);
+      if (jokers.length !== 1 || normals.length !== 4) return false;
+      const vals = normals.map(c => c.val).sort((a, b) => a - b);
+      return JSON.stringify(vals) === JSON.stringify([1, 4, 8, 13]);
     }
   },
 
-  // catId: 4 (役満級)
+  // catId: 4 (役満級：個別ロゴ演出あり)
   {
     id: 'royal_straight_flush', name: 'ロイヤルストレートフラッシュ', score: 30, catId: 4, catName: '④ 役満級', catClass: 'cat-4',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'grand',
     catHeader: '【役満級・個別ロゴ演出】最高峰の役満級カテゴリ',
     desc: '同スートで10・J・Q・K・Aを揃える役満級ストレートフラッシュ（JOKER使用時は-2pt）。',
     sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:1}],
@@ -973,7 +986,7 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'shichisangen', name: '七三元', score: 21, catId: 4, catName: '④ 役満級', catClass: 'cat-4',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'grand',
     catHeader: '【役満級・個別ロゴ演出】最高峰の役満級カテゴリ',
     desc: '7とAの三元構成（5枚）で成立する役満級役（JOKER使用時は-2pt）。',
     sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:1},{suit:'♠',val:1}],
@@ -987,7 +1000,7 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'four_card', name: '4カード', score: 20, catId: 4, catName: '④ 役満級', catClass: 'cat-4',
-    jokerType: 'forbidden', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'forbidden', requireReach: false, logoMode: 'grand',
     catHeader: '【役満級・個別ロゴ演出・JOKER不可】4枚同数役',
     desc: 'JOKERを使わず同一数字を4枚揃える役（ダマテン・リーチ自由）。',
     sample: [{suit:'♠',val:9},{suit:'♥',val:9},{suit:'♦',val:9},{suit:'♣',val:9},{suit:'♠',val:3}],
@@ -999,36 +1012,36 @@ const YAKU_REGISTRY = [
     }
   },
 
-  // catId: 3 (中級役)
+  // catId: 3 (中級役：シンプルロゴ演出あり)
   {
     id: 'kokuryu', name: '黒龍', score: 18, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】黒スート偶数役',
     desc: '黒スート（♠・♣）のみで2・4・6・8・10の偶数を揃える役（JOKER使用時は-2pt）。',
     sample: [{suit:'♠',val:2},{suit:'♣',val:4},{suit:'♠',val:6},{suit:'♣',val:8},{suit:'♠',val:10}],
     check: (cards) => {
       const normals = cards.filter(c => !c.isJoker);
-      if (!normals.every(c => isBlackSuit(c.suit))) return false;
+      if (normals.length !== 5 || !normals.every(c => isBlackSuit(c.suit))) return false;
       const vals = normals.map(c => c.val).sort((a, b) => a - b);
       return JSON.stringify(vals) === JSON.stringify([2, 4, 6, 8, 10]);
     }
   },
   {
     id: 'sekiryu', name: '赤龍', score: 18, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】赤スート偶数役',
     desc: '赤スート（♥・♦）のみで2・4・6・8・10の偶数を揃える役（JOKER使用時は-2pt）。',
     sample: [{suit:'♥',val:2},{suit:'♦',val:4},{suit:'♥',val:6},{suit:'♦',val:8},{suit:'♥',val:10}],
     check: (cards) => {
       const normals = cards.filter(c => !c.isJoker);
-      if (!normals.every(c => isRedSuit(c.suit))) return false;
+      if (normals.length !== 5 || !normals.every(c => isRedSuit(c.suit))) return false;
       const vals = normals.map(c => c.val).sort((a, b) => a - b);
       return JSON.stringify(vals) === JSON.stringify([2, 4, 6, 8, 10]);
     }
   },
   {
     id: 'straight_flush', name: 'ストレートフラッシュ', score: 15, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】同スート連番5枚',
     desc: '同一スートで5枚連続数字を揃える役（JOKER使用時は-2pt）。',
     sample: [{suit:'♦',val:4},{suit:'♦',val:5},{suit:'♦',val:6},{suit:'♦',val:7},{suit:'♦',val:8}],
@@ -1044,13 +1057,13 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'toy_house', name: 'トイハウス', score: 14, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】絵札フルハウス',
     desc: '絵札（J・Q・K）のみで構成された3枚＋2枚のフルハウス（JOKER使用時は-2pt）。',
     sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♦',val:11},{suit:'♠',val:12},{suit:'♥',val:12}],
     check: (cards) => {
       const normals = cards.filter(c => !c.isJoker);
-      if (!normals.every(c => c.val >= 11 && c.val <= 13)) return false;
+      if (normals.length !== 5 || !normals.every(c => c.val >= 11 && c.val <= 13)) return false;
       const counts = {};
       normals.forEach(c => { counts[c.val] = (counts[c.val] || 0) + 1; });
       const arr = Object.values(counts).sort((a, b) => b - a);
@@ -1059,20 +1072,22 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'tsupeikou', name: 'ツーペイコウ', score: 13, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】対子系中級役',
     desc: 'J・J・Q・K・K または A・A・Q・Q・K の構成で成立（JOKER使用時は-2pt）。',
     sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♠',val:13},{suit:'♥',val:13}],
     check: (cards) => {
-      const normals = cards.filter(c => !c.isJoker).map(c => c.val).sort((a, b) => a - b);
+      const normals = cards.filter(c => !c.isJoker);
+      if (normals.length !== 5) return false;
+      const vals = normals.map(c => c.val).sort((a, b) => a - b);
       const p1 = JSON.stringify([11, 11, 12, 13, 13]);
       const p2 = JSON.stringify([1, 1, 12, 12, 13]);
-      return JSON.stringify(normals) === p1 || JSON.stringify(normals) === p2;
+      return JSON.stringify(vals) === p1 || JSON.stringify(vals) === p2;
     }
   },
   {
     id: 'blackjack', name: 'ブラックジャック', score: 12, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】黒Jペア＋黒連番3枚',
     desc: 'Jのペア＋残り3枚が黒（♠・♣）混合3連番で成立（JOKER使用時は-2pt）。',
     sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:7},{suit:'♣',val:8},{suit:'♠',val:9}],
@@ -1084,7 +1099,7 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'red_queen', name: 'レッドクイーン', score: 12, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】赤Qペア＋赤連番3枚',
     desc: 'Qのペア＋残り3枚が赤（♥・♦）混合3連番で成立（JOKER使用時は-2pt）。',
     sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:6},{suit:'♦',val:7},{suit:'♥',val:8}],
@@ -1095,12 +1110,12 @@ const YAKU_REGISTRY = [
     }
   },
 
-  // catId: 2 (基本役)
+  // catId: 2 (基本役：特定役ロゴ演出なし)
   {
     id: 'royal_straight', name: 'ロイヤルストレート', score: 8, catId: 2, catName: '② 基本役', catClass: 'cat-2',
-    jokerType: 'forbidden', requireReach: true, hasSpecialLogo: false,
+    jokerType: 'forbidden', requireReach: true, logoMode: 'none',
     catHeader: '【要リーチ・JOKER不可・基本役】10〜Aのストレート',
-    desc: 'スート不問で10・J・Q・K・Aを揃える役（JOKER不可・要リーチ）。',
+    desc: 'スート不問で10・J・Q・K・Aを揃える役（JOKER不可・要リーチ・ロゴ演出なし）。',
     sample: [{suit:'♠',val:10},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♥',val:1}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
@@ -1112,9 +1127,9 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'new_house', name: 'ニューハウス', score: 7, catId: 2, catName: '② 基本役', catClass: 'cat-2',
-    jokerType: 'forbidden', requireReach: true, hasSpecialLogo: false,
+    jokerType: 'forbidden', requireReach: true, logoMode: 'none',
     catHeader: '【要リーチ・JOKER不可・基本役】ワンペア＋同スート3連番',
-    desc: '任意のワンペア＋残り3枚が同一スートの3連番で成立（JOKER不可・要リーチ）。',
+    desc: '任意のワンペア＋残り3枚が同一スートの3連番で成立（JOKER不可・要リーチ・ロゴ演出なし）。',
     sample: [{suit:'♠',val:5},{suit:'♥',val:5},{suit:'♦',val:3},{suit:'♦',val:4},{suit:'♦',val:5}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
@@ -1123,9 +1138,9 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'full_house', name: 'フルハウス', score: 6, catId: 2, catName: '② 基本役', catClass: 'cat-2',
-    jokerType: 'forbidden', requireReach: true, hasSpecialLogo: false,
+    jokerType: 'forbidden', requireReach: true, logoMode: 'none',
     catHeader: '【要リーチ・JOKER不可・基本役】3枚＋2枚のペア構成',
-    desc: '同じ数字3枚＋同じ数字2枚で構成する役（JOKER不可・要リーチ）。',
+    desc: '同じ数字3枚＋同じ数字2枚で構成する役（JOKER不可・要リーチ・ロゴ演出なし）。',
     sample: [{suit:'♠',val:8},{suit:'♥',val:8},{suit:'♦',val:8},{suit:'♣',val:4},{suit:'♠',val:4}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
@@ -1138,9 +1153,9 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'flush', name: 'フラッシュ', score: 5, catId: 2, catName: '② 基本役', catClass: 'cat-2',
-    jokerType: 'forbidden', requireReach: true, hasSpecialLogo: false,
+    jokerType: 'forbidden', requireReach: true, logoMode: 'none',
     catHeader: '【要リーチ・JOKER不可・基本役】同一スート5枚',
-    desc: '同一スート5枚（ストレートフラッシュ系除外・JOKER不可・要リーチ・自スート和了で+1pt）。',
+    desc: '同一スート5枚（JOKER不可・要リーチ・自スート和了で+1pt・ロゴ演出なし）。',
     sample: [{suit:'♣',val:2},{suit:'♣',val:5},{suit:'♣',val:7},{suit:'♣',val:9},{suit:'♣',val:12}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
@@ -1153,9 +1168,9 @@ const YAKU_REGISTRY = [
   },
   {
     id: 'straight', name: 'ストレート', score: 4, catId: 2, catName: '② 基本役', catClass: 'cat-2',
-    jokerType: 'forbidden', requireReach: true, hasSpecialLogo: false,
+    jokerType: 'forbidden', requireReach: true, logoMode: 'none',
     catHeader: '【要リーチ・JOKER不可・基本役】連続5数字',
-    desc: '数字5連番（ロイヤル・ストレートフラッシュ除外・JOKER不可・要リーチ）。',
+    desc: '数字5連番（JOKER不可・要リーチ・ロゴ演出なし）。',
     sample: [{suit:'♠',val:3},{suit:'♥',val:4},{suit:'♦',val:5},{suit:'♣',val:6},{suit:'♥',val:7}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
@@ -1167,28 +1182,44 @@ const YAKU_REGISTRY = [
     }
   },
 
-  // catId: 1 (状態役)
+  // catId: 1 (状態役：リーチ・ダブルリーチ・天地人和・一発・海底)
+  {
+    id: 'state_double_reach', name: 'ダブルリーチ', score: 3, catId: 1, catName: '① 状態役', catClass: 'cat-1',
+    jokerType: 'allowed', requireReach: true, logoMode: 'grand',
+    catHeader: '【状態役・宣言役】第1打牌限定リーチ（+3pt・供託1pt）',
+    desc: '第1打牌（0巡目）でリーチ宣言した際に成立する状態役（+3pt・場に1pt供託・通常リーチと重複なし）。',
+    sample: [{suit:'♠',val:10},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♥',val:1}],
+    check: () => false
+  },
+  {
+    id: 'state_reach', name: 'リーチ', score: 2, catId: 1, catName: '① 状態役', catClass: 'cat-1',
+    jokerType: 'allowed', requireReach: true, logoMode: 'none',
+    catHeader: '【状態役・宣言役】テンパイ宣言（+2pt・供託1pt）',
+    desc: 'テンパイ状態でリーチ宣言し和了した際に成立する状態役（+2pt・場に1pt供託）。',
+    sample: [{suit:'♠',val:3},{suit:'♥',val:4},{suit:'♦',val:5},{suit:'♣',val:6},{suit:'♥',val:7}],
+    check: () => false
+  },
   {
     id: 'state_tenchi', name: '天地人和', score: 5, catId: 1, catName: '① 状態役', catClass: 'cat-1',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'grand',
     catHeader: '【状態役・専用ロゴ演出】初手和了ボーナス（+5pt）',
-    desc: '第1手目での和了時に成立するボーナス。',
+    desc: '第1手目での和了時に成立するボーナス（+5pt・専用ロゴ演出あり）。',
     sample: [{suit:'♠',val:1},{suit:'♥',val:1},{suit:'♦',val:7},{suit:'♣',val:7},{suit:'♠',val:7}],
     check: () => false
   },
   {
     id: 'state_ippatsu', name: '一発', score: 1, catId: 1, catName: '① 状態役', catClass: 'cat-1',
-    jokerType: 'allowed', requireReach: true, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: true, logoMode: 'grand',
     catHeader: '【状態役・別格演出】リーチ直後1巡以内の和了（+1pt）',
-    desc: 'リーチ宣言時のターンから1巡以内（turnCount - reachTurnIndex <= 1）にツモまたはロンで和了すると成立。',
+    desc: 'リーチ宣言時のターンから1巡以内（turnCount - reachTurnIndex <= 1）にツモまたはロンで和了すると成立（+1pt・別格演出あり）。',
     sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:1}],
     check: () => false
   },
   {
     id: 'state_haitei', name: '海底', score: 1, catId: 1, catName: '① 状態役', catClass: 'cat-1',
-    jokerType: 'allowed', requireReach: false, hasSpecialLogo: true,
+    jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【状態役・専用ロゴ演出】山牌ラスト和了（+1pt）',
-    desc: '山牌ラスト牌での和了時に成立。',
+    desc: '山牌ラスト牌での和了時に成立（+1pt・専用ロゴ演出あり）。',
     sample: [{suit:'♥',val:8},{suit:'♥',val:8},{suit:'♥',val:8},{suit:'♦',val:2},{suit:'♦',val:2}],
     check: () => false
   }
@@ -1342,7 +1373,7 @@ function triggerModeTransitionCutin(mode, callback) {
   const labelMap = {
     beginner: '🌿 ビギナーモード 出陣！',
     main: '⚔️ メインモード 対局開始！',
-    master: '🔥 鬼レンチャレンジ 10連への挑戦！'
+    master: '👹🔥 鬼レンチャレンジ 10連への挑戦！ 🔥👹'
   };
   if (!cutin) {
     callback();
@@ -1355,7 +1386,7 @@ function triggerModeTransitionCutin(mode, callback) {
   setTimeout(() => {
     cutin.style.display = 'none';
     callback();
-  }, 900);
+  }, 950);
 }
 
 function selectMode(mode) {
@@ -1370,6 +1401,8 @@ function selectMode(mode) {
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
   gameState.streakCount = 0;
+  gameState.cycle = 1;
+  gameState.fieldSuit = '♠';
 
   triggerModeTransitionCutin(mode, () => {
     switchScreen('screen-roulette');
@@ -1392,6 +1425,8 @@ function startRoomMatch(roomRule) {
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
   gameState.streakCount = 0;
+  gameState.cycle = 1;
+  gameState.fieldSuit = '♠';
   const roomName = roomRule === 'shiren' ? '🔥 試練の部屋の主' : roomRule === 'damaten' ? '🧠 ダマテン部屋の主' : '⚔️ 勝負師の部屋の主';
   document.getElementById('online-status-msg').innerText = `✨ ${roomName} が待ち構える部屋に入室中...`;
   setTimeout(() => {
@@ -1442,6 +1477,8 @@ function createOnlineRoom(reuseId = false) {
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
   gameState.streakCount = 0;
+  gameState.cycle = 1;
+  gameState.fieldSuit = '♠';
 
   const roomId = (reuseId && lastHostRoomId) ? lastHostRoomId : ('jp2-' + Math.floor(1000 + Math.random() * 9000));
   lastHostRoomId = roomId;
@@ -1545,6 +1582,8 @@ function joinOnlineRoom() {
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
   gameState.streakCount = 0;
+  gameState.cycle = 1;
+  gameState.fieldSuit = '♠';
 
   document.getElementById('online-status-msg').innerText = '🌐 Peerサーバーへ接続中...';
 
@@ -1597,7 +1636,7 @@ function setupPeerConnectionEvents() {
     if (data.type === 'REMOTE_WIN') {
       if (data.signal) setOpponentSignalBubble(data.signal);
       const winYaku = YAKU_REGISTRY.find(y => y.id === data.yakuId) || evaluateHand5(data.fullHand, Boolean(data.isReach));
-      executeRoundEnd(data.winMethod, 'cpu', winYaku, data.fullHand || [], data.winTile || null, Boolean(data.isIppatsu));
+      executeRoundEnd(data.winMethod, 'cpu', winYaku, (data.fullHand || []).slice(0, 5), data.winTile || null, Boolean(data.isIppatsu));
       return;
     }
     if (data.type === 'REMOTE_REMATCH') {
@@ -1624,7 +1663,6 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-/* 定型シグナル8種：スライド選択→タップで吹き出しセット＆送信 */
 function initSignalSlideBar() {
   const bar = document.getElementById('signal-slide-bar');
   if (!bar) return;
@@ -2000,7 +2038,7 @@ function playerDiscard(idx, isAuto = false) {
     }
     isReachNow = true;
     SoundEngine.playSE('reach_cutin');
-    triggerSpecialLogoBanner(gameState.isDoubleReach ? 'ダブルリーチ宣言！' : 'リーチ宣言！');
+    triggerSpecialLogoBanner(gameState.isDoubleReach ? '⚡ ダブルリーチ宣言！ ⚡' : '⚡ リーチ宣言！ ⚡', 'grand');
   } else {
     SoundEngine.playSE('discard_card');
   }
@@ -2056,7 +2094,7 @@ function handleRemoteDiscardSync(data) {
       gameState.cpuIsDoubleReach = true;
     }
     SoundEngine.playSE('reach_cutin');
-    triggerSpecialLogoBanner(gameState.cpuIsDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！');
+    triggerSpecialLogoBanner(gameState.cpuIsDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！', 'grand');
   } else {
     SoundEngine.playSE('discard_card');
   }
@@ -2078,7 +2116,7 @@ function handleRemoteDiscardSync(data) {
 }
 
 function playerDraw() {
-  if (gameState.isGameOver || gameState.hasDrawn || pendingRonCard) return;
+  if (gameState.isGameOver || gameState.hasDrawn || pendingRonCard || gameState.playerHand.length >= 5) return;
   if (gameState.deck.length <= 0) {
     executeDrawRound('流局（山牌切れ）');
     return;
@@ -2099,8 +2137,9 @@ function checkCpuRonOnPlayerDiscard(discarded) {
   if (!yaku) return false;
   if (gameState.roomRule === 'shiren' && !gameState.cpuIsReach && yaku.catId === 2) return false;
   const isIppatsu = checkIsIppatsu(false);
-  if (isIppatsu) SoundEngine.playSE('ippatsu_shout');
-  playWinFanfareByYaku(yaku);
+  const isHaitei = gameState.deck.length === 0;
+  const isTenchi = gameState.turnCount === 1;
+  triggerWinCategoryAndStateEffects(yaku, isIppatsu, isHaitei, isTenchi);
   executeRoundEnd('ロン', 'cpu', yaku, full5, discarded, isIppatsu);
   return true;
 }
@@ -2112,6 +2151,7 @@ function cpuExecuteTurn() {
     return;
   }
 
+  gameState.cpuHand = gameState.cpuHand.slice(0, 4);
   const drawn = gameState.deck.pop();
   gameState.cpuHand.push(drawn);
   SoundEngine.playSE('draw_card');
@@ -2119,8 +2159,9 @@ function cpuExecuteTurn() {
   const tsumoYaku = evaluateHand5(gameState.cpuHand, getEffectiveReachActive(false));
   if (tsumoYaku && !(gameState.roomRule === 'shiren' && !gameState.cpuIsReach && tsumoYaku.catId === 2)) {
     const isIppatsu = checkIsIppatsu(false);
-    if (isIppatsu) SoundEngine.playSE('ippatsu_shout');
-    playWinFanfareByYaku(tsumoYaku);
+    const isHaitei = gameState.deck.length === 0;
+    const isTenchi = gameState.turnCount === 1;
+    triggerWinCategoryAndStateEffects(tsumoYaku, isIppatsu, isHaitei, isTenchi);
     executeRoundEnd('ツモ', 'cpu', tsumoYaku, [...gameState.cpuHand], drawn, isIppatsu);
     return;
   }
@@ -2142,7 +2183,7 @@ function cpuExecuteTurn() {
         cpuDeclaredReach = true;
         setOpponentSignalBubble(gameState.cpuIsDoubleReach ? '通ればリーチ！' : '通るか？');
         SoundEngine.playSE('reach_cutin');
-        triggerSpecialLogoBanner(gameState.cpuIsDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！');
+        triggerSpecialLogoBanner(gameState.cpuIsDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！', 'grand');
         break;
       }
     }
@@ -2218,23 +2259,15 @@ function playerWin() {
   if (!canPlayerWinNow()) return;
   const isRon = Boolean(pendingRonCard && gameState.playerHand.length === 4);
   const winTile = isRon ? pendingRonCard : gameState.playerHand[gameState.playerHand.length - 1];
-  const fullHand = isRon ? [...gameState.playerHand, pendingRonCard] : [...gameState.playerHand];
+  const fullHand = (isRon ? [...gameState.playerHand.slice(0, 4), pendingRonCard] : gameState.playerHand.slice(0, 5));
   pendingRonCard = null;
 
   const yaku = evaluateHand5(fullHand, getEffectiveReachActive(true));
   const isIppatsu = checkIsIppatsu(true);
+  const isHaitei = gameState.deck.length === 0;
+  const isTenchi = gameState.turnCount === 1;
 
-  if (isIppatsu) {
-    triggerIppatsuGrandCutin();
-    SoundEngine.playSE('ippatsu_shout');
-    setTimeout(() => {
-      if (yaku && yaku.hasSpecialLogo) triggerSpecialLogoBanner(`${yaku.name}！`);
-      playWinFanfareByYaku(yaku);
-    }, 850);
-  } else {
-    if (yaku && yaku.hasSpecialLogo) triggerSpecialLogoBanner(`${yaku.name}！`);
-    playWinFanfareByYaku(yaku);
-  }
+  triggerWinCategoryAndStateEffects(yaku, isIppatsu, isHaitei, isTenchi);
 
   if (gameState.isPeerMode && peerConn && peerConn.open) {
     try {
@@ -2265,24 +2298,78 @@ function playWinFanfareByYaku(yaku) {
   }
 }
 
-function triggerSpecialLogoBanner(text) {
+function triggerSpecialLogoBanner(text, styleMode = 'grand') {
   const banner = document.getElementById('special-logo-banner');
   if (!banner) return;
+  banner.classList.remove('logo-simple', 'logo-grand');
+  banner.classList.add(styleMode === 'simple' ? 'logo-simple' : 'logo-grand');
   banner.style.display = 'none';
   banner.innerText = text;
   void banner.offsetWidth;
   banner.style.display = 'block';
-  setTimeout(() => { banner.style.display = 'none'; }, 1450);
+  setTimeout(() => {
+    banner.style.display = 'none';
+  }, styleMode === 'simple' ? 1200 : 1600);
 }
 
 function triggerIppatsuGrandCutin() {
   const el = document.getElementById('ippatsu-grand-cutin');
   if (!el) return;
   el.style.display = 'none';
-  el.innerText = '⚡ 一発別格和了 (+1pt) ⚡';
+  el.innerText = '⚡🔥 一発別格和了 (+1pt) 🔥⚡';
   void el.offsetWidth;
   el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 1750);
+  setTimeout(() => { el.style.display = 'none'; }, 1800);
+}
+
+/* カテゴリ別（JOKER必須/役満＝個別ロゴ、中級＝シンプルロゴ、基本＝ロゴなし）＆状態役（天地人和/一発/海底）演出 */
+function triggerWinCategoryAndStateEffects(yaku, isIppatsu, isHaitei, isTenchi) {
+  const logosToShow = [];
+
+  if (isTenchi) {
+    logosToShow.push({ text: '✨ 天地人和 降臨！ ✨', mode: 'grand', delay: 0 });
+  }
+  if (isHaitei) {
+    logosToShow.push({ text: '🌊 海底撈月 和了！ 🌊', mode: 'simple', delay: logosToShow.length * 450 });
+  }
+
+  if (yaku) {
+    if (yaku.catId === 5 || yaku.catId === 4) {
+      logosToShow.push({ text: `👑 ${yaku.name} 発動！ 👑`, mode: 'grand', delay: logosToShow.length * 500 });
+    } else if (yaku.catId === 3) {
+      logosToShow.push({ text: `◆ ${yaku.name} ◆`, mode: 'simple', delay: logosToShow.length * 450 });
+    }
+  }
+
+  if (isIppatsu) {
+    triggerIppatsuGrandCutin();
+    SoundEngine.playSE('ippatsu_shout');
+    setTimeout(() => {
+      logosToShow.forEach(item => {
+        setTimeout(() => triggerSpecialLogoBanner(item.text, item.mode), item.delay);
+      });
+      playWinFanfareByYaku(yaku);
+    }, 850);
+  } else {
+    logosToShow.forEach(item => {
+      setTimeout(() => triggerSpecialLogoBanner(item.text, item.mode), item.delay);
+    });
+    playWinFanfareByYaku(yaku);
+  }
+}
+
+/* 第1サイクルはドラ1枚・裏1枚、第2サイクル以降からドラ2枚・裏2枚が有効 */
+function getActiveDoraPairsForCycle(cycleNum) {
+  if (cycleNum >= 2) {
+    return {
+      dora: gameState.doraCards.slice(0, 2),
+      ura: gameState.uraDoraCards.slice(0, 2)
+    };
+  }
+  return {
+    dora: gameState.doraCards.slice(0, 1),
+    ura: gameState.uraDoraCards.slice(0, 1)
+  };
 }
 
 function calculateBonusPoints(fullHand, yaku, isWinnerParent, isReach, isDoubleReach, isIppatsu) {
@@ -2321,9 +2408,10 @@ function calculateBonusPoints(fullHand, yaku, isWinnerParent, isReach, isDoubleR
     details.push('海底: +1pt');
   }
 
+  const activePairs = getActiveDoraPairsForCycle(gameState.cycle);
   const nextVals = new Set();
   const doraSuits = new Set();
-  [...gameState.doraCards, ...gameState.uraDoraCards].forEach(d => {
+  [...activePairs.dora, ...activePairs.ura].forEach(d => {
     if (!d || d.isJoker) return;
     nextVals.add(d.val === 13 ? 1 : d.val + 1);
     doraSuits.add(d.suit);
@@ -2378,8 +2466,9 @@ function executeRoundEnd(winMethod, winnerSide, yaku, fullHand, winTile, isIppat
   const isWinnerParent = isPlayerWin ? gameState.isPlayerParent : !gameState.isPlayerParent;
   const isReach = isPlayerWin ? gameState.isPlayerReach : gameState.cpuIsReach;
   const isDoubleReach = isPlayerWin ? gameState.isDoubleReach : gameState.cpuIsDoubleReach;
+  const roundCycle = gameState.cycle;
 
-  const { totalPt, details } = calculateBonusPoints(fullHand, yaku, isWinnerParent, isReach, isDoubleReach, isIppatsu);
+  const { totalPt, details } = calculateBonusPoints(fullHand.slice(0, 5), yaku, isWinnerParent, isReach, isDoubleReach, isIppatsu);
 
   if (isPlayerWin) {
     gameState.playerScore += totalPt;
@@ -2410,9 +2499,10 @@ function executeRoundEnd(winMethod, winnerSide, yaku, fullHand, winTile, isIppat
     isPlayerWin ? 'YOUの和了！' : '相手の和了',
     winTypeLabel,
     yaku ? yaku.name : '基本役',
-    fullHand,
+    fullHand.slice(0, 5),
     details,
-    isPlayerWin ? totalPt : -totalPt
+    isPlayerWin ? totalPt : -totalPt,
+    roundCycle
   );
 }
 
@@ -2420,6 +2510,7 @@ function executeDrawRound(reasonText) {
   clearInterval(turnTimer);
   gameState.isGameOver = true;
   pendingRonCard = null;
+  const roundCycle = gameState.cycle;
   const playerTenpai = checkIsTenpai(gameState.playerHand, getEffectiveReachActive(true));
   const cpuTenpai = checkIsTenpai(gameState.cpuHand, getEffectiveReachActive(false));
   const details = [];
@@ -2444,10 +2535,10 @@ function executeDrawRound(reasonText) {
   }
 
   const stateTag = playerTenpai ? '【 あなた：テンパイ 】' : '【 あなた：ノーテン 】';
-  renderResultScreen(reasonText, stateTag, '流局', gameState.playerHand, details, delta);
+  renderResultScreen(reasonText, stateTag, '流局', gameState.playerHand.slice(0, 5), details, delta, roundCycle);
 }
 
-function renderResultScreen(titleText, winTypeText, yakuName, handCards, details, delta) {
+function renderResultScreen(titleText, winTypeText, yakuName, handCards, details, delta, roundCycle = gameState.cycle) {
   switchScreen('screen-result');
   document.getElementById('res-title').innerText = titleText;
   document.getElementById('res-win-type-badge').innerText = winTypeText;
@@ -2455,11 +2546,26 @@ function renderResultScreen(titleText, winTypeText, yakuName, handCards, details
 
   const handBox = document.getElementById('res-hand-container');
   handBox.innerHTML = '';
-  (handCards || []).forEach(c => handBox.appendChild(createCardElement(c, true)));
+  (handCards || []).slice(0, 5).forEach(c => handBox.appendChild(createCardElement(c, true)));
+
+  const activePairs = getActiveDoraPairsForCycle(roundCycle);
+  const doraLabelEl = document.getElementById('res-dora-label');
+  if (doraLabelEl) {
+    doraLabelEl.innerText = roundCycle >= 2
+      ? '表ドラ2枚 / 裏ドラ2枚 開示（オーラス倍増）'
+      : '表ドラ1枚 / 裏ドラ1枚 開示（第1サイクル）';
+  }
 
   const doraBox = document.getElementById('res-dora-container');
   doraBox.innerHTML = '';
-  [...gameState.doraCards, ...gameState.uraDoraCards].forEach(c => doraBox.appendChild(createCardElement(c, true)));
+  activePairs.dora.forEach(c => doraBox.appendChild(createCardElement(c, true)));
+  if (activePairs.dora.length > 0 && activePairs.ura.length > 0) {
+    const sep = document.createElement('span');
+    sep.innerText = '/';
+    sep.style.cssText = 'color:#94a3b8; font-weight:900; font-size:0.85rem; margin:0 2px;';
+    doraBox.appendChild(sep);
+  }
+  activePairs.ura.forEach(c => doraBox.appendChild(createCardElement(c, true)));
 
   const detailsBox = document.getElementById('res-details');
   detailsBox.innerHTML = details.join(' / ');
@@ -2474,10 +2580,10 @@ function renderResultScreen(titleText, winTypeText, yakuName, handCards, details
   const btnRematch = document.getElementById('btn-rematch-online');
 
   if (isMasterChallenge && gameState.streakCount >= 10) {
-    document.getElementById('res-title').innerText = '鬼連チャン達成！';
+    document.getElementById('res-title').innerText = '👹🔥 鬼連チャン達成！ 🔥👹';
     btnNext.innerText = 'タイトルへ戻る';
     btnNext.onclick = () => showTitle();
-  } else if (isFinalCycleOver || gameState.playerScore < 0 || gameState.cpuScore < 0) {
+  } else if (isFinalCycleOver) {
     btnNext.innerText = 'タイトルへ戻る';
     btnNext.onclick = () => showTitle();
   } else {
@@ -2543,7 +2649,11 @@ function renderGameBoard() {
   document.getElementById('game-info-kyotaku').innerText = `供託: ${gameState.kyotaku}pt | 山札: ${gameState.deck.length}枚`;
 
   const streakEl = document.getElementById('game-info-streak');
-  streakEl.innerText = gameState.streakCount > 0 ? `(${gameState.streakCount}連チャン)` : '(0連チャン)';
+  if (gameState.mode === 'master') {
+    streakEl.innerText = `👹🔥 鬼レン (${gameState.streakCount}/10連チャン) 🔥👹`;
+  } else {
+    streakEl.innerText = gameState.streakCount > 0 ? `(${gameState.streakCount}連チャン)` : '(0連チャン)';
+  }
 
   const leftSuit = '♠';
   const rightSuit = '♥';
@@ -2560,11 +2670,14 @@ function renderGameBoard() {
 
   const doraBox = document.getElementById('game-dora-container');
   doraBox.innerHTML = '';
-  if (gameState.doraCards[0]) doraBox.appendChild(createCardElement(gameState.doraCards[0], true));
+  const doraCount = gameState.cycle >= 2 ? 2 : 1;
+  gameState.doraCards.slice(0, doraCount).forEach(c => {
+    doraBox.appendChild(createCardElement(c, true));
+  });
 
   const cpuMiniBox = document.getElementById('cpu-hand-mini');
   cpuMiniBox.innerHTML = '';
-  gameState.cpuHand.forEach(() => {
+  gameState.cpuHand.slice(0, 4).forEach(() => {
     const back = document.createElement('div');
     back.className = 'card-back-mini';
     cpuMiniBox.appendChild(back);
@@ -2582,11 +2695,11 @@ function renderGameBoard() {
     playerRiverBox.appendChild(createRiverCardElement(c, idx === gameState.playerReachTileIndex));
   });
 
-  /* 常に5スロット固定描画（4枚時でも右端5枚目枠に点線枠の空きスペースを表示） */
   const handBox = document.getElementById('player-hand-container');
   handBox.innerHTML = '';
+  const visibleHand = gameState.playerHand.slice(0, 5);
   for (let idx = 0; idx < 5; idx++) {
-    const card = gameState.playerHand[idx];
+    const card = visibleHand[idx];
     if (card) {
       const el = createCardElement(card, false);
       if (gameState.selectedCardIdx === idx) el.classList.add('selected');
@@ -2612,12 +2725,12 @@ function renderGameBoard() {
   else btnWin.classList.remove('active-win');
 
   const btnDraw = document.getElementById('btn-draw');
-  btnDraw.disabled = gameState.isGameOver || gameState.hasDrawn || Boolean(pendingRonCard) || gameState.deck.length <= 0;
+  btnDraw.disabled = gameState.isGameOver || gameState.hasDrawn || Boolean(pendingRonCard) || visibleHand.length >= 5 || gameState.deck.length <= 0;
 
   const guideBox = document.getElementById('beginner-guide-box');
   if (gameState.mode === 'beginner' && !gameState.isOnline) {
     guideBox.style.display = 'block';
-    const currentYaku = evaluateHand5(gameState.playerHand, getEffectiveReachActive(true));
+    const currentYaku = evaluateHand5(visibleHand, getEffectiveReachActive(true));
     guideBox.innerText = currentYaku ? `成立中：${currentYaku.name} (${currentYaku.score}pt)` : '💡 ガイド：役一覧を見ながら、同じスートや連番・絵札を揃えよう';
   } else {
     guideBox.style.display = 'none';
