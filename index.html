@@ -20,12 +20,21 @@ body {
 .screen.active { display: flex; z-index: 10; }
 
 .btn-gold {
-  background: linear-gradient(135deg, #f1c40f, #d4ac0d);
-  color: #091315; border: none; border-radius: 6px; font-weight: 900;
-  cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4); transition: transform 0.08s ease;
+  background: linear-gradient(135deg, #f1c40f 0%, #d4ac0d 100%);
+  color: #091315; border: 1px solid #f9e79f; border-radius: 8px;
+  font-weight: 900; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.45);
+  transition: transform 0.08s ease;
 }
 .btn-gold:active:not(:disabled) { transform: scale(0.97); }
 .btn-gold:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-mode {
+  width: 100%; max-width: 340px; padding: 10px 12px; border-radius: 8px;
+  background: #162a2d; color: #fff; border: 1px solid #f1c40f;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-weight: 900; cursor: pointer;
+}
+.btn-mode .sub { font-size: 0.68rem; font-weight: normal; color: #bdc3c7; }
 
 .card-tile {
   background: #fdfdfd; color: #111; border-radius: 5px; border: 1.5px solid #cbd5e1;
@@ -33,7 +42,7 @@ body {
   padding: 2px; font-weight: 900; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.35);
   flex-shrink: 0;
 }
-.card-tile.red { color: #d63031; }
+.card-tile.red { color: #e74c3c; }
 .card-tile.selected { transform: translateY(-6px); border-color: #f1c40f; box-shadow: 0 0 10px rgba(241,196,15,0.85); }
 .card-tile.reach-tile { border-color: #ff3838 !important; box-shadow: 0 0 8px rgba(255,56,56,0.9); }
 
@@ -48,156 +57,226 @@ body {
 .cat-5 { background: #d35400; }
 
 .yaku-tab-btn {
-  background: #1a3337; color: #bdc3c7; border: 1px solid #2c5359;
-  border-radius: 4px; padding: 4px 8px; font-size: 0.68rem; font-weight: bold;
-  white-space: nowrap; cursor: pointer;
+  padding: 4px 8px; font-size: 0.7rem; font-weight: bold; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3);
+  color: #fff; cursor: pointer; flex-shrink: 0; white-space: nowrap;
 }
-.yaku-tab-btn.active { background: #f1c40f; color: #091315; border-color: #f1c40f; font-weight: 900; }
-.yaku-cat-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.yaku-tab-btn.active { border-color: #f1c40f; background: rgba(241,196,15,0.25); color: #f1c40f; }
+.modal-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.88); display: none; justify-content: center; align-items: center; z-index: 100;
+}
+@keyframes goldGlow {
+  0% { color: #f1c40f; text-shadow: 0 0 5px #f39c12; }
+  50% { color: #ffeaa7; text-shadow: 0 0 15px #f1c40f, 0 0 25px #e67e22; }
+  100% { color: #f1c40f; text-shadow: 0 0 5px #f39c12; }
+}
+.master-gold-banner { animation: goldGlow 1.8s infinite ease-in-out; }
 </style>
 </head>
 <body>
 <div id="game-wrapper">
 
-  <!-- タイトル画面 -->
-  <div id="screen-title" class="screen active" style="justify-content:center; align-items:center; padding:20px; text-align:center;">
-    <div style="font-size:0.8rem; color:#f1c40f; letter-spacing:2px; margin-bottom:6px;">麻雀 × ポーカー 融合</div>
-    <h1 style="font-size:1.75rem; color:#f1c40f; text-shadow:0 2px 10px rgba(241,196,15,0.4); margin-bottom:18px;">ジャンポーカー<br><span style="font-size:1.1rem; color:#fff;">〜ジャンP２〜</span></h1>
-    <div style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:280px;">
-      <button class="btn-gold" style="height:44px;" onclick="SoundEngine.playSE('select_card'); showModeSelect();">CPU対戦へ</button>
-      <button class="btn-gold" style="height:44px; background:linear-gradient(135deg,#2ecc71,#27ae60); color:#fff;" onclick="SoundEngine.playSE('select_card'); showOnlineLobby();">通信対戦ロビー</button>
-      <button class="btn-gold" style="height:38px; background:#1a3337; color:#f1c40f; border:1px solid #f1c40f;" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');">全役一覧データベース</button>
+  <!-- 1. タイトル画面 -->
+  <div id="screen-title" class="screen active" style="justify-content: center; align-items: center; padding: 15px; text-align: center;">
+    <div style="font-size: 0.8rem; color: #f1c40f; letter-spacing: 2px; margin-bottom: 6px; font-weight: bold;">麻雀 × ポーカー 融合</div>
+    <h1 style="font-size: 1.8rem; color: #f1c40f; text-shadow: 0 2px 12px rgba(241,196,15,0.45); margin-bottom: 20px; line-height: 1.25;">
+      ジャンポーカー<br><span style="font-size: 1.1rem; color: #fff;">〜ジャンP２〜</span>
+    </h1>
+    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showModeSelect();" style="width: 220px; height: 42px; font-size: 0.95rem; margin-bottom: 8px;">CPU対戦スタート</button>
+    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showOnlineLobby();" style="width: 220px; height: 42px; font-size: 0.95rem; background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%); border-color:#3498db; color:#fff; margin-bottom: 10px;">🌐 通信・ルール部屋へ参戦</button>
+    <div style="display: flex; gap: 8px; justify-content: center;">
+      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="background: rgba(0,0,0,0.3); color: #f1c40f; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">役一覧確認</button>
+      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('manual');" style="background: rgba(0,0,0,0.3); color: #2ecc71; border: 1px solid #2ecc71; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">jp2マニュアル</button>
     </div>
   </div>
 
-  <!-- モード選択画面 -->
-  <div id="screen-mode" class="screen" style="padding:16px; justify-content:center; gap:10px;">
-    <h2 style="color:#f1c40f; font-size:1.15rem; text-align:center;">対戦モード選択</h2>
-    <button class="btn-gold" style="height:42px;" onclick="selectCpuMode('beginner')">ビギナーモード（ガイド付き）</button>
-    <button class="btn-gold" style="height:42px;" onclick="selectCpuMode('main')">メインモード（4サイクル戦）</button>
-    <button class="btn-gold" style="height:42px; background:linear-gradient(135deg,#e74c3c,#c0392b); color:#fff;" onclick="selectCpuMode('master')">マスターモード（10連チャン挑戦）</button>
-    <button class="btn-gold" style="height:36px; background:#254449; color:#fff;" onclick="showTitle()">戻る</button>
-  </div>
+  <!-- 2. ルール部屋・通信ロビー画面 -->
+  <div id="screen-online" class="screen" style="padding: 12px; justify-content: flex-start; align-items: center; gap: 8px; overflow-y: auto;">
+    <div style="font-size: 1.1rem; color: #3498db; font-weight: 900; margin-top: 6px;">🌐 制約ルール部屋ロビー</div>
+    <div style="font-size: 0.7rem; color: #bdc3c7; text-align: center; max-width: 320px;">シングルなら各部屋の主と対戦！友達と対戦ならホストが部屋ルールを選択！</div>
 
-  <!-- 通信対戦ロビー -->
-  <div id="screen-online" class="screen" style="padding:16px; justify-content:center; gap:10px;">
-    <h2 style="color:#f1c40f; font-size:1.1rem; text-align:center;">通信対戦 部屋選択</h2>
-    <div id="online-status-msg" style="font-size:0.78rem; color:#2ecc71; text-align:center; min-height:20px;"></div>
-    <button class="btn-gold" style="height:40px;" onclick="startRoomMatch('shoushi')">⚔️ 勝負師の部屋</button>
-    <button class="btn-gold" style="height:40px;" onclick="startRoomMatch('shiren')">🔥 試練の部屋（要リーチ基本役限定）</button>
-    <button class="btn-gold" style="height:40px;" onclick="startRoomMatch('damaten')">🧠 ダマテンの部屋（リーチ禁止）</button>
-    <button class="btn-gold" style="height:36px; background:#254449; color:#fff;" onclick="showTitle()">戻る</button>
-  </div>
-
-  <!-- 親・スート決めルーレット -->
-  <div id="screen-roulette" class="screen" style="justify-content:center; align-items:center; padding:18px; text-align:center; gap:12px;">
-    <div id="roulette-warning-banner" style="display:none; font-size:0.72rem; color:#f1c40f; background:rgba(241,196,15,0.12); padding:5px 8px; border-radius:4px;">♠引いた側が先親スタート</div>
-    <div id="roulette-suit" style="font-size:3.5rem; font-weight:900; color:#3498db;">♠</div>
-    <div id="roulette-result-text" style="font-size:0.9rem; font-weight:bold; min-height:24px;">ルーレット回転中...</div>
-    <button id="btn-cpu-spin" class="btn-gold" style="height:40px; width:200px;" onclick="spinCpuRoulette()">ルーレットを回す</button>
-    <button id="btn-online-game-start" class="btn-gold" style="display:none; height:40px; width:200px;" onclick="initGameSession()">対局開始</button>
-    <div id="roulette-wait-msg" style="display:none; font-size:0.75rem; color:#bdc3c7;">待機中...</div>
-  </div>
-
-  <!-- 対局画面 -->
-  <div id="screen-game" class="screen" style="padding:8px; justify-content:space-between; gap:6px;">
-    <div style="background:#0c181b; border:1px solid #254449; border-radius:6px; padding:6px 8px; display:flex; flex-direction:column; gap:4px;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span id="board-cycle-label" style="color:#f1c40f; font-weight:900; font-size:0.9rem;">第1サイクル ♠場</span>
-        <span style="font-weight:bold; font-size:0.78rem;">供託: <span id="board-kyotaku" style="color:#f1c40f;">0pt</span> | 山札: <span id="board-deck-count" style="color:#f1c40f;">0</span></span>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem;">
-        <span id="board-streak-label" style="color:#bdc3c7;">(0連チャン)</span>
-        <span id="board-timer-label" style="color:#ff3838; font-weight:900; display:none;">⏱ 30秒</span>
-        <span id="board-score-label" style="color:#2ecc71; font-weight:900;">YOU: 30pt / 相手: 30pt</span>
-      </div>
-      <div id="board-dora-row" style="display:flex; align-items:center; gap:4px; font-size:0.68rem; color:#bdc3c7;">
-        <span>ドラ:</span>
-        <div id="board-dora-cards" style="display:flex; gap:3px;"></div>
+    <div style="background: rgba(241, 196, 15, 0.1); border: 1px solid #f1c40f; border-radius: 8px; padding: 8px; width: 100%; max-width: 340px; text-align: center;">
+      <div style="font-size: 0.75rem; color: #f1c40f; font-weight: bold; margin-bottom: 4px;">🎯 各ルール部屋へシングル参戦 (主と対戦)</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+        <button class="btn-gold" onclick="startRoomMatch('shiren')" style="font-size: 0.7rem; padding: 6px 2px; background: #c0392b; color: #fff; border-color: #e74c3c;">🔥 試練の部屋<br><span style="font-size:0.55rem; font-weight:normal;">(要リーチ基本役)</span></button>
+        <button class="btn-gold" onclick="startRoomMatch('damaten')" style="font-size: 0.7rem; padding: 6px 2px; background: #8e44ad; color: #fff; border-color: #9b59b6;">🧠 ダマテン部屋<br><span style="font-size:0.55rem; font-weight:normal;">(リーチ禁止)</span></button>
+        <button class="btn-gold" onclick="startRoomMatch('shoushi')" style="font-size: 0.7rem; padding: 6px 2px; background: #27ae60; color: #fff; border-color: #2ecc71;">⚔️ 勝負師の部屋<br><span style="font-size:0.55rem; font-weight:normal;">(公式ガチンコ)</span></button>
       </div>
     </div>
 
-    <!-- 相手エリア -->
-    <div style="background:#0c181b; border:1px solid #1a3337; border-radius:6px; padding:5px 6px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:0.72rem;">
-        <span>相手 <span id="cpu-reach-badge" style="color:#ff3838; font-weight:900;"></span></span>
-        <div id="cpu-mini-hand" style="display:flex; gap:2px;"></div>
+    <div style="background: rgba(41, 128, 185, 0.15); border: 1px solid #2980b9; border-radius: 8px; padding: 8px; width: 100%; max-width: 340px; text-align: center;">
+      <div style="font-size: 0.75rem; color: #fff; font-weight: bold; margin-bottom: 4px;">【通信対戦ホスト】 ルール選択して作成</div>
+      <select id="host-room-rule-select" style="width: 100%; height: 28px; border-radius: 4px; font-size: 0.7rem; margin-bottom: 4px; background: #091315; color: #fff; border: 1px solid #3498db; text-align: center;">
+        <option value="shoushi">⚔️ 勝負師の部屋（ガチンコ勝負）</option>
+        <option value="shiren">🔥 試練の部屋（要リーチ基本役のみ）</option>
+        <option value="damaten">🧠 ダマテンの部屋（リーチ禁止）</option>
+      </select>
+      <button class="btn-gold" onclick="createOnlineRoom()" style="width: 100%; height: 32px; background: #3498db; color: #fff; border-color: #2980b9; font-size: 0.8rem;">通信ルームを開設する</button>
+      <div id="online-room-id-box" style="margin-top: 6px; font-size: 0.7rem; color: #f1c40f; word-break: break-all; display: none; align-items: center; justify-content: center; gap: 6px;">
+        ルームID: <span id="online-room-id-val" style="background: #091315; padding: 2px 6px; border-radius: 4px; border: 1px solid #f1c40f; color:#fff;">-</span>
+        <button class="btn-gold" onclick="copyOnlineRoomId()" style="padding: 2px 6px; font-size: 0.65rem;">📋 コピー</button>
       </div>
-      <div id="cpu-river-scroll" style="background:#091315; border-radius:4px; padding:3px; min-height:38px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
     </div>
 
-    <div id="beginner-guide-box" style="display:none; background:rgba(241,196,15,0.12); border:1px solid rgba(241,196,15,0.4); border-radius:5px; padding:4px 8px; font-size:0.68rem; color:#f1c40f;"></div>
-    <div id="hand-status-msg" style="background:#162a2d; border-left:3px solid #f1c40f; padding:5px 8px; font-size:0.74rem; font-weight:bold;">対局準備中...</div>
+    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px; width: 100%; max-width: 340px; text-align: center;">
+      <div style="font-size: 0.75rem; color: #fff; font-weight: bold; margin-bottom: 4px;">【通信対戦ゲスト】 IDでルームに参加</div>
+      <input type="text" id="online-join-input" placeholder="友達のルームIDを入力" style="width: 100%; height: 30px; border-radius: 6px; border: 1px solid #ccc; padding: 0 8px; font-size: 0.75rem; margin-bottom: 4px; text-align: center;">
+      <button class="btn-gold" onclick="joinOnlineRoom()" style="width: 100%; height: 32px; font-size: 0.8rem;">ルームに参加する</button>
+    </div>
 
-    <!-- プレイヤーエリア -->
-    <div style="background:#0c181b; border:1px solid #254449; border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:6px;">
-      <div id="player-hand-container" style="display:flex; justify-content:center; gap:5px; min-height:66px; align-items:center;"></div>
-      <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#bdc3c7;">
+    <div id="online-status-msg" style="font-size: 0.75rem; color: #2ecc71; font-weight: bold; min-height: 18px; text-align: center;"></div>
+    <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.8rem; margin-top: 2px;">＜ タイトルに戻る</button>
+  </div>
+
+  <!-- 3. CPUモード選択画面 -->
+  <div id="screen-mode" class="screen" style="padding: 15px; justify-content: center; align-items: center; gap: 10px;">
+    <h2 style="color: #f1c40f; margin-bottom: 2px; font-size: 1.1rem; text-align: center;">CPU対戦モードを選択</h2>
+    <div style="font-size: 0.75rem; color: #bdc3c7; margin-bottom: 6px; text-align: center;">最終サイクル（オーラス）はドラ2枚・裏ドラ2枚！</div>
+    <button class="btn-mode" onclick="SoundEngine.playSE('select_card'); selectMode('beginner');"><span style="font-size: 0.95rem;">ビギナーモード</span><span class="sub">『役を覚える初級編・第2サイクルオーラス』</span></button>
+    <button class="btn-mode" onclick="SoundEngine.playSE('select_card'); selectMode('main');"><span style="font-size: 0.95rem;">メインモード</span><span class="sub">『じっくりやり込む中級編・第4サイクルオーラス』</span></button>
+    <button class="btn-mode" onclick="SoundEngine.playSE('select_card'); selectMode('master');"><span style="font-size: 0.95rem;">マスターモード</span><span class="sub">『鬼レンチャレンジ上級編・第2サイクルオーラス』</span></button>
+    <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; margin-top: 8px; cursor: pointer; font-size: 0.85rem;">＜ タイトルに戻る</button>
+  </div>
+
+  <!-- 4. ルーレット画面 -->
+  <div id="screen-roulette" class="screen" style="justify-content: center; align-items: center; padding: 15px; text-align: center;">
+    <h3 style="color: #f1c40f; margin-bottom: 6px; font-size: 1.1rem;">席順・親決めルーレット</h3>
+    <div id="roulette-warning-banner" style="font-size: 0.75rem; color: #ff3838; font-weight: bold; margin-bottom: 10px; background: rgba(255,56,56,0.15); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,56,56,0.4); display: none;">⚠️ 通信対戦時は開始後30秒制限あり！</div>
+    <div id="roulette-box" style="width: 110px; height: 110px; background: #182e33; border: 3px solid #f1c40f; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 10px auto; overflow: hidden; box-shadow: 0 0 12px rgba(241,196,15,0.4);">
+      <div id="roulette-suit" style="font-size: 2.8rem; color: #3498db; line-height: 1;">♠</div>
+    </div>
+    <div id="roulette-result-text" style="font-size: 0.8rem; color: #2ecc71; font-weight: bold; min-height: 28px; margin-bottom: 10px;"></div>
+    <div id="roulette-action-area" style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <button id="btn-cpu-spin" class="btn-gold" onclick="SoundEngine.playSE('select_card'); startCpuManualRoulette();" style="width: 220px; height: 42px; font-size: 0.95rem;">🎲 ルーレットスタート</button>
+      <button id="btn-online-game-start" class="btn-gold" onclick="SoundEngine.playSE('select_card'); confirmOnlineGameStart();" style="width: 220px; height: 44px; font-size: 1rem; background: #27ae60; color: #fff; border-color: #2ecc71; display: none;">🚀 ゲーム開始 (♠側親)</button>
+      <div id="roulette-wait-msg" style="font-size: 0.8rem; color: #f1c40f; font-weight: bold; display: none;">♠親側がゲーム開始ボタンを押すのを待っています...</div>
+    </div>
+  </div>
+
+  <!-- 5. メイン対戦画面 -->
+  <div id="screen-game" class="screen" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; padding: 8px 10px 72px 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #162a2d; border-radius: 5px;">
+      <span style="font-size: 0.85rem; color: #e74c3c; font-weight: bold;">相手手札 <span id="cpu-reach-badge" style="color:#ff3838;"></span></span>
+      <div id="cpu-hand-mini" style="display: flex; gap: 3px;"></div>
+    </div>
+    <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 42px; display: flex; align-items: center; gap: 3px; overflow-x: auto;" id="cpu-river-scroll"></div>
+
+    <div style="background: #182e33; border: 2px solid #f1c40f; border-radius: 8px; padding: 8px 12px; font-size: 0.95rem; display: flex; flex-direction: column; gap: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="board-cycle-label" style="color: #f1c40f; font-weight: 900; font-size: 0.95rem;">第1サイクル ♠場</span>
+        <span style="font-weight: bold; font-size: 0.8rem;">供託: <span id="board-kyotaku" style="color: #f1c40f;">0pt</span> | 山札: <span id="board-deck-count" style="color: #f1c40f;">0</span></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
+        <span id="board-streak-label" style="color: #bdc3c7;">(0連チャン)</span>
+        <span id="board-timer-label" style="color: #ff3838; font-weight: 900; display: none;">⏱ 30秒</span>
+        <span id="board-score-label" style="color: #2ecc71; font-weight: 900;">YOU: 30pt / 相手: 30pt</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
+        <div style="display: flex; flex-direction: column;">
+          <span id="board-spade-player" style="color: #3498db; font-weight: 900; font-size: 0.85rem;">YOU(30pt)</span>
+          <span id="board-spade-role" style="font-size: 0.75rem; color: #f1c40f; font-weight: bold;">[親]</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.3); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(241,196,15,0.4);">
+          <span style="font-size: 0.75rem; color: #fff; font-weight: bold;">ドラ:</span>
+          <div id="board-dora-container" style="display: flex; gap: 4px; align-items: center; min-height: 36px;"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <span id="board-heart-player" style="color: #e74c3c; font-weight: 900; font-size: 0.85rem;">相手(30pt)</span>
+          <span id="board-heart-role" style="font-size: 0.75rem; color: #bdc3c7; font-weight: bold;">[子]</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 42px; display: flex; align-items: center; gap: 3px; overflow-x: auto;" id="player-river-scroll"></div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+      <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="height: 36px; font-size: 0.85rem; background: #f1c40f; color: #000;">役一覧</button>
+      <button id="btn-reach" class="btn-gold" onclick="togglePlayerReach()" style="height: 36px; font-size: 0.85rem; background: #f1c40f; color: #000;" disabled>リーチ</button>
+      <button id="btn-win" class="btn-gold" onclick="playerWin()" style="height: 36px; font-size: 0.85rem; background: #555544; color: #888;" disabled>和了</button>
+      <button id="btn-draw" class="btn-gold" onclick="playerDraw()" style="height: 36px; font-size: 0.85rem; background: #555544; color: #888;" disabled>ドロー</button>
+    </div>
+
+    <div style="background: #162a2d; border: 1px solid #254449; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #bdc3c7;">
         <span>YOU <span id="player-reach-badge" style="color:#ff3838; font-weight:900;"></span></span>
         <span id="player-role-badge" style="color:#f1c40f; font-weight:bold;">[親]</span>
       </div>
-      <div id="player-river-scroll" style="background:#091315; border:1px solid #1a3337; border-radius:5px; padding:4px; height:42px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
-
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;">
-        <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="height:36px; font-size:0.85rem; background:#f1c40f; color:#000;">役一覧</button>
-        <button id="btn-reach" class="btn-gold" onclick="togglePlayerReach()" style="height:36px; font-size:0.85rem; background:#f1c40f; color:#000;" disabled>リーチ</button>
-        <button id="btn-win" class="btn-gold" onclick="playerWin()" style="height:36px; font-size:0.85rem; background:#555544; color:#888;" disabled>和了</button>
-        <button id="btn-draw" class="btn-gold" onclick="playerDraw()" style="height:36px; font-size:0.85rem; background:#f1c40f; color:#000;" disabled>ドロー</button>
-      </div>
+      <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; min-height: 76px; align-items: flex-end; padding-top: 2px;"></div>
+      <div id="beginner-guide-box" style="background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; border-radius: 5px; padding: 3px 8px; font-size: 0.7rem; color: #f1c40f; text-align: center; font-weight: bold; height: 26px; line-height: 20px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: none;"></div>
+      <div id="hand-status-msg" style="font-size: 0.65rem; color: #bdc3c7; text-align: center; height: 18px;">あなたの親番です。カードを2回タップして打牌するか和了できます。</div>
     </div>
   </div>
 
-  <!-- リザルト画面 -->
-  <div id="screen-result" class="screen" style="padding:10px 20px; text-align:center; justify-content:center; align-items:center;">
-    <div id="res-timer-badge" style="font-size:0.85rem; color:#ff3838; font-weight:900; margin-bottom:2px; display:none;">⏱ 次の操作まで: 30秒</div>
-    <div id="res-streak-banner" style="font-size:1.1rem; font-weight:900; color:#f1c40f; margin-bottom:2px; min-height:1.5em;"></div>
-    <h2 id="res-title" style="color:#f1c40f; font-size:1.1rem; margin-bottom:2px;">リザルト</h2>
-    <div id="res-subtitle" style="font-size:0.8rem; color:#fff; margin-bottom:4px;">成立役：ストレート</div>
-    <div style="background:#162a2d; border:1px solid #f1c40f; border-radius:6px; padding:6px; width:100%; max-width:330px; margin-bottom:6px;">
-      <div style="font-size:0.65rem; color:#bdc3c7; margin-bottom:2px;">和了手札 (5枚)</div>
-      <div id="res-hand-container" style="display:flex; justify-content:center; gap:4px; margin-bottom:4px;"></div>
-      <div style="font-size:0.65rem; color:#bdc3c7; margin-bottom:2px;">表ドラ / 裏ドラ開示</div>
-      <div id="res-dora-container" style="display:flex; justify-content:center; gap:3px; margin-bottom:4px; flex-wrap:wrap;"></div>
-      <div style="font-size:0.65rem; color:#f1c40f; margin-bottom:2px; border-top:1px solid #254449; padding-top:2px;">【 収支内訳 】</div>
-      <div id="res-details" style="font-size:0.65rem; color:#fff; display:grid; grid-template-columns:1fr 1fr; gap:2px 8px; text-align:left; padding:2px 4px; margin-bottom:4px; max-height:65px; overflow-y:auto;"></div>
-      <div id="res-total-score-badge" style="background:rgba(241,196,15,0.2); border:1px solid #f1c40f; border-radius:4px; padding:3px; font-size:0.75rem; color:#f1c40f; font-weight:bold;">【 総合収支 】 +0 pt</div>
+  <!-- 6. リザルト画面 -->
+  <div id="screen-result" class="screen" style="justify-content: center; align-items: center; padding: 12px 20px; text-align: center;">
+    <div id="res-timer-badge" style="font-size: 0.85rem; color: #ff3838; font-weight: 900; margin-bottom: 2px; display: none;">⏱ 次の操作まで: 30秒</div>
+    <div id="res-streak-banner" style="font-size: 1.1rem; font-weight: 900; color: #f1c40f; margin-bottom: 2px; min-height: 1.5em; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"></div>
+    <h2 id="res-title" style="color: #f1c40f; font-size: 1.1rem; margin-bottom: 2px;">リザルト</h2>
+    <div id="res-subtitle" style="font-size: 0.8rem; color: #fff; margin-bottom: 4px;">成立役：ストレート</div>
+    <div style="background: #162a2d; border: 1px solid #f1c40f; border-radius: 6px; padding: 6px; width: 100%; max-width: 330px; margin-bottom: 6px;">
+      <div style="font-size: 0.65rem; color: #bdc3c7; margin-bottom: 2px;">和了手札 (5枚)</div>
+      <div id="res-hand-container" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;"></div>
+      <div style="font-size: 0.65rem; color: #bdc3c7; margin-bottom: 2px;">表ドラ / 裏ドラ開示</div>
+      <div id="res-dora-container" style="display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; flex-wrap: wrap;"></div>
+      <div style="font-size: 0.65rem; color: #f1c40f; margin-bottom: 2px; border-top: 1px solid #254449; padding-top: 2px;">【 収支内訳 】</div>
+      <div id="res-details" style="font-size: 0.65rem; color: #fff; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; text-align: left; padding: 2px 4px; margin-bottom: 4px; max-height: 65px; overflow-y: auto;"></div>
+      <div id="res-total-score-badge" style="background: rgba(241,196,15,0.2); border: 1px solid #f1c40f; border-radius: 4px; padding: 3px; font-size: 0.75rem; color: #f1c40f; font-weight: bold;">【 総合収支 】 +0 pt</div>
     </div>
-    <div id="res-total-pt" style="font-size:0.95rem; color:#2ecc71; font-weight:bold; margin-bottom:6px;">👤 YOU: 30pt vs 相手: 30pt</div>
-    <div id="rematch-status-msg" style="font-size:0.7rem; color:#f1c40f; min-height:16px; margin-bottom:4px;"></div>
-    <div id="res-action-area" style="display:flex; flex-direction:column; gap:5px; width:100%; max-width:260px;">
-      <button id="btn-next-round" class="btn-gold" style="height:36px;" onclick="handleResultNextAction()">次の局へ</button>
-      <button id="btn-rematch" class="btn-gold" style="height:36px; display:none;" onclick="requestRematch()">再戦を申し込む</button>
-      <button class="btn-gold" style="height:32px; background:#254449; color:#fff;" onclick="showTitle()">タイトルへ戻る</button>
+    <div id="res-total-pt" style="font-size: 0.95rem; color: #2ecc71; font-weight: bold; margin-bottom: 6px;">👤 YOU: 30pt vs 相手: 30pt</div>
+    <div id="res-action-area" style="display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 240px; align-items: center;">
+      <button id="btn-next-round" class="btn-gold" onclick="SoundEngine.playSE('select_card'); handleResultNextAction();" style="width: 200px; height: 36px; font-size: 0.85rem;">次の対戦へ</button>
+      <button id="btn-rematch" class="btn-gold" onclick="SoundEngine.playSE('select_card'); requestRematch();" style="width: 200px; height: 36px; background: #2980b9; color: #fff; border-color: #3498db; font-size: 0.85rem; display: none;">🔄 再戦を希望する (オーラス終了時)</button>
+      <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.75rem;">タイトルへ戻る (解散)</button>
     </div>
+    <div id="rematch-status-msg" style="font-size: 0.7rem; color: #f1c40f; margin-top: 2px; font-weight: bold; min-height: 16px;"></div>
   </div>
 
-  <!-- 役一覧モーダル -->
-  <div id="rule-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.82); z-index:100; justify-content:center; align-items:center;">
-    <div style="background:#102023; border:2px solid #f1c40f; border-radius:10px; width:94%; max-width:390px; height:86%; display:flex; flex-direction:column; overflow:hidden;">
-      <div style="background:#091315; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1c40f;">
-        <h3 id="modal-main-title" style="color:#f1c40f; font-size:0.9rem; font-weight:900;">全役一覧データベース</h3>
-        <button onclick="SoundEngine.playSE('select_card'); closeRuleModal();" style="background:#e74c3c; border:none; color:#fff; width:22px; height:22px; border-radius:4px; font-weight:bold; cursor:pointer;">✕</button>
+  <!-- 7. 役一覧＆jp2マニュアルモーダル -->
+  <div id="rule-modal" class="modal-overlay">
+    <div style="background: #162a2d; border: 2px solid #f1c40f; border-radius: 10px; width: 94%; max-width: 390px; height: 86%; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="background: #091315; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1c40f;">
+        <h3 id="modal-main-title" style="color: #f1c40f; font-size: 0.9rem; font-weight: 900;">全役一覧データベース</h3>
+        <button onclick="SoundEngine.playSE('select_card'); closeRuleModal();" style="background: #e74c3c; border: none; color: #fff; width: 22px; height: 22px; border-radius: 4px; font-weight: bold; cursor: pointer;">✕</button>
       </div>
-      <div id="rule-category-panels" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:3px; padding:6px; background:#0c181b; border-bottom:1px solid #254449; flex-shrink:0;">
+      <div id="rule-category-panels" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 6px; background: #0c181b; border-bottom: 1px solid #254449; flex-shrink: 0;">
         <button class="cat-panel-btn cat-1" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(1);">状態役</button>
         <button class="cat-panel-btn cat-2" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(2);">基本役</button>
         <button class="cat-panel-btn cat-3" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(3);">中級役</button>
         <button class="cat-panel-btn cat-4" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(4);">役満</button>
         <button class="cat-panel-btn cat-5" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(5);">JOKER</button>
       </div>
-      <div id="rule-menu-bar" style="display:flex; gap:5px; overflow-x:auto; padding:6px; background:#102023; border-bottom:1px solid #254449; flex-shrink:0;"></div>
-      <div style="padding:10px 12px; overflow-y:auto; flex-grow:1; text-align:left;">
-        <span id="rule-cat-badge" class="yaku-cat-badge cat-1">① 状態役</span>
-        <h4 id="rule-detail-title" style="color:#fff; font-size:0.95rem; margin-bottom:6px;"></h4>
-        <div id="rule-detail-desc" style="font-size:0.76rem; line-height:1.5; color:#e2e8f0; margin-bottom:10px;"></div>
-        <div id="rule-sample-title-wrap" style="font-size:0.7rem; color:#f1c40f; font-weight:bold; margin-bottom:4px;">サンプル手札</div>
-        <div id="rule-sample-cards" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+      <div id="menu-slide-guide-text" style="font-size: 0.65rem; color: #bdc3c7; text-align: center; padding: 3px 0 1px 0; background: #102023; font-weight: bold; border-top: 1px dashed rgba(241,196,15,0.3);">
+        ←スライド→
+      </div>
+      <div id="rule-menu-bar" style="display: flex; gap: 5px; overflow-x: auto; padding: 6px; background: #102023; border-bottom: 1px solid #254449; flex-shrink: 0;"></div>
+
+      <div id="modal-content-body" style="padding: 10px 12px; overflow-y: auto; flex-grow: 1; text-align: left;">
+        <div id="rule-cat-badge" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; color: #fff; margin-bottom: 4px;">カテゴリ</div>
+        <div id="rule-detail-title" style="color: #f1c40f; font-weight: bold; font-size: 1rem; margin-bottom: 6px;">役名</div>
+        <div id="rule-detail-desc" style="font-size: 0.75rem; color: #f5f6fa; margin-bottom: 10px; line-height: 1.4; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">説明文</div>
+        <div id="rule-sample-title-wrap" style="font-size: 0.7rem; color: #bdc3c7; margin-bottom: 4px;">サンプル形：</div>
+        <div id="rule-sample-cards" style="display: flex; gap: 4px;"></div>
+      </div>
+
+      <div id="manual-content-body" style="padding: 10px 12px; overflow-y: auto; flex-grow: 1; text-align: left; display: none;">
+        <div style="font-size: 0.78rem; line-height: 1.55; color: #f5f6fa;">
+          <div style="color: #f1c40f; font-weight: bold; margin-bottom: 4px;">【基本ルール＆進行】</div>
+          ・53枚（4スート×2〜14＋JOKER1枚）を使用し、5枚の手札で役を完成させて和了を目指します。<br>
+          ・親は5枚、子は4枚からスタートし、ドロー＆打牌（2回タップ）またはロン・ツモ和了で進行します。<br><br>
+          <div style="color: #f1c40f; font-weight: bold; margin-bottom: 4px;">【リーチ・ダブルリーチ・一発】</div>
+          ・基本役（ストレート／フラッシュ／フルハウス／ニューハウス／ロイヤルストレート）はリーチ宣言が必須です。<br>
+          ・第1打牌（0巡目）でのリーチ宣言は「ダブルリーチ（+3pt）」となり、通常リーチ（+2pt）と重複しません。<br>
+          ・リーチ宣言直後の1巡以内（turnCount - reachTurnIndex &lt;= 1）での和了で「一発（+1pt）」が加算されます。<br><br>
+          <div style="color: #f1c40f; font-weight: bold; margin-bottom: 4px;">【快適な対戦システム】</div>
+          ・名称は「YOU vs 相手」で統一され、最終サイクル（オーラス）はドラ2枚・裏ドラ2枚となります。<br>
+          ・通信対戦時（およびルール部屋参戦時）は、対戦中・リザルト画面ともに30秒の制限時間が適用され、3秒前の警告音でお知らせします。
+        </div>
       </div>
     </div>
   </div>
 
 </div>
-
 <script>
 const SoundEngine = {
   ctx: null,
@@ -247,6 +326,11 @@ const SoundEngine = {
     } else if (type === 'lose_heavy') {
       this.playTone(160, 0.5, 'sawtooth', 0.28);
       setTimeout(() => this.playTone(100, 0.7, 'sawtooth', 0.3), 150);
+    } else if (type === 'master_ending_10') {
+      [523, 523, 523, 659, 783, 1046].forEach((f, i) => setTimeout(() => this.playTone(f, 0.22, 'triangle', 0.26), i * 100));
+      setTimeout(() => {
+        [1318, 1567].forEach((f, i) => setTimeout(() => this.playTone(f, 0.35, 'sawtooth', 0.3), i * 140));
+      }, 650);
     } else if (type === 'roulette_spin') {
       this.playTone(920, 0.04, 'triangle', 0.1);
     } else if (type === 'timer_warning_pip') {
@@ -318,9 +402,9 @@ const YAKU_REGISTRY = [
   },
   {
     name: "酷使苦情", score: 29, catId: 5, catName: "⑤ JOKER必須役", catClass: "cat-5", jokerType: "required", requireReach: false,
-    catHeader: "【ダマテン可・阿漕免除✨】JOKER必須チート役！", desc: "5・9・4・9 ＋ JOKER（語呂：コク・シ・ク・ジョー）。",
+    catHeader: "【ダマテン可・阿漕免除✨】JOKER必須チート役！", desc: "5・9・4・9・J かつ4スート制限！",
     sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:9},{suit:'',val:0,isJoker:true}],
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => jokers.length === 1 && hasValsSet(vals, 1, [5, 9, 4, 9])
+    check: (cards, jokers, normals, vals, suits, uniqueSuits) => jokers.length === 1 && hasValsSet(vals, 1, [5, 9, 4, 9, 11]) && uniqueSuits.length === 4
   },
   {
     name: "5カード", score: 25, catId: 5, catName: "⑤ JOKER必須役", catClass: "cat-5", jokerType: "required", requireReach: false,
@@ -398,7 +482,7 @@ const YAKU_REGISTRY = [
     name: "ブラックジャック", score: 12, catId: 3, catName: "③ 中級役", catClass: "cat-3", jokerType: "allowed", requireReach: false,
     catHeader: "【ダマテン可・JOKER可】中級役", desc: "黒Jペア＋黒スート混合連番3枚。",
     sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:2},{suit:'♣',val:3},{suit:'♠',val:4}],
-    check: (cards, jokers, normals, vals) => {
+    check: (cards, jokers, normals) => {
       if (cards.length !== 5) return false;
       const blackNormals = normals.filter(c => c.suit === '♠' || c.suit === '♣');
       if (blackNormals.length + jokers.length !== 5) return false;
@@ -591,14 +675,17 @@ function countSuitDoraHits(mySuit, doraList) {
   });
   return count;
 }
- let turnTimer = null, turnTimeLeft = 30;
+
+let turnTimer = null, turnTimeLeft = 30;
 let resTimer = null, resTimeLeft = 30;
 let rematchTimer = null, rematchTimeLeft = 30;
 
 const beginnerAdviceList = [
-  "💡 絵札を含むストレート・フラッシュ・フルハウス・ニューハウスはリーチ後に和了可能です。",
-  "💡 第1打牌（0巡目）でのリーチ宣言は「ダブルリーチ（+3pt）」になります！",
-  "💡 リーチ宣言直後の1巡以内の和了で「一発（+1pt）」が加算されます。"
+  "💡 ヒント：リーチが必要な役もあるよ！しっかり準備しよう。",
+  "💡 ヒント：JOKERが使えない役もあるから役一覧を確認しよう。",
+  "💡 ヒント：相手の捨て札にも注目してロン牌を見逃さないようにしよう。",
+  "💡 ヒント：第1打牌（0巡目）のリーチは「ダブルリーチ（+3pt）」！",
+  "💡 ヒント：リーチ宣言直後の1巡以内の和了で「一発（+1pt）」！"
 ];
 function getRandomBeginnerAdvice() {
   return beginnerAdviceList[Math.floor(Math.random() * beginnerAdviceList.length)];
@@ -620,19 +707,7 @@ const gameState = {
   isColdWinTriggered: false, isGameOver: false
 };
 
-/**
- * 一発判定の一元化（リーチ宣言直後の1巡以内限定）
- * - reachTurnIndex >= 0 かつ turnCount - reachTurnIndex <= 1 のみ有効
- */
-function checkIsIppatsu(actor) {
-  if (actor === 'player') {
-    if (!gameState.isPlayerReach || gameState.playerReachTurnIndex < 0) return false;
-    return (gameState.turnCount - gameState.playerReachTurnIndex) <= 1;
-  } else {
-    if (!gameState.cpuIsReach || gameState.cpuReachTurnIndex < 0) return false;
-    return (gameState.turnCount - gameState.cpuReachTurnIndex) <= 1;
-  }
-}
+const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v5';
 
 function switchScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -642,6 +717,7 @@ function switchScreen(screenId) {
 
 function showTitle() {
   clearInterval(turnTimer); clearInterval(resTimer); clearInterval(rematchTimer);
+  clearInterval(window.onlinePollTimer); clearInterval(window.guestRouletteSyncTimer); clearInterval(window.guestGameStartTimer);
   switchScreen('screen-title');
 }
 
@@ -653,27 +729,47 @@ function showModeSelect() {
   switchScreen('screen-mode');
 }
 
-function selectCpuMode(mode) {
-  gameState.mode = mode;
-  gameState.isOnline = false;
-  gameState.playerScore = 30;
-  gameState.cpuScore = 30;
-  gameState.streakCount = 0;
-  gameState.kyotaku = 0;
-  gameState.cycle = 1;
-  gameState.fieldSuit = '♠';
-  gameState.isGameOver = false;
-  switchScreen('screen-roulette');
-  document.getElementById('roulette-warning-banner').style.display = 'block';
-  document.getElementById('btn-cpu-spin').style.display = 'inline-block';
-  document.getElementById('btn-online-game-start').style.display = 'none';
-  document.getElementById('roulette-wait-msg').style.display = 'none';
-  document.getElementById('roulette-result-text').innerText = 'ルーレットボタンを押してください';
-}
-
 function showOnlineLobby() {
   gameState.isOnline = true;
   switchScreen('screen-online');
+}
+
+function selectMode(mode) {
+  gameState.mode = mode;
+  gameState.isOnline = false;
+  gameState.roomRule = 'shoushi';
+  gameState.playerScore = 30; gameState.cpuScore = 30;
+  gameState.streakCount = 0; gameState.kyotaku = 0;
+  gameState.cycle = 1; gameState.fieldSuit = '♠';
+  gameState.spadePlayer = 'YOU'; gameState.heartPlayer = '相手';
+  gameState.isGameOver = false;
+  switchScreen('screen-roulette');
+  document.getElementById('roulette-warning-banner').style.display = 'none';
+  document.getElementById('btn-cpu-spin').style.display = 'inline-block';
+  document.getElementById('btn-cpu-spin').disabled = false;
+  document.getElementById('btn-online-game-start').style.display = 'none';
+  document.getElementById('roulette-wait-msg').style.display = 'none';
+  document.getElementById('roulette-result-text').innerText = '「ルーレットスタート」ボタンを押してください';
+}
+
+function startCpuManualRoulette() {
+  document.getElementById('btn-cpu-spin').disabled = true;
+  let count = 0;
+  const suits = ['♠', '♥'];
+  const suitEl = document.getElementById('roulette-suit');
+  const resultTextEl = document.getElementById('roulette-result-text');
+  resultTextEl.innerText = '抽選回転中...';
+  const timer = setInterval(() => {
+    const s = suits[Math.floor(Math.random() * suits.length)];
+    suitEl.innerText = s; suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+    SoundEngine.playSE('roulette_spin');
+    count++;
+    if (count > 16) {
+      clearInterval(timer);
+      document.getElementById('btn-cpu-spin').disabled = false;
+      applyRouletteResult(Math.random() < 0.5);
+    }
+  }, 90);
 }
 
 function startRoomMatch(roomRule) {
@@ -681,59 +777,191 @@ function startRoomMatch(roomRule) {
   gameState.isOnline = true;
   gameState.mode = 'beginner';
   gameState.roomRule = roomRule;
-  gameState.playerScore = 30;
-  gameState.cpuScore = 30;
-  gameState.streakCount = 0;
-  gameState.kyotaku = 0;
-  gameState.cycle = 1;
-  gameState.fieldSuit = '♠';
-  gameState.isGameOver = false;
-  let roomName = roomRule === 'shiren' ? '🔥 試練の部屋' : roomRule === 'damaten' ? '🧠 ダマテン部屋' : '⚔️ 勝負師の部屋';
-  document.getElementById('online-status-msg').innerText = `✨ ${roomName} に入室中...`;
+  gameState.playerScore = 30; gameState.cpuScore = 30;
+  gameState.streakCount = 0; gameState.kyotaku = 0;
+  const roomName = roomRule === 'shiren' ? '🔥 試練の部屋の主' : roomRule === 'damaten' ? '🧠 ダマテン部屋の主' : '⚔️ 勝負師の部屋の主';
+  document.getElementById('online-status-msg').innerText = `✨ ${roomName} が待ち構える部屋に入室中...`;
   setTimeout(() => {
     switchScreen('screen-roulette');
     document.getElementById('roulette-warning-banner').style.display = 'block';
     document.getElementById('btn-cpu-spin').style.display = 'none';
-    spinCpuRoulette();
-  }, 500);
+    document.getElementById('btn-online-game-start').style.display = 'none';
+    document.getElementById('roulette-wait-msg').style.display = 'none';
+    document.getElementById('roulette-result-text').innerText = '自動席順抽選中...';
+    let count = 0;
+    const suits = ['♠', '♥'];
+    const suitEl = document.getElementById('roulette-suit');
+    const timer = setInterval(() => {
+      const s = suits[Math.floor(Math.random() * suits.length)];
+      suitEl.innerText = s; suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+      SoundEngine.playSE('roulette_spin');
+      count++;
+      if (count > 14) {
+        clearInterval(timer);
+        applyRouletteResult(Math.random() < 0.5);
+      }
+    }, 90);
+  }, 900);
 }
 
-function spinCpuRoulette() {
-  document.getElementById('btn-cpu-spin').disabled = true;
-  let count = 0;
-  const suits = ['♠', '♥'];
-  const suitEl = document.getElementById('roulette-suit');
-  const timer = setInterval(() => {
-    const s = suits[count % 2];
-    suitEl.innerText = s;
-    suitEl.style.color = s === '♠' ? '#3498db' : '#e74c3c';
-    SoundEngine.playSE('roulette_spin');
-    count++;
-    if (count > 12) {
-      clearInterval(timer);
-      document.getElementById('btn-cpu-spin').disabled = false;
-      applyRouletteResult(Math.random() < 0.5);
+function createOnlineRoom() {
+  SoundEngine.playSE('select_card');
+  gameState.isHost = true;
+  gameState.roomRule = document.getElementById('host-room-rule-select').value;
+  const roomId = 'JP2-' + Math.floor(1000 + Math.random() * 9000);
+  document.getElementById('online-room-id-val').innerText = roomId;
+  document.getElementById('online-room-id-box').style.display = 'flex';
+  document.getElementById('online-status-msg').innerText = "通信ルーム開設完了。挑戦者の参加を待っています...";
+
+  const roomData = { roomId, hostJoined: true, guestJoined: false, started: false, roomRule: gameState.roomRule };
+  localStorage.setItem(ONLINE_STORAGE_KEY, JSON.stringify(roomData));
+
+  clearInterval(window.onlinePollTimer);
+  window.onlinePollTimer = setInterval(() => {
+    const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.roomId === roomId && data.guestJoined) {
+      clearInterval(window.onlinePollTimer);
+      document.getElementById('online-status-msg').innerText = "✨ 挑戦者が入室しました！自動ルーレット開始...";
+      setTimeout(() => startOnlineAutoRoulette(roomId), 900);
     }
-  }, 85);
+  }, 1000);
 }
 
-function applyRouletteResult(isYouSpade) {
+function copyOnlineRoomId() {
+  const roomIdText = document.getElementById('online-room-id-val').innerText;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(roomIdText).then(() => alert("ルームIDをコピーしました: " + roomIdText)).catch(() => alert("コピーに失敗しました"));
+  } else {
+    alert("ルームID: " + roomIdText);
+  }
+}
+
+function joinOnlineRoom() {
+  const roomId = document.getElementById('online-join-input').value.trim();
+  if (!roomId) { alert("ルームIDを入力してください"); return; }
+  SoundEngine.playSE('select_card');
+  gameState.isHost = false;
+  document.getElementById('online-status-msg').innerText = "ルームに接続中...";
+
+  const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+  if (!raw) { document.getElementById('online-status-msg').innerText = "❌ 指定されたルームが見つかりません"; return; }
+  const data = JSON.parse(raw);
+  if (data.roomId === roomId) {
+    gameState.roomRule = data.roomRule || 'shoushi';
+    data.guestJoined = true;
+    localStorage.setItem(ONLINE_STORAGE_KEY, JSON.stringify(data));
+    document.getElementById('online-status-msg').innerText = "✨ 入室完了！自動ルーレットへ移行します";
+    setTimeout(() => startOnlineAutoRoulette(roomId), 900);
+  } else {
+    document.getElementById('online-status-msg').innerText = "❌ ルームIDが一致しません";
+  }
+}
+
+function startOnlineAutoRoulette(roomId) {
+  switchScreen('screen-roulette');
+  document.getElementById('roulette-warning-banner').style.display = 'block';
+  document.getElementById('btn-cpu-spin').style.display = 'none';
+  document.getElementById('roulette-result-text').innerText = '自動抽選回転中...';
+  if (gameState.isHost) {
+    let count = 0;
+    const suits = ['♠', '♥'];
+    const suitEl = document.getElementById('roulette-suit');
+    const timer = setInterval(() => {
+      const s = suits[Math.floor(Math.random() * suits.length)];
+      suitEl.innerText = s; suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+      SoundEngine.playSE('roulette_spin');
+      count++;
+      if (count > 16) {
+        clearInterval(timer);
+        const isHostSpade = Math.random() < 0.5;
+        const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          data.rouletteDone = true;
+          data.isHostSpade = isHostSpade;
+          localStorage.setItem(ONLINE_STORAGE_KEY, JSON.stringify(data));
+        }
+        applyRouletteResult(isHostSpade);
+      }
+    }, 90);
+  } else {
+    clearInterval(window.guestRouletteSyncTimer);
+    window.guestRouletteSyncTimer = setInterval(() => {
+      const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data.rouletteDone) {
+        clearInterval(window.guestRouletteSyncTimer);
+        applyRouletteResult(data.isHostSpade);
+      }
+    }, 500);
+  }
+}
+
+function applyRouletteResult(isHostSpade) {
+  const isYouSpade = gameState.isOnline ? (gameState.isHost ? isHostSpade : !isHostSpade) : isHostSpade;
   gameState.spadePlayer = isYouSpade ? 'YOU' : '相手';
   gameState.heartPlayer = isYouSpade ? '相手' : 'YOU';
   gameState.cycle = 1;
   gameState.fieldSuit = '♠';
-  gameState.isPlayerParent = isYouSpade;
+  gameState.isPlayerParent = (gameState.spadePlayer === 'YOU');
   gameState.isGameOver = false;
 
   const suitEl = document.getElementById('roulette-suit');
   suitEl.innerText = isYouSpade ? '♠' : '♥';
   suitEl.style.color = isYouSpade ? '#3498db' : '#e74c3c';
-  document.getElementById('roulette-result-text').innerText = isYouSpade ? '♠場：YOUの先親スタート！' : '♠場：相手の先親スタート（あなたは♥後親）';
 
-  if (gameState.isOnline) {
-    document.getElementById('btn-online-game-start').style.display = 'inline-block';
+  const resultTextEl = document.getElementById('roulette-result-text');
+  resultTextEl.innerHTML = isYouSpade ? '♠場：YOUの先親スタート！' : '♠場：相手の先親スタート (あなたは♥後親)';
+
+  const btnGameStart = document.getElementById('btn-online-game-start');
+  const waitMsg = document.getElementById('roulette-wait-msg');
+
+  if (gameState.isOnline && gameState.isHost && gameState.roomRule === 'shoushi') {
+    btnGameStart.style.display = 'inline-block';
+    waitMsg.style.display = 'none';
+    resultTextEl.innerHTML += '<br><span style="color:#2ecc71; font-weight:bold;">[ホスト親権者] ♠側：任意のタイミングでゲーム開始ボタンを押してください</span>';
+  } else if (gameState.isOnline && !gameState.isHost && gameState.roomRule === 'shoushi') {
+    btnGameStart.style.display = 'none';
+    waitMsg.style.display = 'block';
+    waitMsg.innerText = "♥側：♠親側がゲーム開始ボタンを押すのを待っています...";
+    clearInterval(window.guestGameStartTimer);
+    window.guestGameStartTimer = setInterval(() => {
+      const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data.gameStarted) {
+        clearInterval(window.guestGameStartTimer);
+        initGameSession();
+      }
+    }, 500);
   } else {
-    setTimeout(initGameSession, 800);
+    setTimeout(initGameSession, 1100);
+  }
+}
+
+function confirmOnlineGameStart() {
+  if (gameState.isOnline) {
+    const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      data.gameStarted = true;
+      localStorage.setItem(ONLINE_STORAGE_KEY, JSON.stringify(data));
+    }
+  }
+  initGameSession();
+}
+</script>
+<script>
+function checkIsIppatsu(actor) {
+  if (actor === 'player') {
+    if (!gameState.isPlayerReach || gameState.playerReachTurnIndex < 0) return false;
+    return (gameState.turnCount - gameState.playerReachTurnIndex) <= 1;
+  } else {
+    if (!gameState.cpuIsReach || gameState.cpuReachTurnIndex < 0) return false;
+    return (gameState.turnCount - gameState.cpuReachTurnIndex) <= 1;
   }
 }
 
@@ -793,7 +1021,7 @@ function initGameSession() {
   updateBoardUI(); renderCpuMiniHand(); renderHands(); renderRivers(); checkPlayerReadyStatus();
 
   if (gameState.isPlayerParent) {
-    document.getElementById('hand-status-msg').innerText = "あなたの親番です。2回タップで打牌または和了できます。";
+    document.getElementById('hand-status-msg').innerText = "あなたの親番です。カードを2回タップして打牌するか和了できます。";
     document.getElementById('btn-draw').disabled = true;
     startTurnTimerIfNeeded();
   } else {
@@ -888,7 +1116,6 @@ function playerDiscard(idx) {
   if (gameState.playerHand.length !== 5) return;
   clearInterval(turnTimer);
 
-  // リーチ宣言保留中なら、打牌前にテンパイ維持＆リーチ可否を厳密確認
   if (gameState.isPlayerReachPending) {
     const remaining4 = gameState.playerHand.filter((_, i) => i !== idx);
     if (!checkIsTenpai(remaining4, true)) {
@@ -900,7 +1127,6 @@ function playerDiscard(idx) {
       return;
     }
     SoundEngine.playSE('reach_slash');
-    // 0巡目（第1打牌前・turnCount === 0）でのリーチ宣言はダブルリーチ確定
     if (gameState.turnCount === 0) {
       gameState.isDoubleReach = true;
     }
@@ -940,7 +1166,6 @@ function checkPlayerReadyStatus() {
   let canReach = false;
   const handLen = gameState.playerHand.length;
 
-  // 1. ツモ和了判定（手札5枚）
   if (handLen === 5) {
     const yaku = evaluateHand5(gameState.playerHand, {
       ignoreReachRequirement: false,
@@ -952,7 +1177,6 @@ function checkPlayerReadyStatus() {
     }
   }
 
-  // 2. ロン和了判定（相手河の最新牌または対象牌に対してフリテンでない＆成立役あり）
   if (!isReady && gameState.cpuRiver.length > 0 && (handLen === 4 || handLen === 5)) {
     const baseHand4 = (handLen === 5 && gameState.selectedCardIdx !== null)
       ? gameState.playerHand.filter((_, idx) => idx !== gameState.selectedCardIdx)
@@ -966,7 +1190,6 @@ function checkPlayerReadyStatus() {
     }
   }
 
-  // 3. リーチ宣言可否判定（手札5枚・未リーチ・ダマテン部屋以外）
   if (handLen === 5 && !gameState.isPlayerReach && !(gameState.isOnline && gameState.roomRule === 'damaten')) {
     for (let i = 0; i < 5; i++) {
       if (checkIsTenpai(gameState.playerHand.filter((_, idx) => idx !== i), true)) {
@@ -1103,8 +1326,7 @@ function cpuTurnRoutine() {
     if (!gameState.cpuIsReach && !(gameState.isOnline && gameState.roomRule === 'damaten')) {
       for (let i = 0; i < 5; i++) {
         if (checkIsTenpai(gameState.cpuHand.filter((_, idx) => idx !== i), true)) {
-          const allowDouble = (gameState.mode !== 'beginner') || (gameState.turnCount > 0);
-          if ((gameState.turnCount === 0 && !allowDouble)) continue;
+          if (gameState.turnCount === 0 && gameState.mode === 'beginner') continue;
           if (gameState.mode === 'master' || Math.random() < reachProbability) {
             if (gameState.turnCount === 0) gameState.cpuIsDoubleReach = true;
             gameState.cpuIsReach = true;
@@ -1147,7 +1369,8 @@ function cpuTurnRoutine() {
     startTurnTimerIfNeeded();
   }, 900);
 }
- function handleDrawGame() {
+
+function handleDrawGame() {
   const checkTenpai = (h) => h.length === 4
     ? checkIsTenpai(h, true)
     : h.some((_, i) => checkIsTenpai(h.filter((_, idx) => idx !== i), true));
@@ -1158,9 +1381,7 @@ function executeDrawReport(playerTenpai, cpuTenpai) {
   SoundEngine.playSE('lose_basic');
   const parentTenpai = gameState.isPlayerParent ? playerTenpai : cpuTenpai;
 
-  if (parentTenpai) {
-    // 親テンパイ維持
-  } else {
+  if (!parentTenpai) {
     gameState.streakCount = 0;
     switchFieldSuit();
   }
@@ -1393,17 +1614,55 @@ function handleResultNextAction() {
 
 function requestRematch() {
   if (!gameState.isOnline) return;
-  clearInterval(resTimer); clearInterval(rematchTimer);
+  SoundEngine.playSE('select_card');
   const msgEl = document.getElementById('rematch-status-msg');
-  msgEl.innerText = "🔄 再戦準備中...";
+  const rematchBtn = document.getElementById('btn-rematch');
+  rematchBtn.disabled = true;
+  rematchTimeLeft = 30;
+  clearInterval(rematchTimer); clearInterval(resTimer);
+  msgEl.innerText = `🔄 お相手に再戦希望送信中... (${rematchTimeLeft}秒)`;
+  rematchTimer = setInterval(() => {
+    rematchTimeLeft--;
+    msgEl.innerText = `🔄 お相手に再戦希望送信中... (${rematchTimeLeft}秒)`;
+    if (rematchTimeLeft <= 3 && rematchTimeLeft > 0) SoundEngine.playSE('timer_warning_pip');
+    else if (rematchTimeLeft === 0) SoundEngine.playSE('timer_warning_bone');
+    if (rematchTimeLeft <= 0) {
+      clearInterval(rematchTimer);
+      msgEl.innerText = "⏱ タイムアウト：タイトルに戻ります";
+      setTimeout(showTitle, 1200);
+    }
+  }, 1000);
+
   setTimeout(() => {
-    msgEl.innerText = "";
-    gameState.playerScore = 30; gameState.cpuScore = 30;
-    gameState.streakCount = 0; gameState.kyotaku = 0;
-    gameState.cycle = 1; gameState.isGameOver = false;
-    switchScreen('screen-roulette');
-    spinCpuRoulette();
-  }, 900);
+    clearInterval(rematchTimer); clearInterval(resTimer);
+    msgEl.innerText = "✨ お相手が再戦に同意しました！ルーレット画面へ移行します...";
+    setTimeout(() => {
+      rematchBtn.disabled = false;
+      msgEl.innerText = "";
+      gameState.playerScore = 30; gameState.cpuScore = 30;
+      gameState.streakCount = 0; gameState.kyotaku = 0;
+      gameState.cycle = 1; gameState.isGameOver = false;
+      switchScreen('screen-roulette');
+      document.getElementById('roulette-warning-banner').style.display = 'block';
+      document.getElementById('btn-cpu-spin').style.display = 'none';
+      document.getElementById('btn-online-game-start').style.display = 'none';
+      document.getElementById('roulette-wait-msg').style.display = 'none';
+      document.getElementById('roulette-result-text').innerText = '再戦自動ルーレット回転中...';
+      let count = 0;
+      const suits = ['♠', '♥'];
+      const suitEl = document.getElementById('roulette-suit');
+      const timer = setInterval(() => {
+        const s = suits[Math.floor(Math.random() * suits.length)];
+        suitEl.innerText = s; suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+        SoundEngine.playSE('roulette_spin');
+        count++;
+        if (count > 14) {
+          clearInterval(timer);
+          applyRouletteResult(Math.random() < 0.5);
+        }
+      }, 90);
+    }, 1000);
+  }, 1500);
 }
 
 function formatVal(val) {
@@ -1448,7 +1707,7 @@ function renderHands() {
 }
 
 function renderCpuMiniHand() {
-  const container = document.getElementById('cpu-mini-hand');
+  const container = document.getElementById('cpu-hand-mini');
   container.innerHTML = '';
   for (let i = 0; i < gameState.cpuHand.length; i++) {
     const back = document.createElement('div');
@@ -1489,6 +1748,13 @@ function updateBoardUI() {
   document.getElementById('board-deck-count').innerText = String(gameState.deck.length);
   document.getElementById('board-streak-label').innerText = `(${gameState.streakCount}連チャン)`;
   document.getElementById('board-score-label').innerText = `YOU: ${gameState.playerScore}pt / 相手: ${gameState.cpuScore}pt`;
+
+  const isYouSpade = (gameState.spadePlayer === 'YOU');
+  document.getElementById('board-spade-player').innerText = `${gameState.spadePlayer}(${isYouSpade ? gameState.playerScore : gameState.cpuScore}pt)`;
+  document.getElementById('board-heart-player').innerText = `${gameState.heartPlayer}(${!isYouSpade ? gameState.playerScore : gameState.cpuScore}pt)`;
+  document.getElementById('board-spade-role').innerText = gameState.isPlayerParent === isYouSpade ? '[親]' : '[子]';
+  document.getElementById('board-heart-role').innerText = gameState.isPlayerParent !== isYouSpade ? '[親]' : '[子]';
+
   document.getElementById('player-role-badge').innerText = gameState.isPlayerParent ? '[親]' : '[子]';
   document.getElementById('player-reach-badge').innerText = gameState.isPlayerReach
     ? (gameState.isDoubleReach ? '【Wリーチ】' : '【リーチ】')
@@ -1497,7 +1763,7 @@ function updateBoardUI() {
     ? (gameState.cpuIsDoubleReach ? '【Wリーチ】' : '【リーチ】')
     : '';
 
-  const doraBox = document.getElementById('board-dora-cards');
+  const doraBox = document.getElementById('board-dora-container');
   doraBox.innerHTML = '';
   gameState.doraCards.forEach(d => doraBox.appendChild(createCardElement(d, true, false, null)));
 }
@@ -1509,14 +1775,39 @@ function resetReachButtonUI() {
   btn.innerText = 'リーチ';
 }
 
-let currentRuleCategory = 1;
-function openRuleModal() {
-  document.getElementById('rule-modal').style.display = 'flex';
-  filterYakuCategory(currentRuleCategory);
+let currentRuleCategory = 2;
+
+function openRuleModal(mode = 'yaku') {
+  const modal = document.getElementById('rule-modal');
+  modal.style.display = 'flex';
+  const catPanels = document.getElementById('rule-category-panels');
+  const menuBar = document.getElementById('rule-menu-bar');
+  const slideGuide = document.getElementById('menu-slide-guide-text');
+  const yakuBody = document.getElementById('modal-content-body');
+  const manualBody = document.getElementById('manual-content-body');
+
+  if (mode === 'manual') {
+    document.getElementById('modal-main-title').innerText = 'jp2マニュアル';
+    catPanels.style.display = 'none';
+    menuBar.style.display = 'none';
+    if (slideGuide) slideGuide.style.display = 'none';
+    yakuBody.style.display = 'none';
+    manualBody.style.display = 'block';
+  } else {
+    document.getElementById('modal-main-title').innerText = '全役一覧データベース';
+    catPanels.style.display = 'grid';
+    menuBar.style.display = 'flex';
+    if (slideGuide) slideGuide.style.display = 'block';
+    yakuBody.style.display = 'block';
+    manualBody.style.display = 'none';
+    filterYakuCategory(currentRuleCategory);
+  }
 }
+
 function closeRuleModal() {
   document.getElementById('rule-modal').style.display = 'none';
 }
+
 function filterYakuCategory(catId) {
   currentRuleCategory = catId;
   const filtered = YAKU_REGISTRY.filter(y => y.catId === catId);
@@ -1537,6 +1828,7 @@ function filterYakuCategory(catId) {
   });
   if (filtered.length > 0) selectRuleYaku(YAKU_REGISTRY.indexOf(filtered[0]));
 }
+
 function selectRuleYaku(idx) {
   const yaku = YAKU_REGISTRY[idx];
   document.getElementById('rule-cat-badge').className = 'yaku-cat-badge ' + yaku.catClass;
