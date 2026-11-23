@@ -122,7 +122,7 @@ body {
 
 /* スクショ準拠トランプカードデザイン（上部スート・下部大きめ数字） */
 .card {
-  width: 56px;
+  width: 54px;
   height: 74px;
   background: #f8f9fa;
   border-radius: 6px;
@@ -139,7 +139,7 @@ body {
   flex-shrink: 0;
 }
 .card.selected {
-  transform: translateY(-7px);
+  transform: translateY(-6px);
   border: 2px dashed #f5c400;
   box-shadow: 0 6px 14px rgba(245,196,0,0.45);
 }
@@ -161,10 +161,42 @@ body {
   line-height: 1;
 }
 .card-bot-val {
-  font-size: 1.22rem;
+  font-size: 1.2rem;
   line-height: 1;
   text-align: right;
   letter-spacing: -0.03em;
+}
+
+/* 4枚時の右端5枚目空きスロット（点線枠・画面ガタつき防止） */
+.card-slot-empty {
+  width: 54px;
+  height: 74px;
+  border-radius: 6px;
+  border: 1.5px dashed #475569;
+  background: rgba(9, 21, 24, 0.55);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #64748b;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+/* 役一覧モーダル内のサンプル5枚カード（左右見切れ防止サイズ） */
+#yaku-sample-cards .card {
+  width: 46px;
+  height: 62px;
+  padding: 3px 5px;
+  cursor: default;
+}
+#yaku-sample-cards .card-top-suit {
+  font-size: 0.78rem;
+}
+#yaku-sample-cards .card-bot-val {
+  font-size: 1.02rem;
 }
 
 .card-mini {
@@ -324,7 +356,7 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 120;
-  padding: 10px;
+  padding: 8px;
 }
 
 @keyframes specialLogoPop {
@@ -476,7 +508,7 @@ body {
     <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #cbd5e1; border: none; cursor: pointer; font-size: 0.8rem; margin-top: 2px;">＜ タイトルに戻る</button>
   </div>
 
-  <!-- 3. CPU対戦モード選択画面（鬼レンチャレンジ派手パネル＆選択カットイン対応） -->
+  <!-- 3. CPU対戦モード選択画面 -->
   <div id="screen-mode" class="screen" style="justify-content: center; align-items: center; padding: 16px; gap: 10px;">
     <div style="font-size: 1.15rem; font-weight: 800; color: #f5c40f; margin-bottom: 4px;">モードを選択してください</div>
 
@@ -513,7 +545,7 @@ body {
     </div>
   </div>
 
-  <!-- 5. メイン対戦画面（スクショ準拠＋中央ボード上下吹き出し＋最下段横スライドシグナルバー） -->
+  <!-- 5. メイン対戦画面（5枚固定スロット＋中央ボード上下吹き出し＋最下段横スライドシグナルバー） -->
   <div id="screen-game" class="screen" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; padding: 6px 9px;">
     <!-- 上段：相手手札 -->
     <div class="panel-box" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px;">
@@ -575,9 +607,9 @@ body {
       <button id="btn-draw" class="action-btn" onclick="playerDraw();" disabled>ドロー</button>
     </div>
 
-    <!-- 下段：手札＆ガイド＆操作案内＆横スライド式シグナルコマンドバー -->
-    <div class="panel-box" style="padding: 6px 6px 5px 6px; display: flex; flex-direction: column; gap: 4px; margin-top: auto;">
-      <div id="player-hand-container" style="display: flex; justify-content: center; gap: 6px; min-height: 80px; align-items: flex-end; padding-top: 4px;"></div>
+    <!-- 下段：手札5枚固定枠＆ガイド＆操作案内＆横スライド式シグナルコマンドバー -->
+    <div class="panel-box" style="padding: 6px 5px 5px 5px; display: flex; flex-direction: column; gap: 4px; margin-top: auto;">
+      <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; min-height: 80px; align-items: flex-end; padding-top: 4px;"></div>
       <div id="beginner-guide-box" style="background: rgba(245, 196, 0, 0.14); border: 1px solid #e6b800; border-radius: 5px; padding: 3px 8px; font-size: 0.7rem; color: #f5c40f; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none;"></div>
       <div id="hand-status-msg" style="font-size: 0.66rem; color: #cbd5e1; text-align: center;">カードを2回タップして打牌します</div>
       <div id="signal-slide-bar" class="signal-slide-bar" aria-label="定型シグナル選択"></div>
@@ -614,36 +646,36 @@ body {
     </div>
   </div>
 
-  <!-- 7. 全役一覧データベース＆jp2マニュアル モーダル -->
+  <!-- 7. 全役一覧データベース＆jp2マニュアル モーダル（枠内左右収まり最適化済み） -->
   <div id="modal-rule" class="modal-overlay">
-    <div class="panel-gold" style="width: 100%; max-width: 390px; max-height: 88%; display: flex; flex-direction: column; padding: 10px; gap: 8px; background: #0e2024;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 0.88rem; font-weight: 900; color: #f5c40f;">📜 全役一覧データベース</span>
-          <button id="tab-btn-yaku" onclick="SoundEngine.playSE('select_card'); switchRuleTab('yaku');" style="padding: 2px 7px; font-size: 0.65rem; border-radius: 4px; border: 1px solid #f5c40f; background: #f5c40f; color: #111; font-weight: 700; cursor: pointer;">役一覧</button>
-          <button id="tab-btn-manual" onclick="SoundEngine.playSE('select_card'); switchRuleTab('manual');" style="padding: 2px 7px; font-size: 0.65rem; border-radius: 4px; border: 1px solid #2ecc71; background: transparent; color: #2ecc71; font-weight: 700; cursor: pointer;">マニュアル</button>
+    <div class="panel-gold" style="width: 100%; max-width: 360px; max-height: 88%; display: flex; flex-direction: column; padding: 9px; gap: 7px; background: #0e2024;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+        <span style="font-size: 0.82rem; font-weight: 900; color: #f5c40f; white-space: nowrap;">📜 全役データベース</span>
+        <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+          <button id="tab-btn-yaku" onclick="SoundEngine.playSE('select_card'); switchRuleTab('yaku');" style="padding: 3px 7px; font-size: 0.64rem; border-radius: 4px; border: 1px solid #f5c40f; background: #f5c40f; color: #111; font-weight: 800; cursor: pointer; white-space: nowrap;">役一覧</button>
+          <button id="tab-btn-manual" onclick="SoundEngine.playSE('select_card'); switchRuleTab('manual');" style="padding: 3px 7px; font-size: 0.64rem; border-radius: 4px; border: 1px solid #2ecc71; background: transparent; color: #2ecc71; font-weight: 800; cursor: pointer; white-space: nowrap;">マニュアル</button>
+          <button onclick="SoundEngine.playSE('select_card'); closeRuleModal();" style="width: 24px; height: 24px; border-radius: 5px; border: 1px solid #e74c3c; background: #1e293b; color: #f87171; font-weight: 800; cursor: pointer;">✕</button>
         </div>
-        <button onclick="SoundEngine.playSE('select_card'); closeRuleModal();" style="width: 26px; height: 26px; border-radius: 5px; border: 1px solid #e74c3c; background: #1e293b; color: #f87171; font-weight: 800; cursor: pointer;">✕</button>
       </div>
 
-      <div id="rule-yaku-content" style="overflow-y: auto; display: flex; flex-direction: column; gap: 7px;">
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;">
-          <button class="cat-filter-btn" data-cat="1" onclick="selectRuleCategory(1)" style="padding: 5px 2px; font-size: 0.66rem; font-weight: 800; border-radius: 5px; border: 1px solid #2980b9; background: #1b4f72; color: #fff; cursor: pointer;">状態役</button>
-          <button class="cat-filter-btn" data-cat="2" onclick="selectRuleCategory(2)" style="padding: 5px 2px; font-size: 0.66rem; font-weight: 800; border-radius: 5px; border: 1px solid #1e8449; background: #145a32; color: #fff; cursor: pointer;">基本役</button>
-          <button class="cat-filter-btn" data-cat="3" onclick="selectRuleCategory(3)" style="padding: 5px 2px; font-size: 0.66rem; font-weight: 800; border-radius: 5px; border: 1px solid #d35400; background: #7e5109; color: #fff; cursor: pointer;">中級役</button>
-          <button class="cat-filter-btn" data-cat="4" onclick="selectRuleCategory(4)" style="padding: 5px 2px; font-size: 0.66rem; font-weight: 800; border-radius: 5px; border: 1px solid #c0392b; background: #78281f; color: #fff; cursor: pointer;">役満</button>
-          <button class="cat-filter-btn" data-cat="5" onclick="selectRuleCategory(5)" style="padding: 5px 2px; font-size: 0.66rem; font-weight: 800; border-radius: 5px; border: 1px solid #8e44ad; background: #512e5f; color: #fff; cursor: pointer;">JOKER</button>
+      <div id="rule-yaku-content" style="overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;">
+          <button class="cat-filter-btn" data-cat="1" onclick="selectRuleCategory(1)" style="padding: 5px 1px; font-size: 0.62rem; font-weight: 800; border-radius: 5px; border: 1px solid #2980b9; background: #1b4f72; color: #fff; cursor: pointer; white-space: nowrap;">状態役</button>
+          <button class="cat-filter-btn" data-cat="2" onclick="selectRuleCategory(2)" style="padding: 5px 1px; font-size: 0.62rem; font-weight: 800; border-radius: 5px; border: 1px solid #1e8449; background: #145a32; color: #fff; cursor: pointer; white-space: nowrap;">基本役</button>
+          <button class="cat-filter-btn" data-cat="3" onclick="selectRuleCategory(3)" style="padding: 5px 1px; font-size: 0.62rem; font-weight: 800; border-radius: 5px; border: 1px solid #d35400; background: #7e5109; color: #fff; cursor: pointer; white-space: nowrap;">中級役</button>
+          <button class="cat-filter-btn" data-cat="4" onclick="selectRuleCategory(4)" style="padding: 5px 1px; font-size: 0.62rem; font-weight: 800; border-radius: 5px; border: 1px solid #c0392b; background: #78281f; color: #fff; cursor: pointer; white-space: nowrap;">役満</button>
+          <button class="cat-filter-btn" data-cat="5" onclick="selectRuleCategory(5)" style="padding: 5px 1px; font-size: 0.62rem; font-weight: 800; border-radius: 5px; border: 1px solid #8e44ad; background: #512e5f; color: #fff; cursor: pointer; white-space: nowrap;">JOKER</button>
         </div>
 
         <div style="font-size: 0.62rem; color: #94a3b8; text-align: center;">← スライド / タップで役を選択 →</div>
-        <div id="yaku-chip-strip" style="display: flex; gap: 5px; overflow-x: auto; padding-bottom: 3px;"></div>
+        <div id="yaku-chip-strip" style="display: flex; gap: 5px; overflow-x: auto; padding: 2px 2px 4px 2px;"></div>
 
-        <div id="yaku-detail-panel" class="panel-box" style="padding: 10px; display: flex; flex-direction: column; gap: 6px; background: #091518;">
-          <div id="yaku-cat-badge" style="align-self: flex-start; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; background: #6c3483; color: #fff;"></div>
-          <div id="yaku-selected-title" style="font-size: 0.95rem; font-weight: 900; color: #2ecc71;"></div>
-          <div id="yaku-selected-desc" style="background: #13262a; border: 1px solid #234248; border-radius: 6px; padding: 8px; font-size: 0.72rem; line-height: 1.45; color: #f1f5f9;"></div>
-          <div id="yaku-sample-label" style="font-size: 0.68rem; color: #cbd5e1; text-align: center; margin-top: 2px;">サンプル形（5枚並び）：</div>
-          <div id="yaku-sample-cards" style="display: flex; justify-content: center; gap: 6px; padding-top: 2px;"></div>
+        <div id="yaku-detail-panel" class="panel-box" style="padding: 8px; display: flex; flex-direction: column; gap: 6px; background: #091518;">
+          <div id="yaku-cat-badge" style="align-self: flex-start; padding: 2px 8px; border-radius: 4px; font-size: 0.64rem; font-weight: 800; background: #6c3483; color: #fff;"></div>
+          <div id="yaku-selected-title" style="font-size: 0.9rem; font-weight: 900; color: #2ecc71;"></div>
+          <div id="yaku-selected-desc" style="background: #13262a; border: 1px solid #234248; border-radius: 6px; padding: 7px; font-size: 0.7rem; line-height: 1.45; color: #f1f5f9;"></div>
+          <div id="yaku-sample-label" style="font-size: 0.66rem; color: #cbd5e1; text-align: center; margin-top: 2px;">サンプル形（5枚並び）：</div>
+          <div id="yaku-sample-cards" style="display: flex; justify-content: center; gap: 4px; padding-top: 2px; width: 100%; overflow: hidden;"></div>
         </div>
       </div>
 
@@ -780,7 +812,7 @@ function createCardElement(card, isMini = false) {
     el.className = (isMini ? 'card-mini' : 'card') + ' joker';
     el.innerHTML = isMini
       ? '<span style="font-size:0.65rem; font-weight:900;">JK</span>'
-      : '<span style="font-size:0.82rem; font-weight:900; transform:rotate(-12deg);">JOKER</span>';
+      : '<span style="font-size:0.78rem; font-weight:900; transform:rotate(-12deg);">JOKER</span>';
     return el;
   }
   const colorClass = isRedSuit(card.suit) ? 'red' : 'black';
@@ -854,7 +886,6 @@ function checkNewHouse5(cards) {
   return false;
 }
 
-// 酷使苦情：5・9・4・9 ＋ JOKER ＋ 4スートコンプリート
 function checkKushiKujou5(cards) {
   if (!Array.isArray(cards) || cards.length !== 5) return false;
   const jokers = cards.filter(c => c.isJoker);
@@ -1150,7 +1181,7 @@ const YAKU_REGISTRY = [
     jokerType: 'allowed', requireReach: true, hasSpecialLogo: true,
     catHeader: '【状態役・別格演出】リーチ直後1巡以内の和了（+1pt）',
     desc: 'リーチ宣言時のターンから1巡以内（turnCount - reachTurnIndex <= 1）にツモまたはロンで和了すると成立。',
-    sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:14}],
+    sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:1}],
     check: () => false
   },
   {
@@ -1645,13 +1676,12 @@ function selectAndSendSignal(text) {
       peerConn.send({ type: 'REMOTE_SIGNAL', signal: text });
     } catch (e) {}
   } else if (!gameState.isOnline && !gameState.isGameOver) {
-    // CPU戦でも感情ラリーの雰囲気を楽しめるよう軽いリアクションを返す
     clearTimeout(cpuSignalTimer);
     cpuSignalTimer = setTimeout(() => {
       const replyMap = {
         '通るか？': '通しませんよ！',
         '通しませんよ！': 'なんだと！？',
-        '危ない！': '様子見…',
+        '危ない！': '通るか？',
         '通ればリーチ！': '危ない！',
         'まだ終わらんよ！': 'いいだろう！',
         '勝たせてもらう！': 'まだ終わらんよ！',
@@ -2552,15 +2582,24 @@ function renderGameBoard() {
     playerRiverBox.appendChild(createRiverCardElement(c, idx === gameState.playerReachTileIndex));
   });
 
+  /* 常に5スロット固定描画（4枚時でも右端5枚目枠に点線枠の空きスペースを表示） */
   const handBox = document.getElementById('player-hand-container');
   handBox.innerHTML = '';
-  gameState.playerHand.forEach((card, idx) => {
-    const el = createCardElement(card, false);
-    if (gameState.selectedCardIdx === idx) el.classList.add('selected');
-    if (gameState.isPlayerReach && idx !== 4) el.classList.add('locked');
-    el.onclick = () => handleCardTap(idx);
-    handBox.appendChild(el);
-  });
+  for (let idx = 0; idx < 5; idx++) {
+    const card = gameState.playerHand[idx];
+    if (card) {
+      const el = createCardElement(card, false);
+      if (gameState.selectedCardIdx === idx) el.classList.add('selected');
+      if (gameState.isPlayerReach && idx !== 4) el.classList.add('locked');
+      el.onclick = () => handleCardTap(idx);
+      handBox.appendChild(el);
+    } else {
+      const emptySlot = document.createElement('div');
+      emptySlot.className = 'card-slot-empty';
+      emptySlot.innerHTML = '<span>DRAW</span>';
+      handBox.appendChild(emptySlot);
+    }
+  }
 
   const btnReach = document.getElementById('btn-reach');
   btnReach.innerText = gameState.isPlayerReachPending ? 'キャンセル' : (gameState.turnCount === 0 ? 'Wリーチ' : 'リーチ');
