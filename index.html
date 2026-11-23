@@ -125,7 +125,20 @@ body {
   box-shadow: 0 0 14px rgba(255, 59, 48, 0.85);
 }
 
-/* 高視認性太字トランプカード（上下ズレなし・スート＆数字はっきり） */
+/* 手札エリア完全固定（上下ズレ・カクつきゼロ） */
+.hand-dock-panel {
+  height: 146px;
+  min-height: 146px;
+  max-height: 146px;
+  padding: 6px 5px 5px 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: auto;
+  overflow: hidden;
+}
+
+/* 高視認性太字トランプカード */
 .card {
   width: 55px;
   height: 76px;
@@ -324,7 +337,7 @@ body {
   display: flex;
   gap: 5px;
   overflow-x: auto;
-  padding: 2px 2px 3px 2px;
+  padding: 2px 2px 1px 2px;
   scrollbar-width: none;
 }
 .signal-slide-bar::-webkit-scrollbar { display: none; }
@@ -529,7 +542,7 @@ body {
 
     <button class="panel-box" onclick="selectMode('beginner');" style="width: 100%; max-width: 315px; padding: 10px 12px; text-align: left; cursor: pointer; color: #fff;">
       <div style="font-size: 0.88rem; font-weight: 900; color: #2ecc71;">① ビギナーモード</div>
-      <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">基本役優先・ガイドあり・第2サイクルオーラス</div>
+      <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 2px;">基本役優先・第2サイクルオーラス</div>
     </button>
 
     <button class="panel-box" onclick="selectMode('main');" style="width: 100%; max-width: 315px; padding: 10px 12px; text-align: left; cursor: pointer; color: #fff;">
@@ -615,11 +628,10 @@ body {
       <button id="btn-draw" class="action-btn" onclick="playerDraw();" disabled>ドロー</button>
     </div>
 
-    <!-- 手札5枚完全固定エリア（上下ズレゼロ） -->
-    <div class="panel-box" style="padding: 6px 5px 5px 5px; display: flex; flex-direction: column; gap: 4px; margin-top: auto;">
+    <!-- 手札5枚完全固定エリア（ガイド可変行なし・高さ完全固定） -->
+    <div class="panel-box hand-dock-panel">
       <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; height: 78px; align-items: center; overflow: hidden;"></div>
-      <div id="beginner-guide-box" style="background: rgba(245, 196, 0, 0.14); border: 1px solid #e6b800; border-radius: 5px; padding: 3px 8px; font-size: 0.7rem; color: #f5c40f; text-align: center; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none;"></div>
-      <div id="hand-status-msg" style="font-size: 0.66rem; color: #cbd5e1; text-align: center;">カードを2回タップして打牌します</div>
+      <div id="hand-status-msg" style="height: 17px; line-height: 17px; font-size: 0.65rem; color: #cbd5e1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">カードを2回タップして打牌します</div>
       <div id="signal-slide-bar" class="signal-slide-bar" aria-label="定型シグナル選択"></div>
     </div>
   </div>
@@ -689,10 +701,10 @@ body {
 
       <div id="rule-manual-content" style="overflow-y: auto; display: none; font-size: 0.72rem; line-height: 1.45; color: #ecf0f1; flex-direction: column; gap: 6px; padding: 4px;">
         <div style="font-weight: 800; color: #f5c40f;">【基本進行・ドラ仕様】</div>
-        <div>・手札4枚からツモで5枚にし、不要な牌を2回タップして打牌します。第1サイクルは表ドラ1枚・裏ドラ1枚、第2サイクル（オーラス）から表ドラ2枚・裏ドラ2枚になります[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span)。</div>
-        <div>・リーチ（+2pt・供託1pt）、ダブルリーチ（+3pt・第1打牌限定・供託1pt）、一発（+1pt・リーチ直後1巡以内）[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)。</div>
+        <div>・手札4枚からツモで5枚にし、不要な牌を2回タップして打牌します。第1サイクルは表ドラ1枚・裏ドラ1枚、第2サイクル（オーラス）から表ドラ2枚・裏ドラ2枚になります[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)。</div>
+        <div>・リーチ（+2pt・供託1pt）、ダブルリーチ（+3pt・第1打牌限定・供託1pt）、一発（+1pt・リーチ直後1巡以内）[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)。</div>
         <div style="font-weight: 800; color: #2ecc71; margin-top: 4px;">【JOKER＆酷使苦情＆シン・AKB48】</div>
-        <div>・JOKER使用時は通常-2pt（JOKER必須役は免除）[span_13](start_span)[span_13](end_span)。酷使苦情（29pt）は5・9・4・9＋JOKER＋4スート[span_14](start_span)[span_14](end_span)、シン・AKB48（48pt）はJOKER＋♥A・K・4・8[span_15](start_span)[span_15](end_span)。</div>
+        <div>・JOKER使用時は通常-2pt（JOKER必須役は免除）[span_14](start_span)[span_14](end_span)。酷使苦情（29pt）は5・9・4・9＋JOKER＋4スート[span_15](start_span)[span_15](end_span)、シン・AKB48（48pt）はJOKER＋♥A・K・4・8[span_16](start_span)[span_16](end_span)。</div>
       </div>
     </div>
   </div>
@@ -851,65 +863,123 @@ function createRiverCardElement(card, isReachTile = false) {
   return el;
 }
 
+/* 5枚連番判定（A=1低位・A=14高位の両対応、数字重複なし） */
 function checkValidStraight5(vals) {
   if (!Array.isArray(vals) || vals.length !== 5) return false;
-  const sorted = [...vals].sort((a, b) => a - b);
-  for (let i = 1; i < 5; i++) {
-    if (sorted[i] !== sorted[i - 1] + 1) return false;
-  }
-  return true;
+  const s1 = [...vals].sort((a, b) => a - b);
+  const ok1 = s1.every((v, i) => i === 0 || v === s1[i - 1] + 1);
+  if (ok1) return true;
+  const s2 = vals.map(v => v === 1 ? 14 : v).sort((a, b) => a - b);
+  return s2.every((v, i) => i === 0 || v === s2[i - 1] + 1);
 }
 
-function hasSuited3Sequence(cards) {
-  for (const suit of SUITS) {
-    const suited = cards.filter(c => !c.isJoker && c.suit === suit);
-    if (suited.length < 3) continue;
-    const nums = [...new Set(suited.flatMap(c => c.val === 1 ? [1, 14] : [c.val]))].sort((a, b) => a - b);
-    for (let i = 0; i <= nums.length - 3; i++) {
-      if (nums[i + 1] === nums[i] + 1 && nums[i + 2] === nums[i] + 2) return true;
+/* 3枚連番判定（A=1低位・A=14高位の両対応、数字重複なし） */
+function checkValid3Sequence(cards3) {
+  if (!Array.isArray(cards3) || cards3.length !== 3 || cards3.some(c => c.isJoker)) return false;
+  const raw = cards3.map(c => c.val);
+  const s1 = [...raw].sort((a, b) => a - b);
+  if (s1[1] === s1[0] + 1 && s1[2] === s1[1] + 1) return true;
+  const s2 = raw.map(v => v === 1 ? 14 : v).sort((a, b) => a - b);
+  return s2[1] === s2[0] + 1 && s2[2] === s2[1] + 1;
+}
+
+/* JOKER込みで3枚連番が作れるか判定（残り3枚用） */
+function canForm3SequenceWithJokers(cards3, jokerCount) {
+  if (!Array.isArray(cards3) || cards3.some(c => c.isJoker)) return false;
+  const total = cards3.length + jokerCount;
+  if (total !== 3) return false;
+  if (jokerCount === 0) return checkValid3Sequence(cards3);
+
+  const pool = [];
+  for (const s of SUITS) {
+    for (let v = 1; v <= 13; v++) {
+      pool.push({ suit: s, val: v, isJoker: false });
     }
   }
-  return false;
-}
-
-function hasMixedColor3Sequence(cards, colorFn) {
-  const colored = cards.filter(c => !c.isJoker && colorFn(c.suit));
-  if (colored.length < 3) return false;
-  const nums = [...new Set(colored.flatMap(c => c.val === 1 ? [1, 14] : [c.val]))].sort((a, b) => a - b);
-  for (let i = 0; i <= nums.length - 3; i++) {
-    if (nums[i + 1] === nums[i] + 1 && nums[i + 2] === nums[i] + 2) return true;
+  for (const c of pool) {
+    if (checkValid3Sequence([...cards3, c])) return true;
   }
   return false;
 }
 
-function checkNewHouse5(cards) {
+/* ブラックジャック（12点）：黒Jペア ＋ 黒スート（♠・♣）の混合3連番 */
+function checkBlackjack5(cards) {
   if (!Array.isArray(cards) || cards.length !== 5) return false;
-  for (let i = 0; i < 5; i++) {
-    for (let j = i + 1; j < 5; j++) {
-      const pair = [cards[i], cards[j]];
-      const rem = cards.filter((_, idx) => idx !== i && idx !== j);
-      if (pair[0].isJoker || pair[1].isJoker) continue;
-      if (pair[0].val !== pair[1].val) continue;
-      if (rem.some(c => c.isJoker)) continue;
-      if (hasSuited3Sequence(rem)) return true;
+  const jokers = cards.filter(c => c.isJoker);
+  const normals = cards.filter(c => !c.isJoker);
+  if (jokers.length > 1) return false;
+  if (!normals.every(c => isBlackSuit(c.suit))) return false;
+
+  const vals = normals.map(c => c.val === 1 ? 14 : c.val);
+  const hasRoyalMix = vals.includes(10) && vals.includes(12) && vals.includes(13) && vals.includes(14);
+  if (hasRoyalMix) return false;
+
+  const blackJacks = normals.filter(c => c.val === 11);
+  if (blackJacks.length >= 2) {
+    const rest = normals.filter(c => c !== blackJacks[0] && c !== blackJacks[1]);
+    if (rest.length + jokers.length === 3 && canForm3SequenceWithJokers(rest, jokers.length)) {
+      return true;
+    }
+  }
+  if (blackJacks.length >= 1 && jokers.length === 1) {
+    const rest = normals.filter(c => c !== blackJacks[0]);
+    if (rest.length === 3 && checkValid3Sequence(rest)) {
+      return true;
     }
   }
   return false;
 }
 
+/* レッドクイーン（12点）：赤Qペア ＋ 赤スート（♥・♦）の混合3連番 */
+function checkRedQueen5(cards) {
+  if (!Array.isArray(cards) || cards.length !== 5) return false;
+  const jokers = cards.filter(c => c.isJoker);
+  const normals = cards.filter(c => !c.isJoker);
+  if (jokers.length > 1) return false;
+  if (!normals.every(c => isRedSuit(c.suit))) return false;
+
+  const redQueens = normals.filter(c => c.val === 12);
+  if (redQueens.length >= 2) {
+    const rest = normals.filter(c => c !== redQueens[0] && c !== redQueens[1]);
+    if (rest.length + jokers.length === 3 && canForm3SequenceWithJokers(rest, jokers.length)) {
+      return true;
+    }
+  }
+  if (redQueens.length >= 1 && jokers.length === 1) {
+    const rest = normals.filter(c => c !== redQueens[0]);
+    if (rest.length === 3 && checkValid3Sequence(rest)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/* ニューハウス（7点）：任意のワンペア（ちょうど2枚）＋残り3枚が同一スートの3連番 */
+function checkNewHouse5(cards) {
+  if (!Array.isArray(cards) || cards.length !== 5 || cards.some(c => c.isJoker)) return false;
+  const counts = {};
+  cards.forEach(c => { counts[c.val] = (counts[c.val] || 0) + 1; });
+  const pairVals = Object.keys(counts).filter(k => counts[k] === 2).map(Number);
+  if (pairVals.length !== 1) return false;
+  const pairVal = pairVals[0];
+  const rest = cards.filter(c => c.val !== pairVal);
+  if (rest.length !== 3) return false;
+  const sameSuit = rest[0].suit === rest[1].suit && rest[1].suit === rest[2].suit;
+  return sameSuit && checkValid3Sequence(rest);
+}
+
+/* 酷使苦情（29点）：5・9・4・9 ＋ JOKER ＋ 4スート */
 function checkKushiKujou5(cards) {
   if (!Array.isArray(cards) || cards.length !== 5) return false;
   const jokers = cards.filter(c => c.isJoker);
-  if (jokers.length !== 1) return false;
   const normals = cards.filter(c => !c.isJoker);
-  if (normals.length !== 4) return false;
+  if (jokers.length !== 1 || normals.length !== 4) return false;
   const normVals = normals.map(c => c.val).sort((a, b) => a - b);
   if (JSON.stringify(normVals) !== JSON.stringify([4, 5, 9, 9])) return false;
-  const uniqueSuits = new Set(normals.map(c => c.suit));
-  return uniqueSuits.size === 4;
+  return new Set(normals.map(c => c.suit)).size === 4;
 }
 
-/* シン・AKB48：JOKER 1枚 ＋ ハート（♥）の A・K・4・8（4枚） */
+/* シン・AKB48（48点）：JOKER 1枚 ＋ ハート（♥）の A・K・4・8 */
 function checkShinAkb48(cards) {
   if (!Array.isArray(cards) || cards.length !== 5) return false;
   const jokers = cards.filter(c => c.isJoker);
@@ -942,7 +1012,7 @@ const YAKU_REGISTRY = [
     id: 'five_card', name: '5カード', score: 25, catId: 5, catName: '⑤ JOKER必須役', catClass: 'cat-5',
     jokerType: 'required', requireReach: false, logoMode: 'grand',
     catHeader: '【JOKER必須・個別ロゴ演出・阿漕免除】5枚同数役',
-    desc: '同一数字＋JOKERで5枚同数構成を作る役（JOKER必須のため-2pt免除）。',
+    desc: '同一数字4枚＋JOKERで5枚同数構成を作る役（JOKER必須のため-2pt免除）。',
     sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:7},{isJoker:true}],
     check: (cards) => {
       const jokers = cards.filter(c => c.isJoker);
@@ -1050,9 +1120,7 @@ const YAKU_REGISTRY = [
       if (normals.length !== 5) return false;
       const s0 = normals[0].suit;
       if (!normals.every(c => c.suit === s0)) return false;
-      const valsA = normals.map(c => c.val);
-      const valsHighA = normals.map(c => c.val === 1 ? 14 : c.val);
-      return checkValidStraight5(valsA) || checkValidStraight5(valsHighA);
+      return checkValidStraight5(normals.map(c => c.val));
     }
   },
   {
@@ -1089,25 +1157,17 @@ const YAKU_REGISTRY = [
     id: 'blackjack', name: 'ブラックジャック', score: 12, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
     jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】黒Jペア＋黒連番3枚',
-    desc: 'Jのペア＋残り3枚が黒（♠・♣）混合3連番で成立（JOKER使用時は-2pt）。',
-    sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:7},{suit:'♣',val:8},{suit:'♠',val:9}],
-    check: (cards) => {
-      const jacks = cards.filter(c => !c.isJoker && c.val === 11);
-      if (jacks.length < 2) return false;
-      return hasMixedColor3Sequence(cards, isBlackSuit);
-    }
+    desc: '黒J（♠J/♣JまたはJOKER）ペア ＋ 黒スート（♠・♣）の混合3連番で成立（JOKER使用時は-2pt）。',
+    sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:2},{suit:'♣',val:3},{suit:'♠',val:4}],
+    check: (cards) => checkBlackjack5(cards)
   },
   {
     id: 'red_queen', name: 'レッドクイーン', score: 12, catId: 3, catName: '③ 中級役', catClass: 'cat-3',
     jokerType: 'allowed', requireReach: false, logoMode: 'simple',
     catHeader: '【中級役・シンプルロゴ演出】赤Qペア＋赤連番3枚',
-    desc: 'Qのペア＋残り3枚が赤（♥・♦）混合3連番で成立（JOKER使用時は-2pt）。',
-    sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:6},{suit:'♦',val:7},{suit:'♥',val:8}],
-    check: (cards) => {
-      const queens = cards.filter(c => !c.isJoker && c.val === 12);
-      if (queens.length < 2) return false;
-      return hasMixedColor3Sequence(cards, isRedSuit);
-    }
+    desc: '赤Q（♥Q/♦QまたはJOKER）ペア ＋ 赤スート（♥・♦）の混合3連番で成立（JOKER使用時は-2pt）。',
+    sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:5},{suit:'♦',val:6},{suit:'♥',val:7}],
+    check: (cards) => checkRedQueen5(cards)
   },
 
   // catId: 2 (基本役：特定役ロゴ演出なし)
@@ -1131,10 +1191,7 @@ const YAKU_REGISTRY = [
     catHeader: '【要リーチ・JOKER不可・基本役】ワンペア＋同スート3連番',
     desc: '任意のワンペア＋残り3枚が同一スートの3連番で成立（JOKER不可・要リーチ・ロゴ演出なし）。',
     sample: [{suit:'♠',val:5},{suit:'♥',val:5},{suit:'♦',val:3},{suit:'♦',val:4},{suit:'♦',val:5}],
-    check: (cards) => {
-      if (cards.some(c => c.isJoker)) return false;
-      return checkNewHouse5(cards);
-    }
+    check: (cards) => checkNewHouse5(cards)
   },
   {
     id: 'full_house', name: 'フルハウス', score: 6, catId: 2, catName: '② 基本役', catClass: 'cat-2',
@@ -1144,9 +1201,8 @@ const YAKU_REGISTRY = [
     sample: [{suit:'♠',val:8},{suit:'♥',val:8},{suit:'♦',val:8},{suit:'♣',val:4},{suit:'♠',val:4}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
-      const normals = cards.filter(c => !c.isJoker);
       const counts = {};
-      normals.forEach(c => { counts[c.val] = (counts[c.val] || 0) + 1; });
+      cards.forEach(c => { counts[c.val] = (counts[c.val] || 0) + 1; });
       const arr = Object.values(counts).sort((a, b) => b - a);
       return arr[0] === 3 && arr[1] === 2;
     }
@@ -1161,9 +1217,7 @@ const YAKU_REGISTRY = [
       if (cards.some(c => c.isJoker)) return false;
       const s0 = cards[0].suit;
       if (!cards.every(c => c.suit === s0)) return false;
-      const valsA = cards.map(c => c.val);
-      const valsHighA = cards.map(c => c.val === 1 ? 14 : c.val);
-      return !checkValidStraight5(valsA) && !checkValidStraight5(valsHighA);
+      return !checkValidStraight5(cards.map(c => c.val));
     }
   },
   {
@@ -1174,10 +1228,9 @@ const YAKU_REGISTRY = [
     sample: [{suit:'♠',val:3},{suit:'♥',val:4},{suit:'♦',val:5},{suit:'♣',val:6},{suit:'♥',val:7}],
     check: (cards) => {
       if (cards.some(c => c.isJoker)) return false;
-      const valsA = cards.map(c => c.val);
-      const valsHighA = cards.map(c => c.val === 1 ? 14 : c.val);
-      const isSeq = checkValidStraight5(valsA) || checkValidStraight5(valsHighA);
-      const isRoyal = [10, 11, 12, 13, 14].every(v => new Set(valsHighA).has(v));
+      const isSeq = checkValidStraight5(cards.map(c => c.val));
+      const setA = new Set(cards.map(c => c.val === 1 ? 14 : c.val));
+      const isRoyal = [10, 11, 12, 13, 14].every(v => setA.has(v));
       return isSeq && !isRoyal;
     }
   },
@@ -2322,7 +2375,6 @@ function triggerIppatsuGrandCutin() {
   setTimeout(() => { el.style.display = 'none'; }, 1800);
 }
 
-/* カテゴリ別（JOKER必須/役満＝個別ロゴ、中級＝シンプルロゴ、基本＝ロゴなし）＆状態役（天地人和/一発/海底）演出 */
 function triggerWinCategoryAndStateEffects(yaku, isIppatsu, isHaitei, isTenchi) {
   const logosToShow = [];
 
@@ -2358,7 +2410,6 @@ function triggerWinCategoryAndStateEffects(yaku, isIppatsu, isHaitei, isTenchi) 
   }
 }
 
-/* 第1サイクルはドラ1枚・裏1枚、第2サイクル以降からドラ2枚・裏2枚が有効 */
 function getActiveDoraPairsForCycle(cycleNum) {
   if (cycleNum >= 2) {
     return {
@@ -2683,16 +2734,24 @@ function renderGameBoard() {
     cpuMiniBox.appendChild(back);
   });
 
+  // CPU河：最新牌へ自動追尾スクロール
   const cpuRiverBox = document.getElementById('cpu-river-scroll');
   cpuRiverBox.innerHTML = '';
   gameState.cpuRiver.forEach((c, idx) => {
     cpuRiverBox.appendChild(createRiverCardElement(c, idx === gameState.cpuReachTileIndex));
   });
+  requestAnimationFrame(() => {
+    cpuRiverBox.scrollLeft = cpuRiverBox.scrollWidth;
+  });
 
+  // プレイヤー河：最新牌へ自動追尾スクロール
   const playerRiverBox = document.getElementById('player-river-scroll');
   playerRiverBox.innerHTML = '';
   gameState.playerRiver.forEach((c, idx) => {
     playerRiverBox.appendChild(createRiverCardElement(c, idx === gameState.playerReachTileIndex));
+  });
+  requestAnimationFrame(() => {
+    playerRiverBox.scrollLeft = playerRiverBox.scrollWidth;
   });
 
   const handBox = document.getElementById('player-hand-container');
@@ -2726,15 +2785,6 @@ function renderGameBoard() {
 
   const btnDraw = document.getElementById('btn-draw');
   btnDraw.disabled = gameState.isGameOver || gameState.hasDrawn || Boolean(pendingRonCard) || visibleHand.length >= 5 || gameState.deck.length <= 0;
-
-  const guideBox = document.getElementById('beginner-guide-box');
-  if (gameState.mode === 'beginner' && !gameState.isOnline) {
-    guideBox.style.display = 'block';
-    const currentYaku = evaluateHand5(visibleHand, getEffectiveReachActive(true));
-    guideBox.innerText = currentYaku ? `成立中：${currentYaku.name} (${currentYaku.score}pt)` : '💡 ガイド：役一覧を見ながら、同じスートや連番・絵札を揃えよう';
-  } else {
-    guideBox.style.display = 'none';
-  }
 
   renderSignalSlideBar();
 }
