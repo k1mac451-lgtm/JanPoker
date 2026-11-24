@@ -80,7 +80,7 @@
     filter: brightness(0.92);
   }
 
-  /* CPUモード選択カード（スクショ準拠：青枠・緑枠・赤〜オレンジ枠） */
+  /* CPUモード選択カード */
   .mode-card-btn {
     width: 100%;
     max-width: 360px;
@@ -128,7 +128,7 @@
     letter-spacing: 0.08em;
   }
 
-  /* 通信＆ルール部屋ロビー（スクショ準拠） */
+  /* 通信＆ルール部屋ロビー */
   .lobby-section-box {
     width: 100%;
     max-width: 366px;
@@ -177,10 +177,38 @@
     transform: scale(0.97);
   }
 
+  /* 5枠固定手札グリッド（4枚時・5枚時のドローカクツキ完全解消） */
+  #player-hand-area {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    width: 100%;
+    height: 92px;
+    padding: 8px 2px 0 2px;
+    align-items: end;
+  }
+
+  .hand-slot {
+    width: 100%;
+    height: 82px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hand-slot-empty {
+    width: 100%;
+    height: 82px;
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.015);
+  }
+
   /* 対戦手札カード（ボツ画像準拠：黒背景＋ゴールド枠＋斜め配置ゴールドJOKER） */
   .playing-card {
-    width: 58px;
-    height: 84px;
+    width: 100%;
+    max-width: 62px;
+    height: 82px;
     background: var(--bg-card);
     border-radius: 8px;
     border: 1.5px solid #cbd5e1;
@@ -188,7 +216,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 4px 6px;
+    padding: 4px 5px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -220,21 +248,21 @@
   .joker-diag-label {
     color: #f1c40f;
     font-weight: 900;
-    font-size: 0.86rem;
-    letter-spacing: 0.06em;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
     transform: rotate(-28deg);
     text-shadow: 0 0 8px rgba(241, 196, 15, 0.65);
     white-space: nowrap;
   }
 
   .playing-card .suit-top {
-    font-size: 1.02rem;
+    font-size: 0.98rem;
     line-height: 1;
     font-weight: 900;
   }
 
   .playing-card .val-bottom {
-    font-size: 1.35rem;
+    font-size: 1.32rem;
     line-height: 1;
     font-weight: 900;
     text-align: right;
@@ -244,7 +272,7 @@
   .suit-red { color: #d62828; }
   .suit-black { color: #111827; }
 
-  /* 相手手札の斜線ストライプ青カード（スクショ準拠） */
+  /* 相手手札の斜線ストライプ青カード */
   .opp-back-card {
     width: 24px;
     height: 36px;
@@ -383,28 +411,31 @@
     border-color: #fff3b0;
   }
 
-  /* 固定表示吹き出しスロット（ガタつき防止） */
+  /* 固定表示吹き出しスロット（通信対戦時のみ可視・高さ固定） */
   .bubble-slot {
-    min-height: 26px;
+    height: 24px;
     display: flex;
     align-items: center;
   }
 
   .chat-bubble {
     display: none;
-    max-width: 85%;
-    padding: 3px 10px;
-    border-radius: 14px;
-    font-size: 0.75rem;
+    max-width: 86%;
+    padding: 2px 10px;
+    border-radius: 13px;
+    font-size: 0.74rem;
     font-weight: 800;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
     pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .chat-bubble.visible {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
   }
 
   .chat-bubble.opp {
@@ -563,11 +594,11 @@
     </div>
   </div>
 
-  <!-- 2. CPU対戦モード選択画面（スクショ 1000001797.png 準拠） -->
+  <!-- 2. CPU対戦モード選択画面 -->
   <div id="screen-mode" class="screen" style="justify-content: center; align-items: center; padding: 14px; gap: 10px;">
     <h2 style="margin: 0; color: #f1c40f; font-size: 1.25rem; font-weight: 900; text-align: center;">CPU対戦モードを選択</h2>
     <div style="font-size: 0.78rem; color: #cbd5e1; text-align: center; line-height: 1.4; margin-bottom: 2px;">
-      全モード第2サイクル（オーラス）はドラ2枚・裏ドラ2枚！
+      全モード第2サイクル（オーラス）はドラ2枚・裏ドラ2枚！（タイマー無制限）
     </div>
 
     <button class="mode-card-btn mode-beginner" onclick="SoundEngine.playSE('select_card'); startCpuMatch('beginner', 'normal');">
@@ -592,16 +623,15 @@
     <button onclick="SoundEngine.playSE('select_card'); openScreen('screen-title');" style="background: transparent; color: #bdc3c7; border: none; margin-top: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">＜ タイトルに戻る</button>
   </div>
 
-  <!-- 3. 通信＆ルール部屋ロビー画面（スクショ 1000001796.png 準拠＋拡張機能） -->
+  <!-- 3. 通信＆ルール部屋ロビー画面 -->
   <div id="screen-lobby" class="screen" style="padding: 12px 14px; gap: 9px; justify-content: flex-start; align-items: center;">
     <div style="text-align:center; width:100%; max-width:366px;">
       <h2 style="margin:0; font-size:1.15rem; font-weight:900; color:#5dade2;">🌐 通信＆ルール部屋ロビー</h2>
-      <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">通信対戦時は全般で30秒の制限時間が適用されます！</div>
+      <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">通信対戦時は全般で30秒の制限時間が適用されます！（シングルは無制限）</div>
     </div>
 
-    <!-- 各ルール部屋へシングル参戦 -->
     <div class="lobby-section-box lobby-single-box">
-      <div style="font-size:0.75rem; font-weight:900; color:#f4d03f; text-align:center;">◎ 各ルール部屋へシングル参戦（主と対戦）</div>
+      <div style="font-size:0.75rem; font-weight:900; color:#f4d03f; text-align:center;">◎ 各ルール部屋へシングル参戦（主と対戦・無制限）</div>
       <div class="room-single-grid">
         <button class="room-single-btn" style="background:#c0392b;" onclick="SoundEngine.playSE('select_card'); startSingleRuleRoom('shiren');">
           <span style="font-size:0.76rem; font-weight:900;">🔥 試練の部屋</span>
@@ -618,9 +648,8 @@
       </div>
     </div>
 
-    <!-- 通信対戦ホスト -->
     <div class="lobby-section-box lobby-host-box">
-      <div style="font-size:0.76rem; font-weight:900; color:#fff; text-align:center;">【通信対戦ホスト】ルール選択して作成</div>
+      <div style="font-size:0.76rem; font-weight:900; color:#fff; text-align:center;">【通信対戦ホスト】ルール選択して作成（30秒制）</div>
       <select id="host-room-rule-select" style="width:100%; height:32px; border-radius:6px; background:#09171a; color:#fff; border:1px solid #3498db; font-size:0.78rem; font-weight:700; text-align:center;">
         <option value="shoushi">⚔️ 勝負師の部屋（ガチンコ勝負）</option>
         <option value="shiren">🔥 試練の部屋（要リーチ基本役）</option>
@@ -638,9 +667,8 @@
       </div>
     </div>
 
-    <!-- 通信対戦ゲスト -->
     <div class="lobby-section-box lobby-guest-box">
-      <div style="font-size:0.76rem; font-weight:900; color:#fff; text-align:center;">【通信対戦ゲスト】IDでルームに参加</div>
+      <div style="font-size:0.76rem; font-weight:900; color:#fff; text-align:center;">【通信対戦ゲスト】IDでルームに参加（30秒制）</div>
       <input id="join-room-id-input" type="text" placeholder="友達のルームIDを入力" style="width:100%; height:34px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#111827; font-weight:800; font-size:0.82rem; text-align:center; padding:0 8px;">
       <button class="btn-gold" onclick="joinHostRoom();" style="width:100%; height:36px; font-size:0.86rem;">ルームに参加する</button>
     </div>
@@ -661,7 +689,7 @@
     <button id="btn-roulette-go" class="btn-gold" onclick="SoundEngine.playSE('select_card'); spinRoulette();" style="width:220px; height:44px; font-size:0.95rem;">🎲 ルーレットを回す</button>
   </div>
 
-  <!-- 5. メイン対戦画面（スクショ 1000001798.png 準拠＋吹き出し＋カクツキ防止） -->
+  <!-- 5. メイン対戦画面（手札5枠固定・通信時のみ30秒タイマー＆吹き出し） -->
   <div id="screen-game" class="screen" style="padding: 8px 10px 50px 10px; gap: 5px; justify-content: space-between;">
     <!-- 上部：相手手札・相手河・相手吹き出し -->
     <div style="display:flex; flex-direction:column; gap:4px;">
@@ -673,7 +701,7 @@
         </div>
       </div>
       <div id="opp-river" style="min-height:44px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
-      <div class="bubble-slot"><div id="bubble-opp" class="chat-bubble opp"></div></div>
+      <div id="bubble-slot-opp" class="bubble-slot"><div id="bubble-opp" class="chat-bubble opp"></div></div>
     </div>
 
     <!-- 中央：ゴールド枠ステータスボード -->
@@ -703,9 +731,9 @@
       </div>
     </div>
 
-    <!-- 下部：自分吹き出し・自分河・4ボタン・手札・打牌ガイド -->
+    <!-- 下部：自分吹き出し・自分河・4ボタン・5枠固定手札・打牌ガイド -->
     <div style="display:flex; flex-direction:column; gap:4px;">
-      <div class="bubble-slot"><div id="bubble-self" class="chat-bubble self"></div></div>
+      <div id="bubble-slot-self" class="bubble-slot"><div id="bubble-self" class="chat-bubble self"></div></div>
       <div id="self-river" style="min-height:44px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
 
       <div style="display:flex; gap:5px;">
@@ -716,7 +744,7 @@
       </div>
 
       <div style="background:rgba(12, 29, 34, 0.94); border:1px solid rgba(255,255,255,0.12); border-radius:9px; padding:8px 6px 6px 6px; display:flex; flex-direction:column; gap:5px;">
-        <div id="player-hand-area" style="display:flex; justify-content:center; align-items:flex-end; gap:5px; height:94px; padding-top:8px;"></div>
+        <div id="player-hand-area"></div>
         <div style="text-align:center; font-size:0.7rem; color:#95a5a6; font-weight:700; height:16px; line-height:16px; overflow:hidden;">
           不要なカードを2回タップして打牌してください。
         </div>
@@ -734,7 +762,7 @@
     <button id="btn-next-round" class="btn-gold" onclick="proceedAfterResult();" style="width:100%; height:46px; font-size:0.98rem;">次の局へ進む</button>
   </div>
 
-  <!-- 7. 独立した「役一覧画面」（全状態役完備・レアカテゴリ非表示・5枚横並びデカカード） -->
+  <!-- 7. 独立した「役一覧画面」 -->
   <div id="screen-yaku" class="screen" style="padding: 12px; gap: 8px; justify-content: flex-start;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2 style="margin:0; color:#f1c40f; font-size:1.08rem;">📜 全役一覧データベース</h2>
@@ -764,12 +792,12 @@
         10点以下の基本役と4カード（20点）ではJOKERは使えません。11点以上（4カード除く）ではオールマイティとしてペアや連番の代替に使えますが、使用すると <strong>-2pt</strong>（JOKER必須役は免除）となります。
       </div>
       <div style="background:#122e35; border:1px solid rgba(241,196,15,0.25); border-radius:10px; padding:10px;">
-        <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">3. サイクル・オーラス・ルール部屋</div>
-        全モード <strong>第2サイクルオーラス（表ドラ2・裏ドラ2）</strong> で終了します。通信対戦は30秒制限、通常シングル対戦は時間無制限です。ルール部屋（試練・ダマテン・勝負師）の主とのシングル対戦にも対応しています。
+        <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">3. サイクル・オーラス・タイマー差</div>
+        全モード <strong>第2サイクルオーラス（表ドラ2・裏ドラ2）</strong> で終了します。<strong>通信対戦全般は1アクション30秒制限</strong>、<strong>シングル対戦（CPU・ルール部屋シングル）は時間無制限</strong>です。
       </div>
       <div style="background:#122e35; border:1px solid rgba(241,196,15,0.25); border-radius:10px; padding:10px;">
         <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">4. 通信ロビー＆吹き出し</div>
-        ルームID発行後、招待URLごとコピー／共有できます。別アプリへ切り替えて戻っても同じIDで自動再接続し、対戦中は上下固定吹き出し（「非表示」あり・専用SE）でやり取りできます。
+        ルームID発行後、招待URLごとコピー／共有できます。別アプリへ切り替えて戻っても同じIDで自動再接続し、通信対戦中は上下固定吹き出し（「非表示」あり・専用SE）でやり取りできます。
       </div>
     </div>
   </div>
@@ -871,6 +899,7 @@ const RANK_LABELS = {
 };
 
 const ROOM_RULE_META = {
+  normal: { title: '通常対戦', sub: 'STANDARD MATCH', desc: '', forbidReach: false },
   shoushi: {
     title: '⚔️ 勝負師の部屋 ⚔️',
     sub: 'RULE ROOM MATCH',
@@ -891,7 +920,6 @@ const ROOM_RULE_META = {
   }
 };
 
-// 演出専用レアカテゴリ（役一覧には出さない）
 const RARE_EFFECT_CONFIG = {
   tenchi_jinwa: { logoClass: 'rare-logo-tenchi', se: 'win_rare', badge: '希少特例・天地人和' },
   shin_akb48: { logoClass: 'rare-logo-shin-akb', se: 'win_rare', badge: '希少規格外・シン・AKB48' },
@@ -905,7 +933,6 @@ const RARE_EFFECT_CONFIG = {
   red_queen: { logoClass: 'rare-logo-rq', se: 'win_rare', badge: '希少RQ・レッドクイーン' }
 };
 
-// 役一覧画面カテゴリ（全状態役を漏れなく網羅）
 const YAKU_CATEGORIES = [
   { id: 'basic', label: '基本役', color: '#27ae60' },
   { id: 'middle', label: '中級役', color: '#e67e22' },
@@ -1218,15 +1245,13 @@ function isFuriten(handFour, playerDiscards, options = {}) {
 
 function canWinWithYakuEval(evalRes) {
   if (!evalRes) return false;
-  const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.shoushi;
+  const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.normal;
   if (meta.forbidReach) {
-    // ダマテン部屋：リーチ宣言禁止のため基本役（要リーチ役）は不可、中級・役満・JOKER必須役のみ可
     return !evalRes.requireReach;
   }
   return !evalRes.requireReach || gameState.isReach;
 }
 
-// 独立した役一覧画面制御
 let yakuReturnScreenId = 'screen-title';
 let activeYakuCatId = 'basic';
 let activeYakuIndex = 0;
@@ -1310,7 +1335,6 @@ function renderYakuDetail() {
   panel.appendChild(grid);
 }
 
-// 通信設定・ゲーム状態管理
 const CUSTOM_PEER_CONFIG = {
   host: 'four51k1-peer-server.onrender.com',
   port: 443,
@@ -1326,8 +1350,7 @@ const CUSTOM_PEER_CONFIG = {
 
 const gameState = {
   mode: 'beginner',
-  roomRule: 'shoushi',
-  isSingleRuleRoom: false,
+  roomRule: 'normal',
   isOnline: false,
   isHost: true,
   roomId: '',
@@ -1370,6 +1393,9 @@ function openScreen(id) {
   if (signalBar) {
     signalBar.style.display = (id === 'screen-game' && gameState.isOnline) ? 'flex' : 'none';
   }
+  if (id !== 'screen-game') {
+    stopTimer();
+  }
 }
 
 function buildDeck() {
@@ -1387,9 +1413,8 @@ function buildDeck() {
   return deck;
 }
 
-function startCpuMatch(mode, ruleKey = 'shoushi') {
+function startCpuMatch(mode, ruleKey = 'normal') {
   gameState.isOnline = false;
-  gameState.isSingleRuleRoom = false;
   gameState.isHost = true;
   gameState.mode = mode;
   gameState.roomRule = ruleKey;
@@ -1409,7 +1434,6 @@ function startCpuMatch(mode, ruleKey = 'shoushi') {
 function startSingleRuleRoom(ruleKey) {
   const meta = ROOM_RULE_META[ruleKey] || ROOM_RULE_META.shoushi;
   gameState.isOnline = false;
-  gameState.isSingleRuleRoom = true;
   gameState.isHost = true;
   gameState.mode = ruleKey === 'shiren' ? 'main' : 'beginner';
   gameState.roomRule = ruleKey;
@@ -1540,13 +1564,20 @@ function initRound() {
 }
 
 function applyRoundStartUI() {
+  const slotOpp = document.getElementById('bubble-slot-opp');
+  const slotSelf = document.getElementById('bubble-slot-self');
+  if (slotOpp) slotOpp.style.display = gameState.isOnline ? 'flex' : 'none';
+  if (slotSelf) slotSelf.style.display = gameState.isOnline ? 'flex' : 'none';
+
   renderSignalBar();
   renderBubbles();
   openScreen('screen-game');
   renderGameBoard();
 
-  if (!gameState.isSelfTurn && !gameState.isOnline) {
-    scheduleCpuTurn();
+  if (!gameState.isOnline) {
+    stopTimer();
+    document.getElementById('timer-badge').style.display = 'none';
+    if (!gameState.isSelfTurn) scheduleCpuTurn();
   } else {
     startOnlineTimerIfNeeded();
   }
@@ -1584,23 +1615,34 @@ function renderGameBoard() {
   selfRiver.innerHTML = '';
   gameState.selfDiscards.forEach(d => selfRiver.appendChild(createMiniCardEl(d.card, d.isReachTile)));
 
+  // 常に5スロット固定（4枚時は5枠目に空き枠を配置してドロー時のカクツキを防止）
   const handArea = document.getElementById('player-hand-area');
   handArea.innerHTML = '';
-  gameState.selfHand.forEach((card, idx) => {
-    const el = document.createElement('div');
-    el.className = 'playing-card' + (card.isJoker ? ' joker' : '');
-    if (gameState.selectedHandIndex === idx) el.classList.add('selected');
-    if (gameState.isReach && idx !== gameState.selfHand.length - 1) el.classList.add('locked');
-
-    if (card.isJoker) {
-      el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
+  for (let slotIdx = 0; slotIdx < 5; slotIdx++) {
+    const slotDiv = document.createElement('div');
+    slotDiv.className = 'hand-slot';
+    const card = gameState.selfHand[slotIdx];
+    if (!card) {
+      const emptyBox = document.createElement('div');
+      emptyBox.className = 'hand-slot-empty';
+      slotDiv.appendChild(emptyBox);
     } else {
-      const colorCls = RED_SUITS.includes(card.suit) ? 'suit-red' : 'suit-black';
-      el.innerHTML = `<div class="suit-top ${colorCls}">${card.suit}</div><div class="val-bottom ${colorCls}">${RANK_LABELS[card.val]}</div>`;
+      const el = document.createElement('div');
+      el.className = 'playing-card' + (card.isJoker ? ' joker' : '');
+      if (gameState.selectedHandIndex === slotIdx) el.classList.add('selected');
+      if (gameState.isReach && slotIdx !== gameState.selfHand.length - 1) el.classList.add('locked');
+
+      if (card.isJoker) {
+        el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
+      } else {
+        const colorCls = RED_SUITS.includes(card.suit) ? 'suit-red' : 'suit-black';
+        el.innerHTML = `<div class="suit-top ${colorCls}">${card.suit}</div><div class="val-bottom ${colorCls}">${RANK_LABELS[card.val]}</div>`;
+      }
+      el.onclick = () => onHandCardTap(slotIdx);
+      slotDiv.appendChild(el);
     }
-    el.onclick = () => onHandCardTap(idx);
-    handArea.appendChild(el);
-  });
+    handArea.appendChild(slotDiv);
+  }
 
   updateActionButtons();
 }
@@ -1671,7 +1713,7 @@ function drawSelfTile() {
 }
 
 function declareReach() {
-  const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.shoushi;
+  const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.normal;
   if (meta.forbidReach || gameState.isReach || !gameState.isSelfTurn || gameState.selfHand.length !== 5) return;
   const isWReach = gameState.turnCount === 0;
   gameState.isReach = true;
@@ -1693,7 +1735,7 @@ function updateActionButtons() {
   const btnReach = document.getElementById('btn-reach');
   const btnWin = document.getElementById('btn-win');
   const btnDraw = document.getElementById('btn-draw');
-  const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.shoushi;
+  const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.normal;
   btnWin.classList.remove('ron-active');
 
   if (gameState.pendingRonCard) {
@@ -2016,6 +2058,7 @@ function showCutin(mainText, subText, isRare, rareLogoClass) {
   }, isRare ? 1600 : 1050);
 }
 
+// 通信対戦モード全般でのみ30秒タイマーを適用
 function startOnlineTimerIfNeeded() {
   stopTimer();
   const badge = document.getElementById('timer-badge');
@@ -2048,6 +2091,7 @@ function stopTimer() {
 }
 
 function handleOnlineTimeout() {
+  if (!gameState.isOnline) return;
   if (gameState.pendingRonCard) {
     gameState.pendingRonCard = null;
     renderGameBoard();
@@ -2079,7 +2123,7 @@ function handleOnlineTimeout() {
   }
 }
 
-const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v3';
+const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v4';
 
 function saveLobbyState() {
   try {
@@ -2269,6 +2313,7 @@ function setupConnectionHandlers(conn) {
     if (payload.type === 'PING') {
       if (conn.open) conn.send({ type: 'PONG' });
     } else if (payload.type === 'ROUND_INIT') {
+      gameState.isOnline = true;
       gameState.selfHand = payload.guestHand || [];
       gameState.oppHandCount = payload.hostHandCount || 4;
       gameState.deck = payload.deck || [];
@@ -2332,6 +2377,7 @@ function setupConnectionHandlers(conn) {
 function leaveLobbyToTitle() {
   gameState.isOnline = false;
   gameState.isHost = false;
+  stopTimer();
   if (gameState.heartbeatId) clearInterval(gameState.heartbeatId);
   clearSavedRoomState();
   openScreen('screen-title');
