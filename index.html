@@ -80,7 +80,6 @@
     filter: brightness(0.92);
   }
 
-  /* CPUモード選択カード */
   .mode-card-btn {
     width: 100%;
     max-width: 360px;
@@ -128,7 +127,6 @@
     letter-spacing: 0.08em;
   }
 
-  /* 通信＆ルール部屋ロビー */
   .lobby-section-box {
     width: 100%;
     max-width: 366px;
@@ -177,7 +175,7 @@
     transform: scale(0.97);
   }
 
-  /* 5枠固定手札グリッド（4枚時・5枚時のドローカクツキ完全解消） */
+  /* 5枠固定手札グリッド */
   #player-hand-area {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -204,7 +202,6 @@
     background: rgba(255, 255, 255, 0.015);
   }
 
-  /* 対戦手札カード（ボツ画像準拠：黒背景＋ゴールド枠＋斜め配置ゴールドJOKER） */
   .playing-card {
     width: 100%;
     max-width: 62px;
@@ -228,11 +225,6 @@
     transform: translate3d(0, -10px, 0);
     border-color: var(--gold);
     box-shadow: 0 8px 18px rgba(241, 196, 15, 0.55);
-  }
-
-  .playing-card.locked {
-    opacity: 0.55;
-    filter: grayscale(0.35);
   }
 
   .playing-card.joker,
@@ -272,7 +264,6 @@
   .suit-red { color: #d62828; }
   .suit-black { color: #111827; }
 
-  /* 相手手札の斜線ストライプ青カード */
   .opp-back-card {
     width: 24px;
     height: 36px;
@@ -288,7 +279,6 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
   }
 
-  /* 河・ドラ表示用ミニカード */
   .mini-card {
     min-width: 30px;
     height: 42px;
@@ -318,7 +308,6 @@
     box-shadow: 0 0 6px rgba(255, 56, 56, 0.75);
   }
 
-  /* 役一覧サンプル5枚横並び */
   .yaku-sample-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -411,7 +400,6 @@
     border-color: #fff3b0;
   }
 
-  /* 固定表示吹き出しスロット（通信対戦時のみ可視・高さ固定） */
   .bubble-slot {
     height: 24px;
     display: flex;
@@ -451,7 +439,6 @@
     margin-left: auto;
   }
 
-  /* 最下段横スライドシグナルバー（通信対戦時） */
   #signal-bar {
     position: fixed;
     bottom: 0;
@@ -524,7 +511,6 @@
     to { transform: scale(1.03); }
   }
 
-  /* カットイン＆ルール部屋バナー演出 */
   #cutin-overlay {
     display: none;
     position: fixed;
@@ -689,9 +675,8 @@
     <button id="btn-roulette-go" class="btn-gold" onclick="SoundEngine.playSE('select_card'); spinRoulette();" style="width:220px; height:44px; font-size:0.95rem;">🎲 ルーレットを回す</button>
   </div>
 
-  <!-- 5. メイン対戦画面（手札5枠固定・通信時のみ30秒タイマー＆吹き出し） -->
+  <!-- 5. メイン対戦画面 -->
   <div id="screen-game" class="screen" style="padding: 8px 10px 50px 10px; gap: 5px; justify-content: space-between;">
-    <!-- 上部：相手手札・相手河・相手吹き出し -->
     <div style="display:flex; flex-direction:column; gap:4px;">
       <div style="display:flex; justify-content:space-between; align-items:center; background:#122a30; border:1px solid rgba(255,255,255,0.1); padding:5px 8px; border-radius:8px;">
         <span id="opp-label" style="font-size:0.8rem; font-weight:900; color:#ff7675;">相手手札</span>
@@ -704,7 +689,6 @@
       <div id="bubble-slot-opp" class="bubble-slot"><div id="bubble-opp" class="chat-bubble opp"></div></div>
     </div>
 
-    <!-- 中央：ゴールド枠ステータスボード -->
     <div style="background:rgba(9, 23, 27, 0.96); border:1.5px solid #f1c40f; border-radius:10px; padding:7px 9px; display:flex; flex-direction:column; gap:5px; box-shadow:0 0 12px rgba(241,196,15,0.18);">
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; font-weight:900;">
         <span id="status-cycle" style="color:#f1c40f;">第1サイクル ♠場</span>
@@ -731,7 +715,6 @@
       </div>
     </div>
 
-    <!-- 下部：自分吹き出し・自分河・4ボタン・5枠固定手札・打牌ガイド -->
     <div style="display:flex; flex-direction:column; gap:4px;">
       <div id="bubble-slot-self" class="bubble-slot"><div id="bubble-self" class="chat-bubble self"></div></div>
       <div id="self-river" style="min-height:44px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
@@ -804,10 +787,8 @@
 
 </div>
 
-<!-- 最下段横スライドシグナルバー（通信対戦時） -->
 <div id="signal-bar"></div>
 
-<!-- カットイン＆ルール部屋バナー演出 -->
 <div id="cutin-overlay">
   <div id="cutin-banner" class="cutin-banner">
     <div id="cutin-sub" style="font-size:0.74rem; font-weight:900; color:#f1c40f; letter-spacing:0.12em; margin-bottom:4px;"></div>
@@ -952,7 +933,7 @@ const YAKU_CATALOG = {
   middle: [
     { name: 'ブラックジャック（12点）', cond: 'JOKER可(-2pt)・ダマテン可。黒Jペア＋黒スート（♠・♣混合可）3連番（A跨ぎNG）。', sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:5},{suit:'♣',val:6},{suit:'♠',val:7}] },
     { name: 'レッドクイーン（12点）', cond: 'JOKER可(-2pt)・ダマテン可。赤Qペア＋赤スート（♥・♦混合可）3連番（A跨ぎNG）。', sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:5},{suit:'♦',val:6},{suit:'♥',val:7}] },
-    { name: 'ツーペイコウ（13点）', cond: 'JOKER可(-2pt)・ダマテン可。JJQKK または QQKAA の2パターン。', sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:12},{suit:'♠',val:13}] },
+    { name: 'ツーペイコウ（13点）', cond: 'JOKER可(-2pt)・ダマテン可。JJQKK / QQKAA / AAQQK などの2ペア＋絵札。', sample: [{suit:'♠',val:14},{suit:'♦',val:14},{suit:'♣',val:12},{suit:'♦',val:12},{suit:'♥',val:13}] },
     { name: 'トイハウス（14点）', cond: 'JOKER可(-2pt)・ダマテン可。ペア＋スリーカード5枚すべて絵札。', sample: [{suit:'♠',val:13},{suit:'♥',val:13},{suit:'♦',val:12},{suit:'♣',val:12},{suit:'♠',val:12}] },
     { name: 'ストレートフラッシュ（15点）', cond: 'JOKER可(-2pt)・ダマテン可。同一スートの5連番（A跨ぎNG）。', sample: [{suit:'♦',val:4},{suit:'♦',val:5},{suit:'♦',val:6},{suit:'♦',val:7},{suit:'♦',val:8}] },
     { name: '黒龍（18点）', cond: 'JOKER可(-2pt)・ダマテン可。絵札なし・黒スートの偶数5枚（2,4,6,8,10）。', sample: [{suit:'♠',val:2},{suit:'♣',val:4},{suit:'♠',val:6},{suit:'♣',val:8},{suit:'♠',val:10}] },
@@ -971,7 +952,7 @@ const YAKU_CATALOG = {
   ],
   situation: [
     { name: 'リーチ（+2pt）', cond: 'テンパイ宣言で成立（場へ1pt供託）。基本役（10点以下）の和了必須条件。', sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♣',val:9}] },
-    { name: 'ダブルリーチ（+3pt）', cond: '配牌後、第1打牌（0巡目）でのテンパイ宣言で成立（場へ1pt供託・通常リーチと重複せず+3pt）。', sample: [{suit:'♠',val:10},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:2}] },
+    { name: 'ダブルリーチ（+3pt）', cond: '初手（自分の打牌0枚・1巡目以内）のテンパイ宣言で成立（場へ1pt供託・通常リーチと重複せず+3pt）。', sample: [{suit:'♠',val:10},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:2}] },
     { name: '一発（+1pt）', cond: 'リーチ／ダブルリーチ宣言後、1巡以内のツモまたは相手打牌でのロン和了で加算。', sample: [{suit:'♥',val:11},{suit:'♦',val:11},{suit:'♥',val:6},{suit:'♦',val:7},{suit:'♥',val:8}] },
     { name: '親権（+1pt）', cond: '親番（[親]マーク）のプレイヤーが和了した際に毎回加算。', sample: [{suit:'♦',val:12},{suit:'♥',val:12},{suit:'♦',val:4},{suit:'♥',val:5},{suit:'♦',val:6}] },
     { name: '海底（ハイテイ）（+1pt）', cond: '山札の最後の1枚（残り0枚時点）でのツモ和了で加算。', sample: [{suit:'♣',val:3},{suit:'♣',val:6},{suit:'♣',val:9},{suit:'♣',val:12},{suit:'♣',val:14}] },
@@ -1136,12 +1117,17 @@ function evaluateFiveCardBaseYaku(fiveCards, options = {}) {
       candidates.push({ id: 'toy_house', name: 'トイハウス', baseScore: 14, jokerPenalty: penalty, catId: 3 });
     }
 
-    const sortedDescCounts = Object.entries(valCounts).sort((a, b) => b[1] - a[1]);
-    if (sortedDescCounts.length === 3 && sortedDescCounts[0][1] === 2 && sortedDescCounts[1][1] === 2 && sortedDescCounts[2][1] === 1) {
-      const pairRanks = sortedDescCounts.filter(x => x[1] === 2).map(x => Number(x[0])).sort((a, b) => a - b);
-      const valid1 = pairRanks[0] === 11 && pairRanks[1] === 12 && Number(sortedDescCounts[2][0]) === 13;
-      const valid2 = pairRanks[0] === 12 && pairRanks[1] === 13 && Number(sortedDescCounts[2][0]) === 14;
-      if (valid1 || valid2) {
+    // ツーペイコウ：2ペア（出現数2が2組）＋残り1枚が絵札（JJQKK / QQKAA / AAQQK などの組合せ）
+    const pairEntries = Object.entries(valCounts)
+      .filter(([, cnt]) => cnt === 2)
+      .map(([r]) => Number(r))
+      .sort((a, b) => a - b);
+    const singleEntries = Object.entries(valCounts)
+      .filter(([, cnt]) => cnt === 1)
+      .map(([r]) => Number(r));
+    if (pairEntries.length === 2 && singleEntries.length === 1 && isPictureRank(singleEntries[0])) {
+      const pKey = `${pairEntries[0]}-${pairEntries[1]}`;
+      if (pKey === '11-12' || pKey === '12-13' || pKey === '12-14') {
         candidates.push({ id: 'two_peikou', name: 'ツーペイコウ', baseScore: 13, jokerPenalty: penalty, catId: 3 });
       }
     }
@@ -1615,7 +1601,6 @@ function renderGameBoard() {
   selfRiver.innerHTML = '';
   gameState.selfDiscards.forEach(d => selfRiver.appendChild(createMiniCardEl(d.card, d.isReachTile)));
 
-  // 常に5スロット固定（4枚時は5枠目に空き枠を配置してドロー時のカクツキを防止）
   const handArea = document.getElementById('player-hand-area');
   handArea.innerHTML = '';
   for (let slotIdx = 0; slotIdx < 5; slotIdx++) {
@@ -1630,7 +1615,6 @@ function renderGameBoard() {
       const el = document.createElement('div');
       el.className = 'playing-card' + (card.isJoker ? ' joker' : '');
       if (gameState.selectedHandIndex === slotIdx) el.classList.add('selected');
-      if (gameState.isReach && slotIdx !== gameState.selfHand.length - 1) el.classList.add('locked');
 
       if (card.isJoker) {
         el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
@@ -1661,7 +1645,6 @@ function createMiniCardEl(card, isReachTile) {
 
 function onHandCardTap(idx) {
   if (!gameState.isSelfTurn || gameState.pendingRonCard || gameState.selfHand.length !== 5) return;
-  if (gameState.isReach && idx !== gameState.selfHand.length - 1) return;
 
   if (gameState.selectedHandIndex === idx) {
     const [discarded] = gameState.selfHand.splice(idx, 1);
@@ -1715,7 +1698,8 @@ function drawSelfTile() {
 function declareReach() {
   const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.normal;
   if (meta.forbidReach || gameState.isReach || !gameState.isSelfTurn || gameState.selfHand.length !== 5) return;
-  const isWReach = gameState.turnCount === 0;
+  // 自分の打牌がまだ0枚かつ1巡目以内のリーチ宣言は初手ダブルリーチ（+3pt）
+  const isWReach = gameState.selfDiscards.length === 0 && gameState.turnCount <= 1;
   gameState.isReach = true;
   gameState.isDoubleReach = isWReach;
   gameState.reachTurnIndex = gameState.turnCount;
@@ -1723,7 +1707,12 @@ function declareReach() {
   gameState.scores.self -= 1;
   gameState.kyotaku += 1;
   SoundEngine.playSE('reach_chip');
-  showCutin(isWReach ? 'ダブルリーチ宣言！' : 'リーチ宣言！', isWReach ? '+3pt チャンス' : '+2pt テンパイ宣言', false, null);
+  showCutin(
+    isWReach ? 'ダブルリーチ宣言！' : 'リーチ宣言！',
+    isWReach ? '初手Wリーチ +3pt チャンス' : '+2pt テンパイ宣言',
+    false,
+    null
+  );
   renderGameBoard();
 
   if (gameState.isOnline && gameState.conn && gameState.conn.open) {
@@ -1750,7 +1739,7 @@ function updateActionButtons() {
 
   let canTsumo = false;
   if (gameState.isSelfTurn && gameState.selfHand.length === 5) {
-    const evalRes = evaluateFiveCardBaseYaku(gameState.selfHand, { isFirstTurn: gameState.turnCount === 0 });
+    const evalRes = evaluateFiveCardBaseYaku(gameState.selfHand, { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
     if (canWinWithYakuEval(evalRes)) canTsumo = true;
   }
   btnWin.disabled = !canTsumo;
@@ -1759,8 +1748,8 @@ function updateActionButtons() {
   if (!meta.forbidReach && !gameState.isReach && gameState.isSelfTurn && gameState.selfHand.length === 5) {
     for (let i = 0; i < 5; i++) {
       const rem4 = gameState.selfHand.filter((_, idx) => idx !== i);
-      const waits = getTenpaiWaits(rem4, { isFirstTurn: gameState.turnCount === 0 });
-      const furiten = isFuriten(rem4, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.turnCount === 0 });
+      const waits = getTenpaiWaits(rem4, { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
+      const furiten = isFuriten(rem4, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
       if (waits.length > 0 && !furiten) {
         canReach = true;
         break;
@@ -1784,7 +1773,7 @@ function triggerWinAction() {
 
 function finalizeWin(winType, fiveCards, isSelfWinner, syncedPayload = null) {
   stopTimer();
-  const baseEval = evaluateFiveCardBaseYaku(fiveCards, { isFirstTurn: gameState.turnCount === 0 });
+  const baseEval = evaluateFiveCardBaseYaku(fiveCards, { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
   if (!baseEval) return;
 
   let total = baseEval.netScore;
@@ -1971,8 +1960,8 @@ function scheduleCpuTurn() {
       SoundEngine.playSE('discard');
 
       if (gameState.selfHand.length === 4) {
-        const furiten = isFuriten(gameState.selfHand, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.turnCount === 0 });
-        const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, drawn], { isFirstTurn: gameState.turnCount === 0 });
+        const furiten = isFuriten(gameState.selfHand, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
+        const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, drawn], { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
         if (!furiten && canWinWithYakuEval(winEval)) {
           gameState.pendingRonCard = drawn;
           gameState.isSelfTurn = true;
@@ -2058,7 +2047,6 @@ function showCutin(mainText, subText, isRare, rareLogoClass) {
   }, isRare ? 1600 : 1050);
 }
 
-// 通信対戦モード全般でのみ30秒タイマーを適用
 function startOnlineTimerIfNeeded() {
   stopTimer();
   const badge = document.getElementById('timer-badge');
@@ -2123,7 +2111,7 @@ function handleOnlineTimeout() {
   }
 }
 
-const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v4';
+const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v5';
 
 function saveLobbyState() {
   try {
@@ -2361,8 +2349,8 @@ function setupConnectionHandlers(conn) {
       gameState.turnCount = payload.turnCount || (gameState.turnCount + 1);
       SoundEngine.playSE('discard');
       if (gameState.selfHand.length === 4) {
-        const furiten = isFuriten(gameState.selfHand, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.turnCount === 0 });
-        const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, payload.card], { isFirstTurn: gameState.turnCount === 0 });
+        const furiten = isFuriten(gameState.selfHand, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
+        const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, payload.card], { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
         if (!furiten && canWinWithYakuEval(winEval)) {
           gameState.pendingRonCard = payload.card;
         }
