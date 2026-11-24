@@ -183,7 +183,6 @@
     transform: scale(0.97);
   }
 
-  /* 5枠固定手札グリッド（1画面収まりサイズ） */
   #player-hand-area {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -210,7 +209,6 @@
     background: rgba(255, 255, 255, 0.015);
   }
 
-  /* 左上スート・右下数値の斜め対角カード */
   .playing-card {
     width: 100%;
     max-width: 68px;
@@ -290,7 +288,6 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
   }
 
-  /* 河・ドラ用ミニカード（左上スート・右下数値） */
   .mini-card {
     min-width: 34px;
     height: 42px;
@@ -337,7 +334,6 @@
     box-shadow: 0 0 6px rgba(255, 56, 56, 0.75);
   }
 
-  /* 役一覧サンプルカード（左上スート・右下数値） */
   .yaku-sample-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -674,11 +670,11 @@
       企画：料理長K<br>
       <span style="color:#2ecc71; font-weight:700;">全モード第2サイクルオーラス仕様</span>
     </div>
-    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openScreen('screen-mode');" style="width: 100%; max-width: 320px; height: 48px; font-size: 1.04rem; margin-top: 4px;">▶ CPU対戦スタート</button>
-    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openOnlineLobby();" style="width: 100%; max-width: 320px; height: 46px; font-size: 0.94rem; background: linear-gradient(180deg, #2ecc71 0%, #1e8449 100%); color: #fff; border-color: #a9dfbf;">🌐 通信＆ルール部屋ロビー</button>
+    <button id="btn-go-cpu-mode" type="button" class="btn-gold" style="width: 100%; max-width: 320px; height: 48px; font-size: 1.04rem; margin-top: 4px;">▶ CPU対戦スタート</button>
+    <button id="btn-go-lobby" type="button" class="btn-gold" style="width: 100%; max-width: 320px; height: 46px; font-size: 0.94rem; background: linear-gradient(180deg, #2ecc71 0%, #1e8449 100%); color: #fff; border-color: #a9dfbf;">🌐 通信＆ルール部屋ロビー</button>
     <div style="display:flex; gap:8px; width:100%; max-width:320px;">
-      <button onclick="SoundEngine.playSE('select_card'); openStandaloneYakuScreen('screen-title');" style="flex:1; height:40px; border-radius:10px; border:1px solid rgba(241,196,15,0.45); background:rgba(16,42,48,0.92); color:#f1c40f; font-weight:800; font-size:0.84rem; cursor:pointer;">📖 全役一覧</button>
-      <button onclick="SoundEngine.playSE('select_card'); openStandaloneManualScreen();" style="flex:1; height:40px; border-radius:10px; border:1px solid rgba(52,152,219,0.55); background:rgba(16,42,48,0.92); color:#85c1e9; font-weight:800; font-size:0.84rem; cursor:pointer;">📘 ジャンP2マニュアル</button>
+      <button id="btn-go-yaku" type="button" style="flex:1; height:40px; border-radius:10px; border:1px solid rgba(241,196,15,0.45); background:rgba(16,42,48,0.92); color:#f1c40f; font-weight:800; font-size:0.84rem; cursor:pointer;">📖 全役一覧</button>
+      <button id="btn-go-manual" type="button" style="flex:1; height:40px; border-radius:10px; border:1px solid rgba(52,152,219,0.55); background:rgba(16,42,48,0.92); color:#85c1e9; font-weight:800; font-size:0.84rem; cursor:pointer;">📘 ジャンP2マニュアル</button>
     </div>
   </div>
 
@@ -689,17 +685,17 @@
       全モード第2サイクル（オーラス）はドラ2枚・裏ドラ2枚！（タイマー無制限）
     </div>
 
-    <button class="mode-card-btn mode-beginner" onclick="SoundEngine.playSE('select_card'); startCpuMatch('beginner', 'normal');">
+    <button id="btn-mode-beginner" type="button" class="mode-card-btn mode-beginner">
       <span style="font-size: 1.02rem; font-weight: 900; color: #5dade2;">🌱 ビギナーモード</span>
       <span style="font-size: 0.76rem; color: #ecf0f1; font-weight: 700;">『役を覚える初級編・第2サイクルオーラス』</span>
     </button>
 
-    <button class="mode-card-btn mode-main" onclick="SoundEngine.playSE('select_card'); startCpuMatch('main', 'normal');">
+    <button id="btn-mode-main" type="button" class="mode-card-btn mode-main">
       <span style="font-size: 1.02rem; font-weight: 900; color: #58d68d;">⚔️ メインモード</span>
       <span style="font-size: 0.76rem; color: #ecf0f1; font-weight: 700;">『ダマテン策士と読み合う中級編・第2サイクルオーラス』</span>
     </button>
 
-    <button class="mode-card-btn mode-master" onclick="startCpuMatch('master', 'normal');">
+    <button id="btn-mode-master" type="button" class="mode-card-btn mode-master">
       <span class="master-pill-badge">🔥 MASTER CHALLENGE 🔥</span>
       <span style="font-size: 1.15rem; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">👹 鬼レンチャレンジ 👹</span>
       <span style="font-size: 0.75rem; color: #fdebd0; font-weight: 800; line-height: 1.35;">
@@ -708,7 +704,7 @@
       </span>
     </button>
 
-    <button onclick="SoundEngine.playSE('select_card'); openScreen('screen-title');" style="background: transparent; color: #bdc3c7; border: none; margin-top: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">＜ タイトルに戻る</button>
+    <button id="btn-back-title-from-mode" type="button" style="background: transparent; color: #bdc3c7; border: none; margin-top: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">＜ タイトルに戻る</button>
   </div>
 
   <!-- 3. 通信＆ルール部屋ロビー画面 -->
@@ -721,15 +717,15 @@
     <div class="lobby-section-box lobby-single-box">
       <div style="font-size:0.75rem; font-weight:900; color:#f4d03f; text-align:center;">◎ 各ルール部屋へシングル参戦（主と対戦・30秒制）</div>
       <div class="room-single-grid">
-        <button class="room-single-btn" style="background:#c0392b;" onclick="startSingleRuleRoom('shiren');">
+        <button id="btn-single-shiren" type="button" class="room-single-btn" style="background:#c0392b;">
           <span style="font-size:0.76rem; font-weight:900;">🔥 試練の部屋</span>
           <span style="font-size:0.6rem; opacity:0.95;">(要リーチ基本役)</span>
         </button>
-        <button class="room-single-btn" style="background:#8e44ad;" onclick="startSingleRuleRoom('damaten');">
+        <button id="btn-single-damaten" type="button" class="room-single-btn" style="background:#8e44ad;">
           <span style="font-size:0.76rem; font-weight:900;">🧠 ダマテン部屋</span>
           <span style="font-size:0.6rem; opacity:0.95;">(リーチ禁止)</span>
         </button>
-        <button class="room-single-btn" style="background:#27ae60;" onclick="startSingleRuleRoom('shoushi');">
+        <button id="btn-single-shoushi" type="button" class="room-single-btn" style="background:#27ae60;">
           <span style="font-size:0.76rem; font-weight:900;">⚔️ 勝負師の部屋</span>
           <span style="font-size:0.6rem; opacity:0.95;">(公式ガチンコ)</span>
         </button>
@@ -743,30 +739,30 @@
         <option value="shiren">🔥 試練の部屋（要リーチ基本役）</option>
         <option value="damaten">🧠 ダマテン部屋（リーチ禁止）</option>
       </select>
-      <button onclick="createHostRoom();" style="width:100%; height:36px; border-radius:7px; border:1px solid #5dade2; background:#2980b9; color:#fff; font-weight:900; font-size:0.86rem; cursor:pointer;">通信ルームを開設する</button>
+      <button id="btn-create-host" type="button" style="width:100%; height:36px; border-radius:7px; border:1px solid #5dade2; background:#2980b9; color:#fff; font-weight:900; font-size:0.86rem; cursor:pointer;">通信ルームを開設する</button>
 
       <div id="host-room-info-box" style="display:none; flex-direction:column; gap:5px; margin-top:2px;">
         <input id="host-room-id-display" type="text" readonly style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #f1c40f; background:#09171a; color:#f1c40f; font-weight:900; font-size:0.84rem; text-align:center;">
         <div id="host-share-actions" style="display:flex; gap:6px;">
-          <button onclick="copyInviteUrl();" style="flex:1; padding:6px; border-radius:6px; border:1px solid #3498db; background:#143852; color:#fff; font-size:0.72rem; font-weight:700; cursor:pointer;">📋 ID＆招待URLコピー</button>
-          <button onclick="shareInviteLink();" style="flex:1; padding:6px; border-radius:6px; border:1px solid #2ecc71; background:#15472b; color:#fff; font-size:0.72rem; font-weight:700; cursor:pointer;">📤 リンクごと送信・共有</button>
+          <button id="btn-copy-invite" type="button" style="flex:1; padding:6px; border-radius:6px; border:1px solid #3498db; background:#143852; color:#fff; font-size:0.72rem; font-weight:700; cursor:pointer;">📋 ID＆招待URLコピー</button>
+          <button id="btn-share-invite" type="button" style="flex:1; padding:6px; border-radius:6px; border:1px solid #2ecc71; background:#15472b; color:#fff; font-size:0.72rem; font-weight:700; cursor:pointer;">📤 リンクごと送信・共有</button>
         </div>
-        <button id="btn-manual-reconnect" onclick="reconnectHostSameId();" style="padding:5px; border-radius:6px; border:1px solid rgba(241,196,15,0.5); background:rgba(241,196,15,0.12); color:#f1c40f; font-size:0.7rem; font-weight:700; cursor:pointer;">🔄 同じルームIDで手動再接続</button>
+        <button id="btn-manual-reconnect" type="button" style="padding:5px; border-radius:6px; border:1px solid rgba(241,196,15,0.5); background:rgba(241,196,15,0.12); color:#f1c40f; font-size:0.7rem; font-weight:700; cursor:pointer;">🔄 同じルームIDで手動再接続</button>
       </div>
     </div>
 
     <div class="lobby-section-box lobby-guest-box">
       <div style="font-size:0.76rem; font-weight:900; color:#fff; text-align:center;">【通信対戦ゲスト】IDでルームに参加（30秒制）</div>
       <input id="join-room-id-input" type="text" placeholder="友達のルームIDを入力" style="width:100%; height:34px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#111827; font-weight:800; font-size:0.82rem; text-align:center; padding:0 8px;">
-      <button class="btn-gold" onclick="joinHostRoom();" style="width:100%; height:36px; font-size:0.86rem;">ルームに参加する</button>
+      <button id="btn-join-host" type="button" class="btn-gold" style="width:100%; height:36px; font-size:0.86rem;">ルームに参加する</button>
     </div>
 
     <div id="lobby-status-banner" style="width:100%; max-width:366px; font-size:0.72rem; color:#a9dfbf; text-align:center; line-height:1.4; min-height:20px;"></div>
 
-    <button onclick="SoundEngine.playSE('select_card'); leaveLobbyToTitle();" style="background:transparent; color:#cbd5e1; border:none; cursor:pointer; font-size:0.82rem; font-weight:700; margin-top:2px;">＜ タイトルに戻る</button>
+    <button id="btn-leave-lobby" type="button" style="background:transparent; color:#cbd5e1; border:none; cursor:pointer; font-size:0.82rem; font-weight:700; margin-top:2px;">＜ タイトルに戻る</button>
   </div>
 
-  <!-- 4. 場所決めルーレット画面（♠青 vs ♥赤 の2択） -->
+  <!-- 4. 場所決めルーレット画面 -->
   <div id="screen-roulette" class="screen" style="justify-content: center; align-items: center; padding: 16px; text-align: center; gap: 10px;">
     <h3 style="margin:0; color:#f1c40f; font-size:1.12rem;">場所決めルーレット（♠青 vs ♥赤）</h3>
     <div id="roulette-room-sub" style="font-size:0.78rem; font-weight:800; color:#85c1e9;"></div>
@@ -777,10 +773,10 @@
       <div id="roulette-suit" style="font-size:2.8rem; font-weight:900; color:#3498db;">♠</div>
     </div>
     <div id="roulette-result" style="min-height:38px; font-size:0.84rem; font-weight:800; color:#2ecc71; line-height:1.4;"></div>
-    <button id="btn-roulette-go" class="btn-gold" onclick="SoundEngine.playSE('select_card'); spinRoulette();" style="width:220px; height:44px; font-size:0.95rem;">🎲 ルーレットを回す</button>
+    <button id="btn-roulette-go" type="button" class="btn-gold" style="width:220px; height:44px; font-size:0.95rem;">🎲 ルーレットを回す</button>
   </div>
 
-  <!-- 5. メイン対戦画面（1画面完全収まり設計） -->
+  <!-- 5. メイン対戦画面 -->
   <div id="screen-game" class="screen">
     <div style="display:flex; flex-direction:column; gap:2px; flex-shrink:0;">
       <div style="display:flex; justify-content:space-between; align-items:center; background:#122a30; border:1px solid rgba(255,255,255,0.1); padding:3px 7px; border-radius:7px;">
@@ -791,7 +787,6 @@
       <div id="bubble-slot-opp" class="bubble-slot"><div id="bubble-opp" class="chat-bubble opp"></div></div>
     </div>
 
-    <!-- 中央ステータスボード：ドラの直上に30秒タイマー配置 -->
     <div style="background:rgba(9, 23, 27, 0.96); border:1.5px solid #f1c40f; border-radius:9px; padding:5px 8px; display:flex; flex-direction:column; gap:3px; box-shadow:0 0 10px rgba(241,196,15,0.18); flex-shrink:0;">
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; font-weight:900;">
         <span id="status-cycle" style="color:#f1c40f;">第1サイクル ♠場</span>
@@ -826,10 +821,10 @@
       <div id="self-river" style="height:46px; background:#09171a; border:1px solid #1b3b42; border-radius:6px; padding:2px 3px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
 
       <div style="display:flex; gap:4px; margin-top:1px;">
-        <button class="action-btn yaku-btn" onclick="SoundEngine.playSE('select_card'); openStandaloneYakuScreen('screen-game');">役一覧</button>
-        <button id="btn-reach" class="action-btn" onclick="declareReach();" disabled>リーチ</button>
-        <button id="btn-win" class="action-btn" onclick="triggerWinAction();" disabled>和了</button>
-        <button id="btn-draw" class="action-btn" onclick="drawSelfTile();" disabled>ドロー</button>
+        <button id="btn-game-yaku" type="button" class="action-btn yaku-btn">役一覧</button>
+        <button id="btn-reach" type="button" class="action-btn" disabled>リーチ</button>
+        <button id="btn-win" type="button" class="action-btn" disabled>和了</button>
+        <button id="btn-draw" type="button" class="action-btn" disabled>ドロー</button>
       </div>
 
       <div style="background:rgba(12, 29, 34, 0.94); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:4px 5px 4px 5px; display:flex; flex-direction:column; gap:2px;">
@@ -850,14 +845,14 @@
     <div id="result-hand-cards" style="display:flex; justify-content:center; gap:6px; min-height:84px;"></div>
     <div id="result-breakdown" style="background:#132f35; border:1px solid rgba(241,196,15,0.3); border-radius:10px; padding:10px; font-size:0.8rem; line-height:1.55; max-height:220px; overflow-y:auto;"></div>
     <div id="result-scores" style="text-align:center; font-size:0.95rem; font-weight:900; color:#fff;"></div>
-    <button id="btn-next-round" class="btn-gold" onclick="proceedAfterResult();" style="width:100%; height:46px; font-size:0.98rem;">次の局へ進む</button>
+    <button id="btn-next-round" type="button" class="btn-gold" style="width:100%; height:46px; font-size:0.98rem;">次の局へ進む</button>
   </div>
 
   <!-- 7. 独立した「役一覧画面」 -->
   <div id="screen-yaku" class="screen" style="padding: 12px; gap: 8px; justify-content: flex-start;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2 style="margin:0; color:#f1c40f; font-size:1.08rem;">📜 全役一覧データベース</h2>
-      <button onclick="SoundEngine.playSE('select_card'); returnFromYakuScreen();" style="background:#c0392b; color:#fff; border:none; border-radius:6px; padding:5px 11px; font-weight:800; font-size:0.78rem; cursor:pointer;">戻る</button>
+      <button id="btn-yaku-back" type="button" style="background:#c0392b; color:#fff; border:none; border-radius:6px; padding:5px 11px; font-weight:800; font-size:0.78rem; cursor:pointer;">戻る</button>
     </div>
 
     <div id="yaku-cat-tabs" class="cat-tab-bar"></div>
@@ -870,7 +865,7 @@
   <div id="screen-manual" class="screen" style="padding: 14px; gap: 10px; justify-content: flex-start;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2 style="margin:0; color:#85c1e9; font-size:1.08rem;">📘 ジャンP2 マニュアル</h2>
-      <button onclick="SoundEngine.playSE('select_card'); openScreen('screen-title');" style="background:#193b42; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:5px 11px; font-weight:800; font-size:0.78rem; cursor:pointer;">タイトルへ</button>
+      <button id="btn-manual-back" type="button" style="background:#193b42; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:5px 11px; font-weight:800; font-size:0.78rem; cursor:pointer;">タイトルへ</button>
     </div>
 
     <div style="display:flex; flex-direction:column; gap:8px; overflow-y:auto; font-size:0.8rem; line-height:1.55;">
@@ -1275,7 +1270,6 @@ function evaluateFiveCardBaseYaku(fiveCards, options = {}) {
       candidates.push({ id: 'toy_house', name: 'トイハウス', baseScore: 14, jokerPenalty: penalty, catId: 3 });
     }
 
-    // ツーペイコウ：JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ成立
     const sortedFiveVals = [...vVals].sort((a, b) => a - b).join(',');
     if (sortedFiveVals === '11,11,12,13,13' || sortedFiveVals === '12,12,13,14,14') {
       candidates.push({ id: 'two_peikou', name: 'ツーペイコウ', baseScore: 13, jokerPenalty: penalty, catId: 3 });
@@ -1412,6 +1406,7 @@ function renderYakuScreen() {
   tabsEl.innerHTML = '';
   YAKU_CATEGORIES.forEach(cat => {
     const btn = document.createElement('button');
+    btn.type = 'button';
     btn.className = 'cat-tab-btn' + (activeYakuCatId === cat.id ? ' active' : '');
     btn.style.background = cat.color;
     btn.textContent = cat.label;
@@ -1429,6 +1424,7 @@ function renderYakuScreen() {
   pillsEl.innerHTML = '';
   list.forEach((y, idx) => {
     const pill = document.createElement('button');
+    pill.type = 'button';
     pill.className = 'yaku-pill-btn' + (activeYakuIndex === idx ? ' active' : '');
     pill.textContent = y.name;
     pill.onclick = () => {
@@ -1469,7 +1465,9 @@ function renderYakuDetail() {
   });
   panel.appendChild(grid);
 }
-  const CUSTOM_PEER_CONFIG = {
+</script>
+<script>
+const CUSTOM_PEER_CONFIG = {
   host: 'four51k1-peer-server.onrender.com',
   port: 443,
   path: '/',
@@ -1593,8 +1591,8 @@ function playRoomIntroFade(introKey, onComplete) {
       overlay.classList.remove('active');
       descEl.textContent = '';
       if (typeof onComplete === 'function') onComplete();
-    }, 380);
-  }, 3000);
+    }, 360);
+  }, 2400);
 }
 
 function startCpuMatch(mode, ruleKey = 'normal') {
@@ -1616,6 +1614,7 @@ function startCpuMatch(mode, ruleKey = 'normal') {
     document.getElementById('roulette-suit').textContent = '♠';
     document.getElementById('roulette-suit').style.color = '#3498db';
     document.getElementById('roulette-result').textContent = '';
+    document.getElementById('btn-roulette-go').disabled = false;
     document.getElementById('btn-roulette-go').style.display = 'inline-block';
     openScreen('screen-roulette');
   };
@@ -1647,6 +1646,7 @@ function startSingleRuleRoom(ruleKey) {
     document.getElementById('roulette-suit').textContent = '♠';
     document.getElementById('roulette-suit').style.color = '#3498db';
     document.getElementById('roulette-result').textContent = '';
+    document.getElementById('btn-roulette-go').disabled = false;
     document.getElementById('btn-roulette-go').style.display = 'inline-block';
     openScreen('screen-roulette');
   });
@@ -1692,9 +1692,9 @@ function spinRoulette() {
       setTimeout(() => {
         btn.disabled = false;
         initRound();
-      }, 800);
+      }, 750);
     }
-  }, 90);
+  }, 85);
 }
 
 function pickMasterBubble(category) {
@@ -2331,6 +2331,7 @@ function renderSignalBar() {
   const bar = document.getElementById('signal-bar');
   bar.innerHTML = '';
   const hideChip = document.createElement('button');
+  hideChip.type = 'button';
   hideChip.className = 'signal-chip mute-chip';
   hideChip.textContent = '✕ 非表示';
   hideChip.onclick = () => setSelfBubble('');
@@ -2338,6 +2339,7 @@ function renderSignalBar() {
 
   SIGNAL_MESSAGES.forEach(msg => {
     const chip = document.createElement('button');
+    chip.type = 'button';
     chip.className = 'signal-chip';
     chip.textContent = msg;
     chip.onclick = () => setSelfBubble(msg);
@@ -2476,7 +2478,7 @@ function handleOnlineTimeout() {
   }
 }
 
-const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v10';
+const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v11';
 
 function saveLobbyState() {
   try {
@@ -2542,6 +2544,11 @@ function createHostRoom(fixedId = null) {
   document.getElementById('host-room-id-display').value = roomId;
   setLobbyStatus(`ルームID「${roomId}」を発行中... サーバーへ登録しています。`, '#f7dc6f');
 
+  if (typeof Peer === 'undefined') {
+    setLobbyStatus('⚠️ 通信ライブラリ読み込み中です。しばらくしてから再度お試しください。', '#e74c3c');
+    return;
+  }
+
   if (gameState.peer) {
     try { gameState.peer.destroy(); } catch (e) {}
   }
@@ -2559,6 +2566,7 @@ function createHostRoom(fixedId = null) {
     setLobbyStatus('🎉 友達が接続しました！場所決めルーレットへ進みます...', '#2ecc71');
     playRoomIntroFade(gameState.roomRule, () => {
       document.getElementById('roulette-room-sub').textContent = (ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.shoushi).title;
+      document.getElementById('btn-roulette-go').disabled = false;
       document.getElementById('btn-roulette-go').style.display = 'inline-block';
       openScreen('screen-roulette');
     });
@@ -2629,6 +2637,10 @@ function joinHostRoom() {
   const inputId = document.getElementById('join-room-id-input').value.trim();
   if (!inputId) {
     setLobbyStatus('ルームIDを入力してください。', '#e74c3c');
+    return;
+  }
+  if (typeof Peer === 'undefined') {
+    setLobbyStatus('⚠️ 通信ライブラリ読み込み中です。しばらくしてから再度お試しください。', '#e74c3c');
     return;
   }
   gameState.isOnline = true;
@@ -2758,6 +2770,44 @@ function leaveLobbyToTitle() {
   openScreen('screen-title');
 }
 
+function bindUIEvents() {
+  const onTap = (id, fn) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', fn);
+  };
+
+  onTap('btn-go-cpu-mode', () => { SoundEngine.playSE('select_card'); openScreen('screen-mode'); });
+  onTap('btn-go-lobby', () => { SoundEngine.playSE('select_card'); openOnlineLobby(); });
+  onTap('btn-go-yaku', () => { SoundEngine.playSE('select_card'); openStandaloneYakuScreen('screen-title'); });
+  onTap('btn-go-manual', () => { SoundEngine.playSE('select_card'); openStandaloneManualScreen(); });
+
+  onTap('btn-mode-beginner', () => { SoundEngine.playSE('select_card'); startCpuMatch('beginner', 'normal'); });
+  onTap('btn-mode-main', () => { SoundEngine.playSE('select_card'); startCpuMatch('main', 'normal'); });
+  onTap('btn-mode-master', () => { startCpuMatch('master', 'normal'); });
+  onTap('btn-back-title-from-mode', () => { SoundEngine.playSE('select_card'); openScreen('screen-title'); });
+
+  onTap('btn-single-shiren', () => startSingleRuleRoom('shiren'));
+  onTap('btn-single-damaten', () => startSingleRuleRoom('damaten'));
+  onTap('btn-single-shoushi', () => startSingleRuleRoom('shoushi'));
+  onTap('btn-create-host', () => createHostRoom());
+  onTap('btn-copy-invite', () => copyInviteUrl());
+  onTap('btn-share-invite', () => shareInviteLink());
+  onTap('btn-manual-reconnect', () => reconnectHostSameId());
+  onTap('btn-join-host', () => joinHostRoom());
+  onTap('btn-leave-lobby', () => { SoundEngine.playSE('select_card'); leaveLobbyToTitle(); });
+
+  onTap('btn-roulette-go', () => { SoundEngine.playSE('select_card'); spinRoulette(); });
+
+  onTap('btn-game-yaku', () => { SoundEngine.playSE('select_card'); openStandaloneYakuScreen('screen-game'); });
+  onTap('btn-reach', () => declareReach());
+  onTap('btn-win', () => triggerWinAction());
+  onTap('btn-draw', () => drawSelfTile());
+
+  onTap('btn-next-round', () => proceedAfterResult());
+  onTap('btn-yaku-back', () => { SoundEngine.playSE('select_card'); returnFromYakuScreen(); });
+  onTap('btn-manual-back', () => { SoundEngine.playSE('select_card'); openScreen('screen-title'); });
+}
+
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     if (gameState.isOnline && gameState.isHost && gameState.roomId) {
@@ -2768,6 +2818,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 (function bootstrap() {
+  bindUIEvents();
   const params = new URLSearchParams(window.location.search);
   if (params.get('room')) {
     openOnlineLobby();
