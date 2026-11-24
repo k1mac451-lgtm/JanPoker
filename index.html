@@ -181,14 +181,14 @@
     grid-template-columns: repeat(5, 1fr);
     gap: 5px;
     width: 100%;
-    height: 92px;
+    height: 98px;
     padding: 8px 2px 0 2px;
     align-items: end;
   }
 
   .hand-slot {
     width: 100%;
-    height: 82px;
+    height: 88px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -196,24 +196,24 @@
 
   .hand-slot-empty {
     width: 100%;
-    height: 82px;
+    height: 88px;
     border-radius: 8px;
     border: 1px dashed rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.015);
   }
 
+  /* 斜め大判スート＆数値表示カード */
   .playing-card {
     width: 100%;
-    max-width: 62px;
-    height: 82px;
+    max-width: 66px;
+    height: 88px;
     background: var(--bg-card);
     border-radius: 8px;
     border: 1.5px solid #cbd5e1;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 4px 5px;
+    justify-content: center;
+    align-items: center;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -225,6 +225,27 @@
     transform: translate3d(0, -10px, 0);
     border-color: var(--gold);
     box-shadow: 0 8px 18px rgba(241, 196, 15, 0.55);
+  }
+
+  .diag-face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-20deg);
+    line-height: 0.98;
+    font-weight: 900;
+    pointer-events: none;
+  }
+
+  .playing-card .diag-suit {
+    font-size: 1.55rem;
+  }
+
+  .playing-card .diag-val {
+    font-size: 1.72rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
   }
 
   .playing-card.joker,
@@ -240,25 +261,11 @@
   .joker-diag-label {
     color: #f1c40f;
     font-weight: 900;
-    font-size: 0.82rem;
+    font-size: 0.86rem;
     letter-spacing: 0.05em;
-    transform: rotate(-28deg);
+    transform: rotate(-25deg);
     text-shadow: 0 0 8px rgba(241, 196, 15, 0.65);
     white-space: nowrap;
-  }
-
-  .playing-card .suit-top {
-    font-size: 0.98rem;
-    line-height: 1;
-    font-weight: 900;
-  }
-
-  .playing-card .val-bottom {
-    font-size: 1.32rem;
-    line-height: 1;
-    font-weight: 900;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
   }
 
   .suit-red { color: #d62828; }
@@ -280,19 +287,30 @@
   }
 
   .mini-card {
-    min-width: 30px;
-    height: 42px;
+    min-width: 34px;
+    height: 44px;
     border-radius: 5px;
     background: #f8fafc;
     border: 1px solid #94a3b8;
     display: inline-flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 2px 4px;
-    font-size: 0.72rem;
-    font-weight: 900;
+    justify-content: center;
+    align-items: center;
     flex-shrink: 0;
+    overflow: hidden;
   }
+
+  .mini-card .diag-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-18deg);
+    font-weight: 900;
+    line-height: 0.96;
+  }
+
+  .mini-card .m-suit { font-size: 0.86rem; }
+  .mini-card .m-val { font-size: 0.92rem; font-variant-numeric: tabular-nums; }
 
   .mini-card.joker {
     background: #0d1117;
@@ -300,7 +318,8 @@
     border: 1.5px solid #f1c40f;
     justify-content: center;
     align-items: center;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
+    font-weight: 900;
   }
 
   .mini-card.reach-tile {
@@ -317,32 +336,30 @@
   }
 
   .sample-big-card {
-    height: 78px;
+    height: 84px;
     border-radius: 7px;
     background: #f8fafc;
     border: 1.5px solid #cbd5e1;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 4px 5px;
+    justify-content: center;
+    align-items: center;
     position: relative;
     overflow: hidden;
   }
 
-  .sample-big-card .s-suit {
-    font-size: 0.98rem;
-    line-height: 1;
+  .sample-big-card .diag-sample {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-20deg);
+    line-height: 0.98;
     font-weight: 900;
   }
 
-  .sample-big-card .s-val {
-    font-size: 1.28rem;
-    line-height: 1;
-    font-weight: 900;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
+  .sample-big-card .s-suit { font-size: 1.45rem; }
+  .sample-big-card .s-val { font-size: 1.62rem; font-variant-numeric: tabular-nums; }
 
   .cat-tab-bar {
     display: flex;
@@ -511,11 +528,12 @@
     to { transform: scale(1.03); }
   }
 
+  /* カットイン＆部屋入場フェード演出オーバーレイ */
   #cutin-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.84);
+    background: rgba(0, 0, 0, 0.86);
     z-index: 90;
     flex-direction: column;
     justify-content: center;
@@ -523,28 +541,91 @@
     padding: 20px;
     text-align: center;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.36s ease;
   }
 
   #cutin-overlay.active {
     display: flex;
   }
 
+  #cutin-overlay.visible {
+    opacity: 1;
+  }
+
   .cutin-banner {
     width: 100%;
-    max-width: 390px;
-    padding: 18px 14px;
-    border-radius: 12px;
+    max-width: 392px;
+    padding: 20px 16px;
+    border-radius: 13px;
     border-top: 2.5px solid #3498db;
     border-bottom: 2.5px solid #3498db;
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
-    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
     background: linear-gradient(180deg, rgba(12, 24, 30, 0.98) 0%, rgba(6, 13, 17, 0.99) 100%);
     box-shadow: 0 0 34px rgba(52, 152, 219, 0.45);
+    transform: scale(0.94);
+    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #cutin-overlay.visible .cutin-banner {
+    transform: scale(1);
+  }
+
+  /* カテゴリ別和了豪華ティア */
+  .cutin-banner.cat-basic {
+    border-top-color: #2ecc71;
+    border-bottom-color: #2ecc71;
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.48);
+  }
+
+  .cutin-banner.cat-middle {
+    border-top: 3px solid #f1c40f;
+    border-bottom: 3px solid #f1c40f;
+    border-left: 1.5px solid #3498db;
+    border-right: 1.5px solid #3498db;
+    background: linear-gradient(180deg, rgba(16, 40, 66, 0.98) 0%, rgba(8, 20, 36, 0.99) 100%);
+    box-shadow: 0 0 38px rgba(52, 152, 219, 0.68), inset 0 0 18px rgba(241, 196, 15, 0.22);
+  }
+
+  .cutin-banner.cat-yakuman {
+    border: 2.5px solid #ffd700;
+    background: radial-gradient(circle at center, rgba(120, 22, 22, 0.97) 0%, rgba(28, 7, 10, 0.99) 100%);
+    box-shadow: 0 0 46px rgba(231, 76, 60, 0.82), 0 0 22px rgba(255, 215, 0, 0.65);
+  }
+
+  .cutin-banner.cat-joker {
+    border: 2.5px solid #f5d0fe;
+    background: radial-gradient(circle at center, rgba(88, 28, 135, 0.97) 0%, rgba(20, 7, 36, 0.99) 100%);
+    box-shadow: 0 0 46px rgba(192, 132, 252, 0.85), 0 0 22px rgba(255, 215, 0, 0.65);
   }
 
   .cutin-banner.rare-tier {
-    border-color: #ffd700;
-    box-shadow: 0 0 42px rgba(255, 215, 0, 0.78);
+    border: 3px solid #ffd700;
+    background: radial-gradient(circle at center, rgba(38, 28, 10, 0.98) 0%, rgba(8, 10, 14, 0.99) 100%);
+    box-shadow: 0 0 54px rgba(255, 215, 0, 0.9), inset 0 0 24px rgba(255, 215, 0, 0.3);
+  }
+
+  /* 部屋入場ロゴ演出 */
+  .room-intro-shiren {
+    border-color: #ff5722 !important;
+    background: radial-gradient(circle at center, rgba(92, 22, 12, 0.98) 0%, rgba(18, 6, 4, 0.99) 100%) !important;
+    box-shadow: 0 0 48px rgba(255, 87, 34, 0.8) !important;
+  }
+  .room-intro-damaten {
+    border-color: #a855f7 !important;
+    background: radial-gradient(circle at center, rgba(59, 21, 94, 0.98) 0%, rgba(14, 6, 24, 0.99) 100%) !important;
+    box-shadow: 0 0 48px rgba(168, 85, 247, 0.8) !important;
+  }
+  .room-intro-shoushi {
+    border-color: #2ecc71 !important;
+    background: radial-gradient(circle at center, rgba(16, 74, 44, 0.98) 0%, rgba(5, 22, 14, 0.99) 100%) !important;
+    box-shadow: 0 0 48px rgba(46, 204, 113, 0.8) !important;
+  }
+  .room-intro-oniren {
+    border-color: #ffd700 !important;
+    background: radial-gradient(circle at center, rgba(138, 24, 16, 0.98) 0%, rgba(24, 4, 4, 0.99) 100%) !important;
+    box-shadow: 0 0 56px rgba(255, 215, 0, 0.9), 0 0 30px rgba(231, 76, 60, 0.9) !important;
   }
 
   .rare-logo-tenchi { font-family: "Yu Mincho", serif; font-size: 2rem; font-weight: 900; letter-spacing: 0.14em; color: #fff3b0; text-shadow: 0 0 16px #ff9f1c, 0 3px 0 #7f1d1d; }
@@ -597,7 +678,7 @@
       <span style="font-size: 0.76rem; color: #ecf0f1; font-weight: 700;">『ダマテン策士と読み合う中級編・第2サイクルオーラス』</span>
     </button>
 
-    <button class="mode-card-btn mode-master" onclick="SoundEngine.playSE('select_card'); startCpuMatch('master', 'normal');">
+    <button class="mode-card-btn mode-master" onclick="startCpuMatch('master', 'normal');">
       <span class="master-pill-badge">🔥 MASTER CHALLENGE 🔥</span>
       <span style="font-size: 1.15rem; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">👹 鬼レンチャレンジ 👹</span>
       <span style="font-size: 0.75rem; color: #fdebd0; font-weight: 800; line-height: 1.35;">
@@ -613,21 +694,21 @@
   <div id="screen-lobby" class="screen" style="padding: 12px 14px; gap: 9px; justify-content: flex-start; align-items: center;">
     <div style="text-align:center; width:100%; max-width:366px;">
       <h2 style="margin:0; font-size:1.15rem; font-weight:900; color:#5dade2;">🌐 通信＆ルール部屋ロビー</h2>
-      <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">通信対戦時は全般で30秒の制限時間が適用されます！（シングルは無制限）</div>
+      <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">通信対戦・通信シングル戦ともに30秒の制限時間が適用されます！</div>
     </div>
 
     <div class="lobby-section-box lobby-single-box">
-      <div style="font-size:0.75rem; font-weight:900; color:#f4d03f; text-align:center;">◎ 各ルール部屋へシングル参戦（主と対戦・無制限）</div>
+      <div style="font-size:0.75rem; font-weight:900; color:#f4d03f; text-align:center;">◎ 各ルール部屋へシングル参戦（主と対戦・30秒制）</div>
       <div class="room-single-grid">
-        <button class="room-single-btn" style="background:#c0392b;" onclick="SoundEngine.playSE('select_card'); startSingleRuleRoom('shiren');">
+        <button class="room-single-btn" style="background:#c0392b;" onclick="startSingleRuleRoom('shiren');">
           <span style="font-size:0.76rem; font-weight:900;">🔥 試練の部屋</span>
           <span style="font-size:0.6rem; opacity:0.95;">(要リーチ基本役)</span>
         </button>
-        <button class="room-single-btn" style="background:#8e44ad;" onclick="SoundEngine.playSE('select_card'); startSingleRuleRoom('damaten');">
+        <button class="room-single-btn" style="background:#8e44ad;" onclick="startSingleRuleRoom('damaten');">
           <span style="font-size:0.76rem; font-weight:900;">🧠 ダマテン部屋</span>
           <span style="font-size:0.6rem; opacity:0.95;">(リーチ禁止)</span>
         </button>
-        <button class="room-single-btn" style="background:#27ae60;" onclick="SoundEngine.playSE('select_card'); startSingleRuleRoom('shoushi');">
+        <button class="room-single-btn" style="background:#27ae60;" onclick="startSingleRuleRoom('shoushi');">
           <span style="font-size:0.76rem; font-weight:900;">⚔️ 勝負師の部屋</span>
           <span style="font-size:0.6rem; opacity:0.95;">(公式ガチンコ)</span>
         </button>
@@ -664,14 +745,17 @@
     <button onclick="SoundEngine.playSE('select_card'); leaveLobbyToTitle();" style="background:transparent; color:#cbd5e1; border:none; cursor:pointer; font-size:0.82rem; font-weight:700; margin-top:2px;">＜ タイトルに戻る</button>
   </div>
 
-  <!-- 4. ルーレット画面 -->
+  <!-- 4. 場所決めルーレット画面（♠青 vs ♥赤 の2択） -->
   <div id="screen-roulette" class="screen" style="justify-content: center; align-items: center; padding: 16px; text-align: center; gap: 10px;">
-    <h3 style="margin:0; color:#f1c40f; font-size:1.12rem;">席順・親決めルーレット</h3>
+    <h3 style="margin:0; color:#f1c40f; font-size:1.12rem;">場所決めルーレット（♠青 vs ♥赤）</h3>
     <div id="roulette-room-sub" style="font-size:0.78rem; font-weight:800; color:#85c1e9;"></div>
-    <div id="roulette-box" style="width:106px; height:106px; border-radius:50%; background:#132f35; border:3px solid #f1c40f; display:flex; justify-content:center; align-items:center; box-shadow:0 0 16px rgba(241,196,15,0.35);">
-      <div id="roulette-suit" style="font-size:2.6rem; font-weight:900; color:#3498db;">♠</div>
+    <div style="font-size:0.74rem; color:#cbd5e1; line-height:1.4;">
+      左＝♠場（青・先親）／右＝♥場（赤・子）
     </div>
-    <div id="roulette-result" style="min-height:36px; font-size:0.84rem; font-weight:800; color:#2ecc71;"></div>
+    <div id="roulette-box" style="width:108px; height:108px; border-radius:50%; background:#132f35; border:3px solid #f1c40f; display:flex; justify-content:center; align-items:center; box-shadow:0 0 16px rgba(241,196,15,0.35);">
+      <div id="roulette-suit" style="font-size:2.8rem; font-weight:900; color:#3498db;">♠</div>
+    </div>
+    <div id="roulette-result" style="min-height:38px; font-size:0.84rem; font-weight:800; color:#2ecc71; line-height:1.4;"></div>
     <button id="btn-roulette-go" class="btn-gold" onclick="SoundEngine.playSE('select_card'); spinRoulette();" style="width:220px; height:44px; font-size:0.95rem;">🎲 ルーレットを回す</button>
   </div>
 
@@ -685,7 +769,7 @@
           <span id="timer-badge" style="display:none; background:#c0392b; color:#fff; font-size:0.72rem; font-weight:900; padding:2px 7px; border-radius:999px;">30s</span>
         </div>
       </div>
-      <div id="opp-river" style="min-height:44px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
+      <div id="opp-river" style="min-height:48px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:4px; overflow-x:auto;"></div>
       <div id="bubble-slot-opp" class="bubble-slot"><div id="bubble-opp" class="chat-bubble opp"></div></div>
     </div>
 
@@ -699,8 +783,8 @@
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
         <div style="display:flex; flex-direction:column; gap:1px;">
-          <span id="status-self-score" style="font-size:0.84rem; font-weight:900; color:#5dade2;">♠YOU(30pt)</span>
-          <span id="status-self-role" style="font-size:0.72rem; font-weight:800; color:#f4d03f;">[親]</span>
+          <span id="status-left-score" style="font-size:0.84rem; font-weight:900; color:#3498db;">♠YOU(30pt)</span>
+          <span id="status-left-role" style="font-size:0.72rem; font-weight:800; color:#f4d03f;">[親]</span>
         </div>
 
         <div style="background:#071214; border:1px solid rgba(241,196,15,0.45); border-radius:7px; padding:3px 7px; display:flex; align-items:center; gap:5px;">
@@ -709,15 +793,15 @@
         </div>
 
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:1px;">
-          <span id="status-opp-score" style="font-size:0.84rem; font-weight:900; color:#ff7675;">♥相手(30pt)</span>
-          <span id="status-opp-role" style="font-size:0.72rem; font-weight:800; color:#95a5a6;">[子]</span>
+          <span id="status-right-score" style="font-size:0.84rem; font-weight:900; color:#e74c3c;">♥相手(30pt)</span>
+          <span id="status-right-role" style="font-size:0.72rem; font-weight:800; color:#95a5a6;">[子]</span>
         </div>
       </div>
     </div>
 
     <div style="display:flex; flex-direction:column; gap:4px;">
       <div id="bubble-slot-self" class="bubble-slot"><div id="bubble-self" class="chat-bubble self"></div></div>
-      <div id="self-river" style="min-height:44px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:3px; overflow-x:auto;"></div>
+      <div id="self-river" style="min-height:48px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:4px; overflow-x:auto;"></div>
 
       <div style="display:flex; gap:5px;">
         <button class="action-btn yaku-btn" onclick="SoundEngine.playSE('select_card'); openStandaloneYakuScreen('screen-game');">役一覧</button>
@@ -739,7 +823,7 @@
   <div id="screen-result" class="screen" style="padding: 16px; gap: 10px; justify-content: space-between;">
     <h2 id="result-title" style="margin:0; text-align:center; color:#f1c40f; font-size:1.25rem;">リザルト</h2>
     <div id="result-win-type" style="text-align:center; font-size:0.9rem; font-weight:800; color:#2ecc71;"></div>
-    <div id="result-hand-cards" style="display:flex; justify-content:center; gap:6px; min-height:88px;"></div>
+    <div id="result-hand-cards" style="display:flex; justify-content:center; gap:6px; min-height:94px;"></div>
     <div id="result-breakdown" style="background:#132f35; border:1px solid rgba(241,196,15,0.3); border-radius:10px; padding:10px; font-size:0.8rem; line-height:1.55; max-height:220px; overflow-y:auto;"></div>
     <div id="result-scores" style="text-align:center; font-size:0.95rem; font-weight:900; color:#fff;"></div>
     <button id="btn-next-round" class="btn-gold" onclick="proceedAfterResult();" style="width:100%; height:46px; font-size:0.98rem;">次の局へ進む</button>
@@ -775,8 +859,8 @@
         10点以下の基本役と4カード（20点）ではJOKERは使えません。11点以上（4カード除く）ではオールマイティとしてペアや連番の代替に使えますが、使用すると <strong>-2pt</strong>（JOKER必須役は免除）となります。
       </div>
       <div style="background:#122e35; border:1px solid rgba(241,196,15,0.25); border-radius:10px; padding:10px;">
-        <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">3. サイクル・オーラス・タイマー差</div>
-        全モード <strong>第2サイクルオーラス（表ドラ2・裏ドラ2）</strong> で終了します。<strong>通信対戦全般は1アクション30秒制限</strong>、<strong>シングル対戦（CPU・ルール部屋シングル）は時間無制限</strong>です。
+        <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">3. サイクル・オーラス・タイマー仕様</div>
+        全モード <strong>第2サイクルオーラス（表ドラ2・裏ドラ2）</strong> で終了します。<strong>対人通信対戦・通信シングル戦ともに1アクション30秒制限</strong>、<strong>通常CPU対戦（ビギナー／メイン／鬼レン）は時間無制限</strong>です。
       </div>
       <div style="background:#122e35; border:1px solid rgba(241,196,15,0.25); border-radius:10px; padding:10px;">
         <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">4. 通信ロビー＆吹き出し</div>
@@ -796,7 +880,6 @@
     <div id="cutin-desc" style="font-size:0.76rem; font-weight:800; color:#58d68d; margin-top:5px;"></div>
   </div>
 </div>
-
 <script>
 const SoundEngine = {
   ctx: null,
@@ -829,6 +912,12 @@ const SoundEngine = {
       case 'select_card':
         this.tone(540, 0.06, 'triangle', 0.11);
         break;
+      case 'shakin':
+        // 刀剣・金属系「シャキーン！」SE
+        this.tone(1760, 0.12, 'sawtooth', 0.12, 0);
+        this.tone(2637, 0.34, 'sine', 0.15, 0.04);
+        this.tone(3520, 0.42, 'triangle', 0.09, 0.08);
+        break;
       case 'draw':
         this.tone(420, 0.07, 'sine', 0.12);
         this.tone(620, 0.07, 'sine', 0.1, 0.04);
@@ -853,15 +942,33 @@ const SoundEngine = {
         this.tone(Math.min(pitch, 920), 0.045, 'square', 0.07);
         break;
       }
-      case 'win_normal':
-        this.tone(523.25, 0.12, 'triangle', 0.16, 0);
-        this.tone(659.25, 0.12, 'triangle', 0.16, 0.1);
-        this.tone(783.99, 0.22, 'triangle', 0.18, 0.2);
+      case 'win_cat_basic':
+        this.tone(523.25, 0.12, 'triangle', 0.15, 0);
+        this.tone(659.25, 0.12, 'triangle', 0.15, 0.1);
+        this.tone(783.99, 0.22, 'triangle', 0.17, 0.2);
+        break;
+      case 'win_cat_middle':
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+          this.tone(f, 0.16, 'triangle', 0.16, idx * 0.08);
+          this.tone(f * 1.25, 0.14, 'sine', 0.07, idx * 0.08 + 0.02);
+        });
+        break;
+      case 'win_cat_yakuman':
+        [440, 554.37, 659.25, 880, 1108.73].forEach((f, idx) => {
+          this.tone(f, 0.2, 'sawtooth', 0.13, idx * 0.075);
+          this.tone(f * 1.5, 0.16, 'triangle', 0.1, idx * 0.075 + 0.02);
+        });
+        break;
+      case 'win_cat_joker':
+        [587.33, 739.99, 880, 1174.66, 1479.98].forEach((f, idx) => {
+          this.tone(f, 0.18, 'triangle', 0.16, idx * 0.075);
+          this.tone(f * 1.5, 0.14, 'sine', 0.09, idx * 0.075 + 0.03);
+        });
         break;
       case 'win_rare':
-        [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, idx) => {
-          this.tone(f, 0.18, 'triangle', 0.17, idx * 0.075);
-          this.tone(f * 1.5, 0.14, 'sine', 0.08, idx * 0.075 + 0.03);
+        [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98].forEach((f, idx) => {
+          this.tone(f, 0.22, 'triangle', 0.18, idx * 0.07);
+          this.tone(f * 1.5, 0.16, 'sine', 0.1, idx * 0.07 + 0.03);
         });
         break;
       case 'warning_beep':
@@ -872,6 +979,7 @@ const SoundEngine = {
 };
 
 const SUITS = ['♠', '♥', '♦', '♣'];
+const ROULETTE_SUITS = ['♠', '♥'];
 const BLACK_SUITS = ['♠', '♣'];
 const RED_SUITS = ['♥', '♦'];
 const RANK_LABELS = {
@@ -880,24 +988,34 @@ const RANK_LABELS = {
 };
 
 const ROOM_RULE_META = {
-  normal: { title: '通常対戦', sub: 'STANDARD MATCH', desc: '', forbidReach: false },
+  normal: { title: '通常対戦', sub: 'STANDARD MATCH', desc: '', forbidReach: false, bannerClass: '' },
   shoushi: {
     title: '⚔️ 勝負師の部屋 ⚔️',
     sub: 'RULE ROOM MATCH',
     desc: '特定ルール：【公式フルルール・全役＆リーチ有効のガチンコ勝負】',
-    forbidReach: false
+    forbidReach: false,
+    bannerClass: 'room-intro-shoushi'
   },
   shiren: {
     title: '🔥 試練の部屋 🔥',
     sub: 'RULE ROOM MATCH',
     desc: '特定ルール：【基本役はリーチ必須・試練の主との一騎打ち】',
-    forbidReach: false
+    forbidReach: false,
+    bannerClass: 'room-intro-shiren'
   },
   damaten: {
     title: '🧠 ダマテン部屋 🧠',
     sub: 'RULE ROOM MATCH',
     desc: '特定ルール：【リーチ宣言禁止・読み合いとダマテン勝負】',
-    forbidReach: true
+    forbidReach: true,
+    bannerClass: 'room-intro-damaten'
+  },
+  oniren: {
+    title: '👹 鬼レンチャレンジ 👹',
+    sub: 'MASTER CHALLENGE',
+    desc: '特別ルール：【10連チャン達成で完全制覇・第2オーラス親権消滅で即終了】',
+    forbidReach: false,
+    bannerClass: 'room-intro-oniren'
   }
 };
 
@@ -933,7 +1051,7 @@ const YAKU_CATALOG = {
   middle: [
     { name: 'ブラックジャック（12点）', cond: 'JOKER可(-2pt)・ダマテン可。黒Jペア＋黒スート（♠・♣混合可）3連番（A跨ぎNG）。', sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:5},{suit:'♣',val:6},{suit:'♠',val:7}] },
     { name: 'レッドクイーン（12点）', cond: 'JOKER可(-2pt)・ダマテン可。赤Qペア＋赤スート（♥・♦混合可）3連番（A跨ぎNG）。', sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:5},{suit:'♦',val:6},{suit:'♥',val:7}] },
-    { name: 'ツーペイコウ（13点）', cond: 'JOKER可(-2pt)・ダマテン可。JJQKK / QQKAA / AAQQK などの2ペア＋絵札。', sample: [{suit:'♠',val:14},{suit:'♦',val:14},{suit:'♣',val:12},{suit:'♦',val:12},{suit:'♥',val:13}] },
+    { name: 'ツーペイコウ（13点）', cond: 'JOKER可(-2pt)・ダマテン可。JJQKK または QQKAA の2パターンのみ成立。', sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♣',val:12},{suit:'♦',val:13},{suit:'♠',val:13}] },
     { name: 'トイハウス（14点）', cond: 'JOKER可(-2pt)・ダマテン可。ペア＋スリーカード5枚すべて絵札。', sample: [{suit:'♠',val:13},{suit:'♥',val:13},{suit:'♦',val:12},{suit:'♣',val:12},{suit:'♠',val:12}] },
     { name: 'ストレートフラッシュ（15点）', cond: 'JOKER可(-2pt)・ダマテン可。同一スートの5連番（A跨ぎNG）。', sample: [{suit:'♦',val:4},{suit:'♦',val:5},{suit:'♦',val:6},{suit:'♦',val:7},{suit:'♦',val:8}] },
     { name: '黒龍（18点）', cond: 'JOKER可(-2pt)・ダマテン可。絵札なし・黒スートの偶数5枚（2,4,6,8,10）。', sample: [{suit:'♠',val:2},{suit:'♣',val:4},{suit:'♠',val:6},{suit:'♣',val:8},{suit:'♠',val:10}] },
@@ -1117,19 +1235,10 @@ function evaluateFiveCardBaseYaku(fiveCards, options = {}) {
       candidates.push({ id: 'toy_house', name: 'トイハウス', baseScore: 14, jokerPenalty: penalty, catId: 3 });
     }
 
-    // ツーペイコウ：2ペア（出現数2が2組）＋残り1枚が絵札（JJQKK / QQKAA / AAQQK などの組合せ）
-    const pairEntries = Object.entries(valCounts)
-      .filter(([, cnt]) => cnt === 2)
-      .map(([r]) => Number(r))
-      .sort((a, b) => a - b);
-    const singleEntries = Object.entries(valCounts)
-      .filter(([, cnt]) => cnt === 1)
-      .map(([r]) => Number(r));
-    if (pairEntries.length === 2 && singleEntries.length === 1 && isPictureRank(singleEntries[0])) {
-      const pKey = `${pairEntries[0]}-${pairEntries[1]}`;
-      if (pKey === '11-12' || pKey === '12-13' || pKey === '12-14') {
-        candidates.push({ id: 'two_peikou', name: 'ツーペイコウ', baseScore: 13, jokerPenalty: penalty, catId: 3 });
-      }
+    // ツーペイコウ：JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ成立
+    const sortedFiveVals = [...vVals].sort((a, b) => a - b).join(',');
+    if (sortedFiveVals === '11,11,12,13,13' || sortedFiveVals === '12,12,13,14,14') {
+      candidates.push({ id: 'two_peikou', name: 'ツーペイコウ', baseScore: 13, jokerPenalty: penalty, catId: 3 });
     }
 
     for (let i = 0; i < 5; i++) {
@@ -1314,14 +1423,13 @@ function renderYakuDetail() {
       cardEl.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
     } else {
       const cls = RED_SUITS.includes(c.suit) ? 'suit-red' : 'suit-black';
-      cardEl.innerHTML = `<div class="s-suit ${cls}">${c.suit}</div><div class="s-val ${cls}">${RANK_LABELS[c.val]}</div>`;
+      cardEl.innerHTML = `<div class="diag-sample"><span class="s-suit ${cls}">${c.suit}</span><span class="s-val ${cls}">${RANK_LABELS[c.val]}</span></div>`;
     }
     grid.appendChild(cardEl);
   });
   panel.appendChild(grid);
 }
-
-const CUSTOM_PEER_CONFIG = {
+  const CUSTOM_PEER_CONFIG = {
   host: 'four51k1-peer-server.onrender.com',
   port: 443,
   path: '/',
@@ -1338,6 +1446,7 @@ const gameState = {
   mode: 'beginner',
   roomRule: 'normal',
   isOnline: false,
+  isSingleRuleRoom: false,
   isHost: true,
   roomId: '',
   peer: null,
@@ -1371,6 +1480,10 @@ const gameState = {
   lastResult: null
 };
 
+function hasActiveTurnTimer() {
+  return Boolean(gameState.isOnline || gameState.isSingleRuleRoom);
+}
+
 function openScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
@@ -1399,8 +1512,43 @@ function buildDeck() {
   return deck;
 }
 
+// 部屋・鬼レン入場カットイン演出（SE「シャキーン！」＋フェードイン＋3秒余韻＋フェードアウト）
+function playRoomIntroFade(introKey, onComplete) {
+  const meta = ROOM_RULE_META[introKey] || ROOM_RULE_META.shoushi;
+  const overlay = document.getElementById('cutin-overlay');
+  const banner = document.getElementById('cutin-banner');
+  const subEl = document.getElementById('cutin-sub');
+  const mainEl = document.getElementById('cutin-main');
+  const descEl = document.getElementById('cutin-desc');
+
+  banner.className = 'cutin-banner ' + (meta.bannerClass || '');
+  mainEl.className = '';
+  subEl.textContent = meta.sub;
+  mainEl.textContent = meta.title;
+  descEl.textContent = meta.desc;
+
+  SoundEngine.playSE('shakin');
+  overlay.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlay.classList.add('visible');
+    });
+  });
+
+  // 3.0秒じっくり眺める余韻のあとフェードアウトして遷移
+  setTimeout(() => {
+    overlay.classList.remove('visible');
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      descEl.textContent = '';
+      if (typeof onComplete === 'function') onComplete();
+    }, 380);
+  }, 3000);
+}
+
 function startCpuMatch(mode, ruleKey = 'normal') {
   gameState.isOnline = false;
+  gameState.isSingleRuleRoom = false;
   gameState.isHost = true;
   gameState.mode = mode;
   gameState.roomRule = ruleKey;
@@ -1411,15 +1559,27 @@ function startCpuMatch(mode, ruleKey = 'normal') {
   gameState.selfBubbleMsg = '';
   gameState.oppBubbleMsg = '';
   stopTimer();
-  document.getElementById('roulette-room-sub').textContent = '';
-  document.getElementById('roulette-result').textContent = '';
-  document.getElementById('btn-roulette-go').style.display = 'inline-block';
-  openScreen('screen-roulette');
+
+  const proceedToRoulette = () => {
+    document.getElementById('roulette-room-sub').textContent = mode === 'master' ? '👹 鬼レンチャレンジ 👹' : '';
+    document.getElementById('roulette-suit').textContent = '♠';
+    document.getElementById('roulette-suit').style.color = '#3498db';
+    document.getElementById('roulette-result').textContent = '';
+    document.getElementById('btn-roulette-go').style.display = 'inline-block';
+    openScreen('screen-roulette');
+  };
+
+  if (mode === 'master') {
+    playRoomIntroFade('oniren', proceedToRoulette);
+  } else {
+    proceedToRoulette();
+  }
 }
 
 function startSingleRuleRoom(ruleKey) {
   const meta = ROOM_RULE_META[ruleKey] || ROOM_RULE_META.shoushi;
   gameState.isOnline = false;
+  gameState.isSingleRuleRoom = true;
   gameState.isHost = true;
   gameState.mode = ruleKey === 'shiren' ? 'main' : 'beginner';
   gameState.roomRule = ruleKey;
@@ -1430,61 +1590,61 @@ function startSingleRuleRoom(ruleKey) {
   gameState.selfBubbleMsg = '';
   gameState.oppBubbleMsg = '';
   stopTimer();
-  document.getElementById('roulette-room-sub').textContent = meta.title;
-  document.getElementById('roulette-result').textContent = '';
-  document.getElementById('btn-roulette-go').style.display = 'inline-block';
-  showRoomBanner(ruleKey);
-  openScreen('screen-roulette');
+
+  playRoomIntroFade(ruleKey, () => {
+    document.getElementById('roulette-room-sub').textContent = meta.title;
+    document.getElementById('roulette-suit').textContent = '♠';
+    document.getElementById('roulette-suit').style.color = '#3498db';
+    document.getElementById('roulette-result').textContent = '';
+    document.getElementById('btn-roulette-go').style.display = 'inline-block';
+    openScreen('screen-roulette');
+  });
 }
 
-function showRoomBanner(ruleKey) {
-  const meta = ROOM_RULE_META[ruleKey] || ROOM_RULE_META.shoushi;
-  const overlay = document.getElementById('cutin-overlay');
-  const banner = document.getElementById('cutin-banner');
-  const subEl = document.getElementById('cutin-sub');
-  const mainEl = document.getElementById('cutin-main');
-  const descEl = document.getElementById('cutin-desc');
-
-  banner.className = 'cutin-banner';
-  mainEl.className = '';
-  subEl.textContent = meta.sub;
-  mainEl.textContent = meta.title;
-  descEl.textContent = meta.desc;
-  overlay.classList.add('active');
-
-  setTimeout(() => {
-    overlay.classList.remove('active');
-    descEl.textContent = '';
-  }, 1350);
-}
-
+// 2人打ち場所決めルーレット：♠（青・先親）と ♥（赤・子）の2択
 function spinRoulette() {
   if (gameState.isOnline && !gameState.isHost) return;
   const suitEl = document.getElementById('roulette-suit');
   const resEl = document.getElementById('roulette-result');
   const btn = document.getElementById('btn-roulette-go');
   btn.disabled = true;
+
   let step = 0;
-  const maxSteps = 16;
+  const totalTicks = 18;
+  const pickedSuit = ROULETTE_SUITS[Math.floor(Math.random() * ROULETTE_SUITS.length)];
+
   const timer = setInterval(() => {
-    const s = SUITS[step % 4];
+    const s = (step === totalTicks - 1) ? pickedSuit : ROULETTE_SUITS[step % ROULETTE_SUITS.length];
     suitEl.textContent = s;
-    suitEl.style.color = RED_SUITS.includes(s) ? '#e74c3c' : '#3498db';
+    suitEl.style.color = s === '♥' ? '#e74c3c' : '#3498db';
     SoundEngine.playSE('roulette_tick', { step });
     step++;
-    if (step >= maxSteps) {
+
+    if (step >= totalTicks) {
       clearInterval(timer);
-      const picked = SUITS[Math.floor(Math.random() * 4)];
-      gameState.seatSuit = picked;
-      gameState.isParent = picked === '♠';
-      suitEl.textContent = picked;
-      resEl.textContent = `自スート「${picked}」／${gameState.isParent ? '先親スタート' : '子スタート'}`;
+      const isSpade = pickedSuit === '♠';
+      gameState.seatSuit = pickedSuit;
+      gameState.isParent = isSpade;
+      suitEl.textContent = pickedSuit;
+      suitEl.style.color = isSpade ? '#3498db' : '#e74c3c';
+      resEl.textContent = isSpade
+        ? '♠（青・左）確定：先親スタート'
+        : '♥（赤・右）確定：子スタート';
+
+      if (gameState.isOnline && gameState.conn && gameState.conn.open) {
+        gameState.conn.send({
+          type: 'ROULETTE_SYNC',
+          hostSuit: pickedSuit,
+          hostIsParent: isSpade
+        });
+      }
+
       setTimeout(() => {
         btn.disabled = false;
         initRound();
-      }, 750);
+      }, 800);
     }
-  }, 95);
+  }, 90);
 }
 
 function initRound() {
@@ -1511,6 +1671,8 @@ function initRound() {
   const guestHand = [];
   for (let i = 0; i < hostCount; i++) hostHand.push(fullDeck.pop());
   for (let i = 0; i < guestCount; i++) guestHand.push(fullDeck.pop());
+
+  const guestSeatSuit = gameState.seatSuit === '♠' ? '♥' : '♠';
 
   gameState.deck = fullDeck;
   gameState.doraIndicators = doraIndicators;
@@ -1541,7 +1703,7 @@ function initRound() {
       streak: gameState.streak,
       scores: { self: gameState.scores.opp, opp: gameState.scores.self },
       kyotaku: gameState.kyotaku,
-      guestSeatSuit: gameState.seatSuit === '♠' ? '♥' : '♠',
+      guestSeatSuit,
       roomRule: gameState.roomRule
     });
   }
@@ -1560,12 +1722,15 @@ function applyRoundStartUI() {
   openScreen('screen-game');
   renderGameBoard();
 
-  if (!gameState.isOnline) {
+  if (hasActiveTurnTimer()) {
+    startOnlineTimerIfNeeded();
+  } else {
     stopTimer();
     document.getElementById('timer-badge').style.display = 'none';
-    if (!gameState.isSelfTurn) scheduleCpuTurn();
-  } else {
-    startOnlineTimerIfNeeded();
+  }
+
+  if (!gameState.isOnline && !gameState.isSelfTurn) {
+    scheduleCpuTurn();
   }
 }
 
@@ -1575,11 +1740,33 @@ function renderGameBoard() {
   document.getElementById('status-kyotaku-deck').textContent = `供託: ${gameState.kyotaku}pt | 山札: ${gameState.deck.length}`;
   document.getElementById('status-streak-bar').textContent = `(${gameState.streak}連チャン)`;
 
-  const oppSuit = gameState.seatSuit === '♠' ? '♥' : '♠';
-  document.getElementById('status-self-score').textContent = `${gameState.seatSuit}YOU(${gameState.scores.self}pt)`;
-  document.getElementById('status-self-role').textContent = gameState.isParent ? '[親]' : '[子]';
-  document.getElementById('status-opp-score').textContent = `${oppSuit}相手(${gameState.scores.opp}pt)`;
-  document.getElementById('status-opp-role').textContent = gameState.isParent ? '[子]' : '[親]';
+  // 左＝♠場（青）、右＝♥場（赤）固定。ルーレットでYOUと相手が左右変動
+  const selfIsSpade = gameState.seatSuit === '♠';
+  const leftEl = document.getElementById('status-left-score');
+  const leftRoleEl = document.getElementById('status-left-role');
+  const rightEl = document.getElementById('status-right-score');
+  const rightRoleEl = document.getElementById('status-right-role');
+
+  leftEl.style.color = '#3498db';
+  rightEl.style.color = '#e74c3c';
+
+  if (selfIsSpade) {
+    leftEl.textContent = `♠YOU(${gameState.scores.self}pt)`;
+    leftRoleEl.textContent = gameState.isParent ? '[親]' : '[子]';
+    leftRoleEl.style.color = gameState.isParent ? '#f4d03f' : '#95a5a6';
+
+    rightEl.textContent = `♥相手(${gameState.scores.opp}pt)`;
+    rightRoleEl.textContent = gameState.isParent ? '[子]' : '[親]';
+    rightRoleEl.style.color = gameState.isParent ? '#95a5a6' : '#f4d03f';
+  } else {
+    leftEl.textContent = `♠相手(${gameState.scores.opp}pt)`;
+    leftRoleEl.textContent = gameState.isParent ? '[子]' : '[親]';
+    leftRoleEl.style.color = gameState.isParent ? '#95a5a6' : '#f4d03f';
+
+    rightEl.textContent = `♥YOU(${gameState.scores.self}pt)`;
+    rightRoleEl.textContent = gameState.isParent ? '[親]' : '[子]';
+    rightRoleEl.style.color = gameState.isParent ? '#f4d03f' : '#95a5a6';
+  }
 
   const doraBox = document.getElementById('dora-indicators');
   doraBox.innerHTML = '';
@@ -1620,7 +1807,7 @@ function renderGameBoard() {
         el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
       } else {
         const colorCls = RED_SUITS.includes(card.suit) ? 'suit-red' : 'suit-black';
-        el.innerHTML = `<div class="suit-top ${colorCls}">${card.suit}</div><div class="val-bottom ${colorCls}">${RANK_LABELS[card.val]}</div>`;
+        el.innerHTML = `<div class="diag-face"><span class="diag-suit ${colorCls}">${card.suit}</span><span class="diag-val ${colorCls}">${RANK_LABELS[card.val]}</span></div>`;
       }
       el.onclick = () => onHandCardTap(slotIdx);
       slotDiv.appendChild(el);
@@ -1638,7 +1825,7 @@ function createMiniCardEl(card, isReachTile) {
     el.innerHTML = `<span>JK</span>`;
   } else {
     const cls = RED_SUITS.includes(card.suit) ? 'suit-red' : 'suit-black';
-    el.innerHTML = `<span class="${cls}">${card.suit}</span><span class="${cls}">${RANK_LABELS[card.val]}</span>`;
+    el.innerHTML = `<div class="diag-mini"><span class="m-suit ${cls}">${card.suit}</span><span class="m-val ${cls}">${RANK_LABELS[card.val]}</span></div>`;
   }
   return el;
 }
@@ -1668,6 +1855,7 @@ function onHandCardTap(idx) {
       });
       startOnlineTimerIfNeeded();
     } else if (!gameState.isOnline) {
+      if (hasActiveTurnTimer()) startOnlineTimerIfNeeded();
       scheduleCpuTurn();
     }
   } else {
@@ -1698,7 +1886,6 @@ function drawSelfTile() {
 function declareReach() {
   const meta = ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.normal;
   if (meta.forbidReach || gameState.isReach || !gameState.isSelfTurn || gameState.selfHand.length !== 5) return;
-  // 自分の打牌がまだ0枚かつ1巡目以内のリーチ宣言は初手ダブルリーチ（+3pt）
   const isWReach = gameState.selfDiscards.length === 0 && gameState.turnCount <= 1;
   gameState.isReach = true;
   gameState.isDoubleReach = isWReach;
@@ -1710,7 +1897,7 @@ function declareReach() {
   showCutin(
     isWReach ? 'ダブルリーチ宣言！' : 'リーチ宣言！',
     isWReach ? '初手Wリーチ +3pt チャンス' : '+2pt テンパイ宣言',
-    false,
+    'cat-basic',
     null
   );
   renderGameBoard();
@@ -1769,6 +1956,21 @@ function triggerWinAction() {
   if (gameState.selfHand.length === 5) {
     finalizeWin('tsumo', [...gameState.selfHand], true);
   }
+}
+
+function getCategoryWinPresentation(baseEval, winType, total) {
+  const catMap = {
+    2: { tierClass: 'cat-basic', se: 'win_cat_basic', label: '基本役和了' },
+    3: { tierClass: 'cat-middle', se: 'win_cat_middle', label: '中級役和了' },
+    4: { tierClass: 'cat-yakuman', se: 'win_cat_yakuman', label: '役満級和了' },
+    5: { tierClass: 'cat-joker', se: 'win_cat_joker', label: 'JOKER必須役和了' }
+  };
+  const info = catMap[baseEval.catId] || catMap[2];
+  return {
+    tierClass: info.tierClass,
+    se: info.se,
+    subText: `${info.label}・${winType === 'tsumo' ? 'ツモ' : 'ロン'} +${total}pt`
+  };
 }
 
 function finalizeWin(winType, fiveCards, isSelfWinner, syncedPayload = null) {
@@ -1834,14 +2036,21 @@ function finalizeWin(winType, fiveCards, isSelfWinner, syncedPayload = null) {
     SoundEngine.playSE('player_lose_pt');
   }
 
+  // レア10役個別ロゴ演出 or カテゴリ別豪華演出
   const rareKey = baseEval.isTenchiJinwa ? 'tenchi_jinwa' : (RARE_EFFECT_CONFIG[baseEval.id] ? baseEval.id : null);
   if (rareKey) {
     const cfg = RARE_EFFECT_CONFIG[rareKey];
     SoundEngine.playSE(cfg.se);
-    showCutin(baseEval.isTenchiJinwa ? '天地人和' : baseEval.name, cfg.badge, true, cfg.logoClass);
+    showCutin(
+      baseEval.isTenchiJinwa ? '天地人和' : baseEval.name,
+      `${cfg.badge}（${winType === 'tsumo' ? 'ツモ' : 'ロン'} +${total}pt）`,
+      'rare-tier',
+      cfg.logoClass
+    );
   } else {
-    SoundEngine.playSE('win_normal');
-    showCutin(baseEval.name, `${winType === 'tsumo' ? 'ツモ' : 'ロン'}和了 +${total}pt`, false, null);
+    const catPres = getCategoryWinPresentation(baseEval, winType, total);
+    SoundEngine.playSE(catPres.se);
+    showCutin(baseEval.name, catPres.subText, catPres.tierClass, null);
   }
 
   let shouldEndGame = false;
@@ -1876,7 +2085,7 @@ function finalizeWin(winType, fiveCards, isSelfWinner, syncedPayload = null) {
     shouldEndGame
   };
 
-  setTimeout(() => showResultScreen(), 1350);
+  setTimeout(() => showResultScreen(), rareKey ? 1700 : 1350);
 }
 
 function finishRoundRyukyoku() {
@@ -1918,7 +2127,7 @@ function showResultScreen() {
       el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
     } else {
       const cls = RED_SUITS.includes(c.suit) ? 'suit-red' : 'suit-black';
-      el.innerHTML = `<div class="suit-top ${cls}">${c.suit}</div><div class="val-bottom ${cls}">${RANK_LABELS[c.val]}</div>`;
+      el.innerHTML = `<div class="diag-face"><span class="diag-suit ${cls}">${c.suit}</span><span class="diag-val ${cls}">${RANK_LABELS[c.val]}</span></div>`;
     }
     handBox.appendChild(el);
   });
@@ -1966,12 +2175,14 @@ function scheduleCpuTurn() {
           gameState.pendingRonCard = drawn;
           gameState.isSelfTurn = true;
           renderGameBoard();
+          if (hasActiveTurnTimer()) startOnlineTimerIfNeeded();
           return;
         }
       }
 
       gameState.isSelfTurn = true;
       renderGameBoard();
+      if (hasActiveTurnTimer()) startOnlineTimerIfNeeded();
     }, 520);
   }, 480);
 }
@@ -2028,29 +2239,39 @@ function renderBubbles() {
   }
 }
 
-function showCutin(mainText, subText, isRare, rareLogoClass) {
+function showCutin(mainText, subText, tierClass, rareLogoClass) {
   const overlay = document.getElementById('cutin-overlay');
   const banner = document.getElementById('cutin-banner');
   const subEl = document.getElementById('cutin-sub');
   const mainEl = document.getElementById('cutin-main');
   const descEl = document.getElementById('cutin-desc');
 
-  banner.className = isRare ? 'cutin-banner rare-tier' : 'cutin-banner';
+  banner.className = 'cutin-banner ' + (tierClass || '');
   mainEl.className = rareLogoClass || '';
   subEl.textContent = subText || '';
   mainEl.textContent = mainText || '';
   descEl.textContent = '';
-  overlay.classList.add('active');
 
+  overlay.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlay.classList.add('visible');
+    });
+  });
+
+  const holdMs = tierClass === 'rare-tier' ? 1450 : 1050;
   setTimeout(() => {
-    overlay.classList.remove('active');
-  }, isRare ? 1600 : 1050);
+    overlay.classList.remove('visible');
+    setTimeout(() => {
+      overlay.classList.remove('active');
+    }, 300);
+  }, holdMs);
 }
 
 function startOnlineTimerIfNeeded() {
   stopTimer();
   const badge = document.getElementById('timer-badge');
-  if (!gameState.isOnline) {
+  if (!hasActiveTurnTimer()) {
     badge.style.display = 'none';
     return;
   }
@@ -2079,7 +2300,7 @@ function stopTimer() {
 }
 
 function handleOnlineTimeout() {
-  if (!gameState.isOnline) return;
+  if (!hasActiveTurnTimer()) return;
   if (gameState.pendingRonCard) {
     gameState.pendingRonCard = null;
     renderGameBoard();
@@ -2097,7 +2318,7 @@ function handleOnlineTimeout() {
       gameState.turnCount++;
       gameState.isSelfTurn = false;
       renderGameBoard();
-      if (gameState.conn && gameState.conn.open) {
+      if (gameState.isOnline && gameState.conn && gameState.conn.open) {
         gameState.conn.send({
           type: 'DISCARD',
           card: disc,
@@ -2106,12 +2327,16 @@ function handleOnlineTimeout() {
           deckCount: gameState.deck.length,
           selfHandCount: gameState.selfHand.length
         });
+        startOnlineTimerIfNeeded();
+      } else if (gameState.isSingleRuleRoom) {
+        startOnlineTimerIfNeeded();
+        scheduleCpuTurn();
       }
     }
   }
 }
 
-const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v5';
+const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v8';
 
 function saveLobbyState() {
   try {
@@ -2143,6 +2368,7 @@ function setLobbyStatus(msg, color = '#a9dfbf') {
 
 function openOnlineLobby() {
   gameState.isOnline = true;
+  gameState.isSingleRuleRoom = false;
   openScreen('screen-lobby');
   const params = new URLSearchParams(window.location.search);
   const urlRoom = params.get('room');
@@ -2166,6 +2392,7 @@ function createHostRoom(fixedId = null) {
   const chosenRule = ruleSel ? ruleSel.value : 'shoushi';
   const roomId = fixedId || ('jp2-' + Math.floor(1000 + Math.random() * 9000));
   gameState.isOnline = true;
+  gameState.isSingleRuleRoom = false;
   gameState.isHost = true;
   gameState.roomId = roomId;
   gameState.roomRule = chosenRule;
@@ -2189,12 +2416,12 @@ function createHostRoom(fixedId = null) {
   peer.on('connection', (conn) => {
     gameState.conn = conn;
     setupConnectionHandlers(conn);
-    setLobbyStatus('🎉 友達が接続しました！席順・親決めルーレットへ進みます...', '#2ecc71');
-    setTimeout(() => {
+    setLobbyStatus('🎉 友達が接続しました！場所決めルーレットへ進みます...', '#2ecc71');
+    playRoomIntroFade(gameState.roomRule, () => {
       document.getElementById('roulette-room-sub').textContent = (ROOM_RULE_META[gameState.roomRule] || ROOM_RULE_META.shoushi).title;
       document.getElementById('btn-roulette-go').style.display = 'inline-block';
       openScreen('screen-roulette');
-    }, 650);
+    });
   });
 
   peer.on('disconnected', () => {
@@ -2265,6 +2492,7 @@ function joinHostRoom() {
     return;
   }
   gameState.isOnline = true;
+  gameState.isSingleRuleRoom = false;
   gameState.isHost = false;
   gameState.roomId = inputId;
   setLobbyStatus(`ルーム「${inputId}」へ接続中...`, '#85c1e9');
@@ -2292,7 +2520,9 @@ function setupConnectionHandlers(conn) {
     setLobbyStatus('✅ 相手との通信ラインが確立しました！ホストの開始を待っています...', '#2ecc71');
     if (!gameState.isHost) {
       document.getElementById('btn-roulette-go').style.display = 'none';
-      document.getElementById('roulette-result').textContent = 'ホストが親決めルーレットを実行中...';
+      document.getElementById('roulette-suit').textContent = '♠';
+      document.getElementById('roulette-suit').style.color = '#3498db';
+      document.getElementById('roulette-result').textContent = 'ホストが場所決めルーレットを実行中...';
       openScreen('screen-roulette');
     }
   });
@@ -2300,8 +2530,20 @@ function setupConnectionHandlers(conn) {
     if (!payload) return;
     if (payload.type === 'PING') {
       if (conn.open) conn.send({ type: 'PONG' });
+    } else if (payload.type === 'ROULETTE_SYNC') {
+      const guestSuit = payload.hostSuit === '♠' ? '♥' : '♠';
+      const suitEl = document.getElementById('roulette-suit');
+      const resEl = document.getElementById('roulette-result');
+      if (suitEl) {
+        suitEl.textContent = guestSuit;
+        suitEl.style.color = guestSuit === '♥' ? '#e74c3c' : '#3498db';
+      }
+      if (resEl) {
+        resEl.textContent = `自スート「${guestSuit}」／${payload.hostIsParent ? '子スタート' : '先親スタート'}`;
+      }
     } else if (payload.type === 'ROUND_INIT') {
       gameState.isOnline = true;
+      gameState.isSingleRuleRoom = false;
       gameState.selfHand = payload.guestHand || [];
       gameState.oppHandCount = payload.hostHandCount || 4;
       gameState.deck = payload.deck || [];
@@ -2333,7 +2575,7 @@ function setupConnectionHandlers(conn) {
       gameState.kyotaku = payload.kyotaku;
       gameState.scores.opp = payload.oppScore;
       SoundEngine.playSE('reach_chip');
-      showCutin(payload.isDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！', '警戒せよ！', false, null);
+      showCutin(payload.isDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！', '警戒せよ！', 'cat-basic', null);
       renderGameBoard();
     } else if (payload.type === 'WIN_DECL') {
       finalizeWin(payload.winType, payload.fiveCards, false, payload);
@@ -2364,6 +2606,7 @@ function setupConnectionHandlers(conn) {
 
 function leaveLobbyToTitle() {
   gameState.isOnline = false;
+  gameState.isSingleRuleRoom = false;
   gameState.isHost = false;
   stopTimer();
   if (gameState.heartbeatId) clearInterval(gameState.heartbeatId);
