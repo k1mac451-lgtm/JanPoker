@@ -181,14 +181,14 @@
     grid-template-columns: repeat(5, 1fr);
     gap: 5px;
     width: 100%;
-    height: 98px;
+    height: 100px;
     padding: 8px 2px 0 2px;
     align-items: end;
   }
 
   .hand-slot {
     width: 100%;
-    height: 88px;
+    height: 90px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -196,24 +196,21 @@
 
   .hand-slot-empty {
     width: 100%;
-    height: 88px;
+    height: 90px;
     border-radius: 8px;
     border: 1px dashed rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.015);
   }
 
-  /* 斜め大判スート＆数値表示カード */
+  /* 左上スート・右下数値の斜め対角カード */
   .playing-card {
     width: 100%;
-    max-width: 66px;
-    height: 88px;
+    max-width: 68px;
+    height: 90px;
     background: var(--bg-card);
     border-radius: 8px;
     border: 1.5px solid #cbd5e1;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -227,25 +224,26 @@
     box-shadow: 0 8px 18px rgba(241, 196, 15, 0.55);
   }
 
-  .diag-face {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transform: rotate(-20deg);
-    line-height: 0.98;
+  .corner-suit-tl {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 1.48rem;
+    line-height: 1;
     font-weight: 900;
     pointer-events: none;
   }
 
-  .playing-card .diag-suit {
-    font-size: 1.55rem;
-  }
-
-  .playing-card .diag-val {
-    font-size: 1.72rem;
+  .corner-rank-br {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-size: 1.56rem;
+    line-height: 1;
+    font-weight: 900;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.03em;
+    pointer-events: none;
   }
 
   .playing-card.joker,
@@ -253,19 +251,17 @@
     background: radial-gradient(circle at center, #232931 0%, #090c10 100%);
     border: 2px solid #f1c40f;
     box-shadow: 0 0 10px rgba(241, 196, 15, 0.35);
+    display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0;
   }
 
-  .joker-diag-label {
+  .joker-center-label {
     color: #f1c40f;
     font-weight: 900;
-    font-size: 0.86rem;
-    letter-spacing: 0.05em;
-    transform: rotate(-25deg);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
     text-shadow: 0 0 8px rgba(241, 196, 15, 0.65);
-    white-space: nowrap;
   }
 
   .suit-red { color: #d62828; }
@@ -286,39 +282,45 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
   }
 
+  /* 河・ドラ用ミニカード（左上スート・右下数値） */
   .mini-card {
-    min-width: 34px;
-    height: 44px;
+    min-width: 38px;
+    height: 48px;
     border-radius: 5px;
     background: #f8fafc;
     border: 1px solid #94a3b8;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
     flex-shrink: 0;
     overflow: hidden;
   }
 
-  .mini-card .diag-mini {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transform: rotate(-18deg);
+  .mini-card .m-suit-tl {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 0.88rem;
+    line-height: 1;
     font-weight: 900;
-    line-height: 0.96;
   }
 
-  .mini-card .m-suit { font-size: 0.86rem; }
-  .mini-card .m-val { font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+  .mini-card .m-val-br {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 0.92rem;
+    line-height: 1;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
 
   .mini-card.joker {
     background: #0d1117;
     color: #f1c40f;
     border: 1.5px solid #f1c40f;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 900;
   }
 
@@ -327,6 +329,7 @@
     box-shadow: 0 0 6px rgba(255, 56, 56, 0.75);
   }
 
+  /* 役一覧サンプルカード（左上スート・右下数値） */
   .yaku-sample-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -336,30 +339,33 @@
   }
 
   .sample-big-card {
-    height: 84px;
+    height: 86px;
     border-radius: 7px;
     background: #f8fafc;
     border: 1.5px solid #cbd5e1;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
     overflow: hidden;
   }
 
-  .sample-big-card .diag-sample {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transform: rotate(-20deg);
-    line-height: 0.98;
+  .sample-big-card .s-suit-tl {
+    position: absolute;
+    top: 4px;
+    left: 5px;
+    font-size: 1.38rem;
+    line-height: 1;
     font-weight: 900;
   }
 
-  .sample-big-card .s-suit { font-size: 1.45rem; }
-  .sample-big-card .s-val { font-size: 1.62rem; font-variant-numeric: tabular-nums; }
+  .sample-big-card .s-val-br {
+    position: absolute;
+    bottom: 4px;
+    right: 5px;
+    font-size: 1.45rem;
+    line-height: 1;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
 
   .cat-tab-bar {
     display: flex;
@@ -425,7 +431,7 @@
 
   .chat-bubble {
     display: none;
-    max-width: 86%;
+    max-width: 88%;
     padding: 2px 10px;
     border-radius: 13px;
     font-size: 0.74rem;
@@ -528,7 +534,20 @@
     to { transform: scale(1.03); }
   }
 
-  /* カットイン＆部屋入場フェード演出オーバーレイ */
+  #board-center-timer {
+    display: none;
+    background: linear-gradient(180deg, #e74c3c 0%, #96281b 100%);
+    color: #fff;
+    border: 1.5px solid #ffd700;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.65);
+    letter-spacing: 0.04em;
+  }
+
   #cutin-overlay {
     display: none;
     position: fixed;
@@ -572,7 +591,6 @@
     transform: scale(1);
   }
 
-  /* カテゴリ別和了豪華ティア */
   .cutin-banner.cat-basic {
     border-top-color: #2ecc71;
     border-bottom-color: #2ecc71;
@@ -606,7 +624,6 @@
     box-shadow: 0 0 54px rgba(255, 215, 0, 0.9), inset 0 0 24px rgba(255, 215, 0, 0.3);
   }
 
-  /* 部屋入場ロゴ演出 */
   .room-intro-shiren {
     border-color: #ff5722 !important;
     background: radial-gradient(circle at center, rgba(92, 22, 12, 0.98) 0%, rgba(18, 6, 4, 0.99) 100%) !important;
@@ -694,7 +711,7 @@
   <div id="screen-lobby" class="screen" style="padding: 12px 14px; gap: 9px; justify-content: flex-start; align-items: center;">
     <div style="text-align:center; width:100%; max-width:366px;">
       <h2 style="margin:0; font-size:1.15rem; font-weight:900; color:#5dade2;">🌐 通信＆ルール部屋ロビー</h2>
-      <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">通信対戦・通信シングル戦ともに30秒の制限時間が適用されます！</div>
+      <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">通信対戦・通信シングル戦ともに30秒タイマー＆吹き出し対応！</div>
     </div>
 
     <div class="lobby-section-box lobby-single-box">
@@ -764,15 +781,13 @@
     <div style="display:flex; flex-direction:column; gap:4px;">
       <div style="display:flex; justify-content:space-between; align-items:center; background:#122a30; border:1px solid rgba(255,255,255,0.1); padding:5px 8px; border-radius:8px;">
         <span id="opp-label" style="font-size:0.8rem; font-weight:900; color:#ff7675;">相手手札</span>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <div id="opp-hand-backs" style="display:flex; gap:3px;"></div>
-          <span id="timer-badge" style="display:none; background:#c0392b; color:#fff; font-size:0.72rem; font-weight:900; padding:2px 7px; border-radius:999px;">30s</span>
-        </div>
+        <div id="opp-hand-backs" style="display:flex; gap:3px;"></div>
       </div>
-      <div id="opp-river" style="min-height:48px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:4px; overflow-x:auto;"></div>
+      <div id="opp-river" style="min-height:52px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:4px; overflow-x:auto;"></div>
       <div id="bubble-slot-opp" class="bubble-slot"><div id="bubble-opp" class="chat-bubble opp"></div></div>
     </div>
 
+    <!-- 中央ステータスボード：ドラの直上に30秒タイマー配置 -->
     <div style="background:rgba(9, 23, 27, 0.96); border:1.5px solid #f1c40f; border-radius:10px; padding:7px 9px; display:flex; flex-direction:column; gap:5px; box-shadow:0 0 12px rgba(241,196,15,0.18);">
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; font-weight:900;">
         <span id="status-cycle" style="color:#f1c40f;">第1サイクル ♠場</span>
@@ -787,9 +802,12 @@
           <span id="status-left-role" style="font-size:0.72rem; font-weight:800; color:#f4d03f;">[親]</span>
         </div>
 
-        <div style="background:#071214; border:1px solid rgba(241,196,15,0.45); border-radius:7px; padding:3px 7px; display:flex; align-items:center; gap:5px;">
-          <span style="font-size:0.72rem; font-weight:900; color:#ecf0f1;">ドラ:</span>
-          <div id="dora-indicators" style="display:flex; gap:3px; align-items:center;"></div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <span id="board-center-timer">30s</span>
+          <div style="background:#071214; border:1px solid rgba(241,196,15,0.45); border-radius:7px; padding:3px 7px; display:flex; align-items:center; gap:5px;">
+            <span style="font-size:0.72rem; font-weight:900; color:#ecf0f1;">ドラ:</span>
+            <div id="dora-indicators" style="display:flex; gap:3px; align-items:center;"></div>
+          </div>
         </div>
 
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:1px;">
@@ -801,7 +819,7 @@
 
     <div style="display:flex; flex-direction:column; gap:4px;">
       <div id="bubble-slot-self" class="bubble-slot"><div id="bubble-self" class="chat-bubble self"></div></div>
-      <div id="self-river" style="min-height:48px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:4px; overflow-x:auto;"></div>
+      <div id="self-river" style="min-height:52px; background:#09171a; border:1px solid #1b3b42; border-radius:7px; padding:3px; display:flex; align-items:center; gap:4px; overflow-x:auto;"></div>
 
       <div style="display:flex; gap:5px;">
         <button class="action-btn yaku-btn" onclick="SoundEngine.playSE('select_card'); openStandaloneYakuScreen('screen-game');">役一覧</button>
@@ -823,7 +841,7 @@
   <div id="screen-result" class="screen" style="padding: 16px; gap: 10px; justify-content: space-between;">
     <h2 id="result-title" style="margin:0; text-align:center; color:#f1c40f; font-size:1.25rem;">リザルト</h2>
     <div id="result-win-type" style="text-align:center; font-size:0.9rem; font-weight:800; color:#2ecc71;"></div>
-    <div id="result-hand-cards" style="display:flex; justify-content:center; gap:6px; min-height:94px;"></div>
+    <div id="result-hand-cards" style="display:flex; justify-content:center; gap:6px; min-height:96px;"></div>
     <div id="result-breakdown" style="background:#132f35; border:1px solid rgba(241,196,15,0.3); border-radius:10px; padding:10px; font-size:0.8rem; line-height:1.55; max-height:220px; overflow-y:auto;"></div>
     <div id="result-scores" style="text-align:center; font-size:0.95rem; font-weight:900; color:#fff;"></div>
     <button id="btn-next-round" class="btn-gold" onclick="proceedAfterResult();" style="width:100%; height:46px; font-size:0.98rem;">次の局へ進む</button>
@@ -864,7 +882,7 @@
       </div>
       <div style="background:#122e35; border:1px solid rgba(241,196,15,0.25); border-radius:10px; padding:10px;">
         <div style="font-weight:900; color:#f1c40f; margin-bottom:4px;">4. 通信ロビー＆吹き出し</div>
-        ルームID発行後、招待URLごとコピー／共有できます。別アプリへ切り替えて戻っても同じIDで自動再接続し、通信対戦中は上下固定吹き出し（「非表示」あり・専用SE）でやり取りできます。
+        ルームID発行後、招待URLごとコピー／共有できます。別アプリへ切り替えて戻っても同じIDで自動再接続し、通信対戦・通信シングルともに上下固定吹き出し（「非表示」あり・専用SE）を楽しめます。
       </div>
     </div>
   </div>
@@ -913,7 +931,6 @@ const SoundEngine = {
         this.tone(540, 0.06, 'triangle', 0.11);
         break;
       case 'shakin':
-        // 刀剣・金属系「シャキーン！」SE
         this.tone(1760, 0.12, 'sawtooth', 0.12, 0);
         this.tone(2637, 0.34, 'sine', 0.15, 0.04);
         this.tone(3520, 0.42, 'triangle', 0.09, 0.08);
@@ -987,12 +1004,14 @@ const RANK_LABELS = {
   11: 'J', 12: 'Q', 13: 'K', 14: 'A'
 };
 
+const MAX_RIVER_CARDS = 8;
+
 const ROOM_RULE_META = {
   normal: { title: '通常対戦', sub: 'STANDARD MATCH', desc: '', forbidReach: false, bannerClass: '' },
   shoushi: {
     title: '⚔️ 勝負師の部屋 ⚔️',
     sub: 'RULE ROOM MATCH',
-    desc: '特定ルール：【公式フルルール・全役＆リーチ有効のガチンコ勝負】',
+    desc: '特定ルール：【公式フルルール・攻守バランスと勝負師の駆け引き】',
     forbidReach: false,
     bannerClass: 'room-intro-shoushi'
   },
@@ -1006,7 +1025,7 @@ const ROOM_RULE_META = {
   damaten: {
     title: '🧠 ダマテン部屋 🧠',
     sub: 'RULE ROOM MATCH',
-    desc: '特定ルール：【リーチ宣言禁止・読み合いとダマテン勝負】',
+    desc: '特定ルール：【リーチ宣言禁止・ダマテン策士との読み合い】',
     forbidReach: true,
     bannerClass: 'room-intro-damaten'
   },
@@ -1088,6 +1107,23 @@ const SIGNAL_MESSAGES = [
   'なんだと！？',
   'いいだろう！'
 ];
+
+const ROOM_MASTER_BUBBLES = {
+  shiren: {
+    start: ['試練の扉へようこそ…基本の極みを見せてもらおう', 'リーチ宣言こそ試練の証！'],
+    reach: ['ここでリーチだ！試練を突破できるか？', 'テンパイ完成！逃げずに受けて立て！'],
+    discard: ['ここは堅実にいくぞ', '試練の牌、見極められるかな？', 'その手、まだ甘いな']
+  },
+  damaten: {
+    start: ['リーチなど無用…静かに仕留める', 'ダマテンの恐ろしさ、味わってもらうよ'],
+    discard: ['気配を消して…ふふ', 'まだ待ちではない…かもしれない', 'その牌、本当に安全かな？']
+  },
+  shoushi: {
+    start: ['さあ勝負だ！手加減はなしだぜ', 'ドラと流れ、どちらが掴むかな？'],
+    reach: ['勝負どころだ！リーチ！！', '一気に決めにいくぜ！'],
+    discard: ['勝負師の選択だ', 'ここが分かれ道だな', 'いい読みだ、だがまだ早い']
+  }
+};
 
 function isPictureRank(val) {
   return val >= 11 && val <= 14;
@@ -1411,7 +1447,7 @@ function renderYakuDetail() {
   panel.innerHTML = `
     <div style="font-size:1.05rem; font-weight:900; color:#f1c40f;">${item.name}</div>
     <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.55;">${item.cond}</div>
-    <div style="font-size:0.74rem; color:#94a3b8; font-weight:700; margin-top:2px;">サンプル形（5枚横並び）</div>
+    <div style="font-size:0.74rem; color:#94a3b8; font-weight:700; margin-top:2px;">サンプル形（5枚横並び・左上スート／右下数値）</div>
   `;
 
   const grid = document.createElement('div');
@@ -1420,10 +1456,10 @@ function renderYakuDetail() {
     const cardEl = document.createElement('div');
     cardEl.className = 'sample-big-card' + (c.isJoker ? ' joker' : '');
     if (c.isJoker) {
-      cardEl.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
+      cardEl.innerHTML = `<div class="joker-center-label">JOKER</div>`;
     } else {
       const cls = RED_SUITS.includes(c.suit) ? 'suit-red' : 'suit-black';
-      cardEl.innerHTML = `<div class="diag-sample"><span class="s-suit ${cls}">${c.suit}</span><span class="s-val ${cls}">${RANK_LABELS[c.val]}</span></div>`;
+      cardEl.innerHTML = `<span class="s-suit-tl ${cls}">${c.suit}</span><span class="s-val-br ${cls}">${RANK_LABELS[c.val]}</span>`;
     }
     grid.appendChild(cardEl);
   });
@@ -1463,6 +1499,7 @@ const gameState = {
   kyotaku: 0,
   selfHand: [],
   oppHandCount: 4,
+  oppHandCards: [],
   selfDiscards: [],
   oppDiscards: [],
   selectedHandIndex: null,
@@ -1472,6 +1509,7 @@ const gameState = {
   isDoubleReach: false,
   reachTurnIndex: -1,
   pendingReachDeclaration: false,
+  oppIsReach: false,
   pendingRonCard: null,
   selfBubbleMsg: '',
   oppBubbleMsg: '',
@@ -1484,13 +1522,24 @@ function hasActiveTurnTimer() {
   return Boolean(gameState.isOnline || gameState.isSingleRuleRoom);
 }
 
+function hasChatBubblesEnabled() {
+  return Boolean(gameState.isOnline || gameState.isSingleRuleRoom);
+}
+
+function appendDiscardToRiver(riverArr, discardEntry) {
+  riverArr.push(discardEntry);
+  if (riverArr.length > MAX_RIVER_CARDS) {
+    riverArr.splice(0, riverArr.length - MAX_RIVER_CARDS);
+  }
+}
+
 function openScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   if (el) el.classList.add('active');
   const signalBar = document.getElementById('signal-bar');
   if (signalBar) {
-    signalBar.style.display = (id === 'screen-game' && gameState.isOnline) ? 'flex' : 'none';
+    signalBar.style.display = (id === 'screen-game' && hasChatBubblesEnabled()) ? 'flex' : 'none';
   }
   if (id !== 'screen-game') {
     stopTimer();
@@ -1512,7 +1561,6 @@ function buildDeck() {
   return deck;
 }
 
-// 部屋・鬼レン入場カットイン演出（SE「シャキーン！」＋フェードイン＋3秒余韻＋フェードアウト）
 function playRoomIntroFade(introKey, onComplete) {
   const meta = ROOM_RULE_META[introKey] || ROOM_RULE_META.shoushi;
   const overlay = document.getElementById('cutin-overlay');
@@ -1535,7 +1583,6 @@ function playRoomIntroFade(introKey, onComplete) {
     });
   });
 
-  // 3.0秒じっくり眺める余韻のあとフェードアウトして遷移
   setTimeout(() => {
     overlay.classList.remove('visible');
     setTimeout(() => {
@@ -1601,7 +1648,6 @@ function startSingleRuleRoom(ruleKey) {
   });
 }
 
-// 2人打ち場所決めルーレット：♠（青・先親）と ♥（赤・子）の2択
 function spinRoulette() {
   if (gameState.isOnline && !gameState.isHost) return;
   const suitEl = document.getElementById('roulette-suit');
@@ -1647,6 +1693,20 @@ function spinRoulette() {
   }, 90);
 }
 
+function pickMasterBubble(category) {
+  const bank = ROOM_MASTER_BUBBLES[gameState.roomRule];
+  if (!bank || !bank[category] || bank[category].length === 0) return '';
+  const arr = bank[category];
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function setOppBubble(msg) {
+  if (!hasChatBubblesEnabled()) return;
+  gameState.oppBubbleMsg = msg || '';
+  renderBubbles();
+  if (msg) SoundEngine.playSE('bubble_update');
+}
+
 function initRound() {
   if (gameState.isOnline && !gameState.isHost) return;
 
@@ -1678,6 +1738,7 @@ function initRound() {
   gameState.doraIndicators = doraIndicators;
   gameState.uraDoraIndicators = uraDoraIndicators;
   gameState.selfHand = hostHand;
+  gameState.oppHandCards = guestHand;
   gameState.oppHandCount = guestHand.length;
   gameState.selfDiscards = [];
   gameState.oppDiscards = [];
@@ -1687,8 +1748,13 @@ function initRound() {
   gameState.isDoubleReach = false;
   gameState.reachTurnIndex = -1;
   gameState.pendingReachDeclaration = false;
+  gameState.oppIsReach = false;
   gameState.pendingRonCard = null;
   gameState.isSelfTurn = gameState.isParent;
+
+  if (gameState.isSingleRuleRoom) {
+    gameState.oppBubbleMsg = pickMasterBubble('start');
+  }
 
   if (gameState.isOnline && gameState.conn && gameState.conn.open) {
     gameState.conn.send({
@@ -1714,8 +1780,9 @@ function initRound() {
 function applyRoundStartUI() {
   const slotOpp = document.getElementById('bubble-slot-opp');
   const slotSelf = document.getElementById('bubble-slot-self');
-  if (slotOpp) slotOpp.style.display = gameState.isOnline ? 'flex' : 'none';
-  if (slotSelf) slotSelf.style.display = gameState.isOnline ? 'flex' : 'none';
+  const showBubbles = hasChatBubblesEnabled();
+  if (slotOpp) slotOpp.style.display = showBubbles ? 'flex' : 'none';
+  if (slotSelf) slotSelf.style.display = showBubbles ? 'flex' : 'none';
 
   renderSignalBar();
   renderBubbles();
@@ -1726,7 +1793,7 @@ function applyRoundStartUI() {
     startOnlineTimerIfNeeded();
   } else {
     stopTimer();
-    document.getElementById('timer-badge').style.display = 'none';
+    document.getElementById('board-center-timer').style.display = 'none';
   }
 
   if (!gameState.isOnline && !gameState.isSelfTurn) {
@@ -1740,7 +1807,6 @@ function renderGameBoard() {
   document.getElementById('status-kyotaku-deck').textContent = `供託: ${gameState.kyotaku}pt | 山札: ${gameState.deck.length}`;
   document.getElementById('status-streak-bar').textContent = `(${gameState.streak}連チャン)`;
 
-  // 左＝♠場（青）、右＝♥場（赤）固定。ルーレットでYOUと相手が左右変動
   const selfIsSpade = gameState.seatSuit === '♠';
   const leftEl = document.getElementById('status-left-score');
   const leftRoleEl = document.getElementById('status-left-role');
@@ -1783,10 +1849,12 @@ function renderGameBoard() {
   const oppRiver = document.getElementById('opp-river');
   oppRiver.innerHTML = '';
   gameState.oppDiscards.forEach(d => oppRiver.appendChild(createMiniCardEl(d.card, d.isReachTile)));
+  oppRiver.scrollLeft = oppRiver.scrollWidth;
 
   const selfRiver = document.getElementById('self-river');
   selfRiver.innerHTML = '';
   gameState.selfDiscards.forEach(d => selfRiver.appendChild(createMiniCardEl(d.card, d.isReachTile)));
+  selfRiver.scrollLeft = selfRiver.scrollWidth;
 
   const handArea = document.getElementById('player-hand-area');
   handArea.innerHTML = '';
@@ -1804,10 +1872,10 @@ function renderGameBoard() {
       if (gameState.selectedHandIndex === slotIdx) el.classList.add('selected');
 
       if (card.isJoker) {
-        el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
+        el.innerHTML = `<div class="joker-center-label">JOKER</div>`;
       } else {
         const colorCls = RED_SUITS.includes(card.suit) ? 'suit-red' : 'suit-black';
-        el.innerHTML = `<div class="diag-face"><span class="diag-suit ${colorCls}">${card.suit}</span><span class="diag-val ${colorCls}">${RANK_LABELS[card.val]}</span></div>`;
+        el.innerHTML = `<span class="corner-suit-tl ${colorCls}">${card.suit}</span><span class="corner-rank-br ${colorCls}">${RANK_LABELS[card.val]}</span>`;
       }
       el.onclick = () => onHandCardTap(slotIdx);
       slotDiv.appendChild(el);
@@ -1825,7 +1893,7 @@ function createMiniCardEl(card, isReachTile) {
     el.innerHTML = `<span>JK</span>`;
   } else {
     const cls = RED_SUITS.includes(card.suit) ? 'suit-red' : 'suit-black';
-    el.innerHTML = `<div class="diag-mini"><span class="m-suit ${cls}">${card.suit}</span><span class="m-val ${cls}">${RANK_LABELS[card.val]}</span></div>`;
+    el.innerHTML = `<span class="m-suit-tl ${cls}">${card.suit}</span><span class="m-val-br ${cls}">${RANK_LABELS[card.val]}</span>`;
   }
   return el;
 }
@@ -1838,9 +1906,21 @@ function onHandCardTap(idx) {
     gameState.selectedHandIndex = null;
     const reachFlag = gameState.pendingReachDeclaration;
     gameState.pendingReachDeclaration = false;
-    gameState.selfDiscards.push({ card: discarded, isReachTile: reachFlag });
+    appendDiscardToRiver(gameState.selfDiscards, { card: discarded, isReachTile: reachFlag });
     gameState.turnCount++;
     SoundEngine.playSE('discard');
+
+    // リーチ演出は実際にリーチ打牌が河へ捨てられた瞬間に発動
+    if (reachFlag) {
+      SoundEngine.playSE('reach_chip');
+      showCutin(
+        gameState.isDoubleReach ? 'ダブルリーチ宣言！' : 'リーチ宣言！',
+        gameState.isDoubleReach ? '初手Wリーチ +3pt チャンス' : '+2pt テンパイ宣言',
+        'cat-basic',
+        null
+      );
+    }
+
     gameState.isSelfTurn = false;
     renderGameBoard();
 
@@ -1849,6 +1929,7 @@ function onHandCardTap(idx) {
         type: 'DISCARD',
         card: discarded,
         isReachTile: reachFlag,
+        isDoubleReach: gameState.isDoubleReach,
         turnCount: gameState.turnCount,
         deckCount: gameState.deck.length,
         selfHandCount: gameState.selfHand.length
@@ -1894,12 +1975,6 @@ function declareReach() {
   gameState.scores.self -= 1;
   gameState.kyotaku += 1;
   SoundEngine.playSE('reach_chip');
-  showCutin(
-    isWReach ? 'ダブルリーチ宣言！' : 'リーチ宣言！',
-    isWReach ? '初手Wリーチ +3pt チャンス' : '+2pt テンパイ宣言',
-    'cat-basic',
-    null
-  );
   renderGameBoard();
 
   if (gameState.isOnline && gameState.conn && gameState.conn.open) {
@@ -2036,7 +2111,6 @@ function finalizeWin(winType, fiveCards, isSelfWinner, syncedPayload = null) {
     SoundEngine.playSE('player_lose_pt');
   }
 
-  // レア10役個別ロゴ演出 or カテゴリ別豪華演出
   const rareKey = baseEval.isTenchiJinwa ? 'tenchi_jinwa' : (RARE_EFFECT_CONFIG[baseEval.id] ? baseEval.id : null);
   if (rareKey) {
     const cfg = RARE_EFFECT_CONFIG[rareKey];
@@ -2124,10 +2198,10 @@ function showResultScreen() {
     const el = document.createElement('div');
     el.className = 'playing-card' + (c.isJoker ? ' joker' : '');
     if (c.isJoker) {
-      el.innerHTML = `<div class="joker-diag-label">JOKER</div>`;
+      el.innerHTML = `<div class="joker-center-label">JOKER</div>`;
     } else {
       const cls = RED_SUITS.includes(c.suit) ? 'suit-red' : 'suit-black';
-      el.innerHTML = `<div class="diag-face"><span class="diag-suit ${cls}">${c.suit}</span><span class="diag-val ${cls}">${RANK_LABELS[c.val]}</span></div>`;
+      el.innerHTML = `<span class="corner-suit-tl ${cls}">${c.suit}</span><span class="corner-rank-br ${cls}">${RANK_LABELS[c.val]}</span>`;
     }
     handBox.appendChild(el);
   });
@@ -2153,26 +2227,89 @@ function proceedAfterResult() {
   initRound();
 }
 
+function chooseRoomMasterDiscard(handCards, ruleKey) {
+  if (!Array.isArray(handCards) || handCards.length === 0) return 0;
+  const doraRanks = new Set(gameState.doraIndicators.filter(c => !c.isJoker).map(c => getNextRank(c.val)));
+
+  let bestDiscardIdx = 0;
+  let bestKeepScore = -Infinity;
+
+  for (let dropIdx = 0; dropIdx < handCards.length; dropIdx++) {
+    const rem = handCards.filter((_, idx) => idx !== dropIdx);
+    const waits = getTenpaiWaits(rem, { isFirstTurn: gameState.turnCount <= 1 });
+    let keepScore = waits.length * 14;
+
+    if (ruleKey === 'shiren') {
+      const basicWaits = waits.filter(w => w.yaku.catId === 2).length;
+      keepScore += basicWaits * 18;
+    } else if (ruleKey === 'damaten') {
+      const highWaits = waits.filter(w => w.yaku.catId >= 3).length;
+      keepScore += highWaits * 24;
+    } else {
+      const doraKeep = rem.filter(c => !c.isJoker && doraRanks.has(c.val)).length;
+      keepScore += doraKeep * 12 + waits.length * 8;
+    }
+
+    if (handCards[dropIdx].isJoker && ruleKey !== 'damaten') keepScore += 10;
+    if (keepScore > bestKeepScore) {
+      bestKeepScore = keepScore;
+      bestDiscardIdx = dropIdx;
+    }
+  }
+  return bestDiscardIdx;
+}
+
 function scheduleCpuTurn() {
   if (gameState.deck.length === 0) {
     finishRoundRyukyoku();
     return;
   }
   setTimeout(() => {
-    gameState.oppHandCount = Math.min(5, gameState.oppHandCount + 1);
     const dIdx = Math.floor(Math.random() * gameState.deck.length);
     const drawn = gameState.deck.splice(dIdx, 1)[0];
+    const workingHand = [...(gameState.oppHandCards || []), drawn];
+    gameState.oppHandCount = workingHand.length;
+
     setTimeout(() => {
-      gameState.oppHandCount = Math.max(4, gameState.oppHandCount - 1);
-      gameState.oppDiscards.push({ card: drawn, isReachTile: false });
+      const dropIdx = chooseRoomMasterDiscard(workingHand, gameState.roomRule);
+      const [discarded] = workingHand.splice(dropIdx, 1);
+      gameState.oppHandCards = workingHand;
+      gameState.oppHandCount = workingHand.length;
+
+      let reachOnDiscard = false;
+      if (gameState.roomRule === 'shiren' && !gameState.oppIsReach) {
+        const waitsAfter = getTenpaiWaits(workingHand, { isFirstTurn: gameState.turnCount <= 1 });
+        if (waitsAfter.length > 0 && Math.random() < 0.72) {
+          gameState.oppIsReach = true;
+          reachOnDiscard = true;
+        }
+      } else if (gameState.roomRule === 'shoushi' && !gameState.oppIsReach) {
+        const waitsAfter = getTenpaiWaits(workingHand, { isFirstTurn: gameState.turnCount <= 1 });
+        if (waitsAfter.length > 0 && Math.random() < 0.45) {
+          gameState.oppIsReach = true;
+          reachOnDiscard = true;
+        }
+      }
+
+      appendDiscardToRiver(gameState.oppDiscards, { card: discarded, isReachTile: reachOnDiscard });
       gameState.turnCount++;
       SoundEngine.playSE('discard');
 
+      if (gameState.isSingleRuleRoom) {
+        if (reachOnDiscard) {
+          setOppBubble(pickMasterBubble('reach'));
+          SoundEngine.playSE('reach_chip');
+          showCutin('相手リーチ宣言！', `${(ROOM_RULE_META[gameState.roomRule] || {}).title || '部屋主'}がテンパイ！`, 'cat-basic', null);
+        } else {
+          setOppBubble(pickMasterBubble('discard'));
+        }
+      }
+
       if (gameState.selfHand.length === 4) {
         const furiten = isFuriten(gameState.selfHand, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
-        const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, drawn], { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
+        const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, discarded], { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
         if (!furiten && canWinWithYakuEval(winEval)) {
-          gameState.pendingRonCard = drawn;
+          gameState.pendingRonCard = discarded;
           gameState.isSelfTurn = true;
           renderGameBoard();
           if (hasActiveTurnTimer()) startOnlineTimerIfNeeded();
@@ -2217,7 +2354,7 @@ function setSelfBubble(msg) {
 function renderBubbles() {
   const oppEl = document.getElementById('bubble-opp');
   const selfEl = document.getElementById('bubble-self');
-  if (!gameState.isOnline) {
+  if (!hasChatBubblesEnabled()) {
     oppEl.classList.remove('visible');
     selfEl.classList.remove('visible');
     return;
@@ -2270,7 +2407,7 @@ function showCutin(mainText, subText, tierClass, rareLogoClass) {
 
 function startOnlineTimerIfNeeded() {
   stopTimer();
-  const badge = document.getElementById('timer-badge');
+  const badge = document.getElementById('board-center-timer');
   if (!hasActiveTurnTimer()) {
     badge.style.display = 'none';
     return;
@@ -2314,7 +2451,7 @@ function handleOnlineTimeout() {
     if (gameState.selfHand.length === 5) {
       const idx = gameState.isReach ? gameState.selfHand.length - 1 : 0;
       const [disc] = gameState.selfHand.splice(idx, 1);
-      gameState.selfDiscards.push({ card: disc, isReachTile: false });
+      appendDiscardToRiver(gameState.selfDiscards, { card: disc, isReachTile: false });
       gameState.turnCount++;
       gameState.isSelfTurn = false;
       renderGameBoard();
@@ -2336,7 +2473,7 @@ function handleOnlineTimeout() {
   }
 }
 
-const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v8';
+const LOBBY_STORAGE_KEY = 'jp2_lobby_state_v9';
 
 function saveLobbyState() {
   try {
@@ -2574,8 +2711,6 @@ function setupConnectionHandlers(conn) {
     } else if (payload.type === 'REACH_DECL') {
       gameState.kyotaku = payload.kyotaku;
       gameState.scores.opp = payload.oppScore;
-      SoundEngine.playSE('reach_chip');
-      showCutin(payload.isDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！', '警戒せよ！', 'cat-basic', null);
       renderGameBoard();
     } else if (payload.type === 'WIN_DECL') {
       finalizeWin(payload.winType, payload.fiveCards, false, payload);
@@ -2586,10 +2721,16 @@ function setupConnectionHandlers(conn) {
       renderBubbles();
       SoundEngine.playSE('bubble_update');
     } else if (payload.type === 'DISCARD') {
-      gameState.oppDiscards.push({ card: payload.card, isReachTile: Boolean(payload.isReachTile) });
+      appendDiscardToRiver(gameState.oppDiscards, { card: payload.card, isReachTile: Boolean(payload.isReachTile) });
       gameState.oppHandCount = payload.selfHandCount || 4;
       gameState.turnCount = payload.turnCount || (gameState.turnCount + 1);
       SoundEngine.playSE('discard');
+
+      if (payload.isReachTile) {
+        SoundEngine.playSE('reach_chip');
+        showCutin(payload.isDoubleReach ? '相手ダブルリーチ！' : '相手リーチ！', '警戒せよ！', 'cat-basic', null);
+      }
+
       if (gameState.selfHand.length === 4) {
         const furiten = isFuriten(gameState.selfHand, gameState.selfDiscards.map(d => d.card), { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
         const winEval = evaluateFiveCardBaseYaku([...gameState.selfHand, payload.card], { isFirstTurn: gameState.selfDiscards.length === 0 && gameState.turnCount <= 1 });
