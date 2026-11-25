@@ -256,9 +256,9 @@
 
     @keyframes logoFadeIn {
       0% { opacity: 0; transform: scale(0.9); }
-      25% { opacity: 1; transform: scale(1.02); }
-      80% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.98); }
+      20% { opacity: 1; transform: scale(1.02); }
+      85% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0.92; transform: scale(0.99); }
     }
     @keyframes ippatsuPulse {
       0% { transform: scale(0.84) rotate(-1.5deg); filter: brightness(1.35); }
@@ -276,7 +276,7 @@
       border: 2px solid #f1c40f; color: #fff; text-align: center;
       box-shadow: 0 0 26px rgba(241, 196, 15, 0.5);
     }
-    .cutin-banner.entry-fadein { animation: logoFadeIn 2s ease-in-out forwards; }
+    .cutin-banner.entry-fadein { animation: logoFadeIn 1.6s ease-in-out forwards; }
     .cutin-banner.rare-cutin {
       background: linear-gradient(135deg, #5c0a17 0%, #1d0736 50%, #4d2603 100%);
       border: 3px solid #ff7675;
@@ -698,6 +698,11 @@ const SoundEngine = {
   }
 };
 
+function clearCutinTimers() {
+  clearTimeout(window.__cutinTimer);
+  clearTimeout(window.__cutinFollowTimer);
+}
+
 function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false) {
   const overlay = document.getElementById('cutin-overlay');
   const banner = document.getElementById('cutin-banner');
@@ -705,7 +710,7 @@ function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false)
     if (onComplete) onComplete();
     return;
   }
-  clearTimeout(window.__cutinTimer);
+  clearCutinTimers();
   SoundEngine.playSE(isRareStyle ? 'win_rare' : 'reach_declare');
   banner.className = isRareStyle ? 'cutin-banner rare-cutin entry-fadein' : 'cutin-banner entry-fadein';
   banner.innerHTML = `<div style="font-size:0.68rem; color:#ffd43b; font-weight:900; letter-spacing:0.12em; margin-bottom:4px;">ENTRY EVENT</div>` +
@@ -729,7 +734,9 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   const banner = document.getElementById('cutin-banner');
   if (!overlay || !banner) return;
 
-  const showBanner = (bannerClass, tagText, titleText, subText, seName, duration) => {
+  clearCutinTimers();
+
+  const showBanner = (bannerClass, tagText, titleText, subText, seName, durationMs, afterCallback = null) => {
     SoundEngine.playSE(seName);
     banner.className = bannerClass;
     banner.innerHTML =
@@ -737,10 +744,13 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
       `<div style="font-size:1.2rem; font-weight:950; letter-spacing:0.04em;">${titleText}</div>` +
       (subText ? `<div style="font-size:0.8rem; color:#ffe066; margin-top:4px; font-weight:800;">${subText}</div>` : '');
     overlay.style.display = 'flex';
-    clearTimeout(window.__cutinTimer);
     window.__cutinTimer = setTimeout(() => {
-      overlay.style.display = 'none';
-    }, duration);
+      if (afterCallback) {
+        afterCallback();
+      } else {
+        overlay.style.display = 'none';
+      }
+    }, durationMs);
   };
 
   let baseClass = 'cutin-banner';
@@ -748,7 +758,6 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   let baseTitle = `${winType}和了：${yaku.name}`;
   let baseSub = `+${effectiveScore}pt`;
   let baseSE = 'win_basic';
-  let baseDuration = 1150;
 
   if (isTenchi) {
     baseClass = 'cutin-banner rare-cutin';
@@ -756,35 +765,30 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
     baseTitle = `天地人和・${yaku.name}！`;
     baseSub = `初手完成特例（+${effectiveScore}pt）`;
     baseSE = 'win_rare';
-    baseDuration = 1650;
   } else if (RARE_YAKU_NAMES.has(yaku.name)) {
     baseClass = 'cutin-banner rare-cutin';
     baseTag = '👑 RARE CATEGORY / 希少役 👑';
     baseTitle = `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_rare';
-    baseDuration = 1650;
   } else if (yaku.catId === 5) {
     baseClass = 'cutin-banner rare-cutin';
     baseTag = '🃏 JOKER MUST';
     baseTitle = `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_yakuman';
-    baseDuration = 1550;
   } else if (yaku.catId === 4) {
     baseClass = 'cutin-banner rare-cutin';
     baseTag = '🔥 YAKUMAN';
     baseTitle = `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_yakuman';
-    baseDuration = 1550;
   } else if (yaku.catId === 3) {
     baseClass = 'cutin-banner mid-cutin';
     baseTag = '◆ MIDDLE YAKU';
     baseTitle = `${yaku.name}`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_mid';
-    baseDuration = 1300;
   }
 
   if (isHaitei) {
@@ -795,17 +799,28 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
     showBanner(
       'cutin-banner ippatsu-cutin',
       '⚡⚡ IPPATSU FEVER / 一発確定 ⚡⚡',
-      `一発${winType}和了：${yaku.name}！`,
-      `一発ボーナス（+1pt） / ${baseSub}`,
+      `一発${winType}宣言！（+1pt）`,
+      `一発ボーナス確定 → 和了役演出へ`,
       'ippatsu_shout',
-      950
+      2000,
+      () => {
+        showBanner(
+          baseClass,
+          baseTag,
+          baseTitle,
+          `⚡ 一発（+1pt） / ${baseSub}`,
+          baseSE,
+          2000,
+          () => {
+            overlay.style.display = 'none';
+          }
+        );
+      }
     );
-    clearTimeout(window.__cutinTimer);
-    window.__cutinTimer = setTimeout(() => {
-      showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, Math.max(1150, baseDuration - 300));
-    }, 850);
   } else {
-    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, baseDuration);
+    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, 2000, () => {
+      overlay.style.display = 'none';
+    });
   }
 }
 
@@ -813,12 +828,12 @@ function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare
   const overlay = document.getElementById('cutin-overlay');
   const banner = document.getElementById('cutin-banner');
   if (!overlay || !banner) return;
+  clearCutinTimers();
   SoundEngine.playSE(seName);
   banner.className = 'cutin-banner';
   banner.innerHTML = `<div style="font-size:1.1rem; font-weight:900;">${titleText}</div>` +
     (subText ? `<div style="font-size:0.76rem; color:#ffe066; margin-top:3px; font-weight:800;">${subText}</div>` : '');
   overlay.style.display = 'flex';
-  clearTimeout(window.__cutinTimer);
   window.__cutinTimer = setTimeout(() => {
     overlay.style.display = 'none';
   }, 1200);
@@ -1267,7 +1282,8 @@ const gameState = {
   cpuIsReach: false,
   isColdWinTriggered: false,
   isGameOver: false,
-  pendingRonCard: null
+  pendingRonCard: null,
+  isCpuActing: false
 };
 </script>
 <script>
@@ -1307,6 +1323,7 @@ const CPU_MODE_DIALOGUES = {
 
 let turnTimer = null, turnTimeLeft = 30;
 let resTimer = null, resTimeLeft = 30;
+let cpuActionTimer = null, cpuThinkTimer = null;
 let peerInstance = null, peerConn = null, heartbeatInterval = null;
 let currentRuleCategory = 2;
 
@@ -1388,10 +1405,13 @@ function switchScreen(screenId) {
 function clearAllTimers() {
   clearInterval(turnTimer);
   clearInterval(resTimer);
+  clearTimeout(cpuActionTimer);
+  clearTimeout(cpuThinkTimer);
   clearInterval(window.onlinePollTimer);
   clearInterval(window.guestRouletteSyncTimer);
   clearInterval(window.guestGameStartTimer);
   clearInterval(heartbeatInterval);
+  gameState.isCpuActing = false;
 }
 
 function showTitle() {
@@ -1510,7 +1530,7 @@ function bindPeerDataChannel(conn) {
     } else if (payload.type === 'RON_PASS') {
       gameState.pendingRonCard = null;
       if (!gameState.isOnline) {
-        setTimeout(cpuTurnRoutine, 500);
+        scheduleCpuTurn(500);
       }
     }
   });
@@ -1830,6 +1850,14 @@ function getDoraCountForCycle() {
   return (gameState.cycle >= 2) ? 2 : 1;
 }
 
+function scheduleCpuTurn(delayMs = 750) {
+  if (gameState.isOnline || gameState.isGameOver) return;
+  clearTimeout(cpuActionTimer);
+  cpuActionTimer = setTimeout(() => {
+    cpuTurnRoutine();
+  }, delayMs);
+}
+
 function initGameSession() {
   if (gameState.isGameOver) return;
   clearAllTimers();
@@ -1864,6 +1892,7 @@ function initGameSession() {
   gameState.cpuIsReach = false;
   gameState.isColdWinTriggered = false;
   gameState.pendingRonCard = null;
+  gameState.isCpuActing = false;
 
   const pRiver = document.getElementById('player-river-scroll');
   const cRiver = document.getElementById('cpu-river-scroll');
@@ -1918,7 +1947,7 @@ function initGameSession() {
     document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
     document.getElementById('btn-draw').disabled = true;
     if (!gameState.isOnline) {
-      setTimeout(cpuTurnRoutine, 850);
+      scheduleCpuTurn(850);
     } else {
       startTurnTimerIfNeeded();
     }
@@ -2182,7 +2211,7 @@ function discardPlayerCard(idx) {
   }
 
   if (checkCpuRonOnPlayerDiscard(discarded)) return;
-  setTimeout(cpuTurnRoutine, 750);
+  scheduleCpuTurn(750);
 }
 
 function togglePlayerReach() {
@@ -2425,6 +2454,7 @@ function checkCpuRonOnPlayerDiscard(discarded) {
 
 function chooseCpuDiscardIndex() {
   const hand = gameState.cpuHand;
+  if (!Array.isArray(hand) || hand.length === 0) return 0;
   const isLockedHand = gameState.cpuIsReach && hand.length === 5;
 
   if (!gameState.cpuIsReach) {
@@ -2470,28 +2500,35 @@ function chooseCpuDiscardIndex() {
 }
 
 function cpuTurnRoutine() {
-  if (gameState.isGameOver || gameState.isOnline) return;
+  if (gameState.isGameOver || gameState.isOnline || gameState.isCpuActing) return;
+  gameState.isCpuActing = true;
+
   if (gameState.deck.length === 0) {
+    gameState.isCpuActing = false;
     handleDrawGame();
     return;
   }
-  if (gameState.cpuHand.length === 4) {
+  if (gameState.cpuHand.length < 5) {
     SoundEngine.playSE('draw_card');
     gameState.cpuHand.push(gameState.deck.pop());
   }
   renderCpuMiniHand();
   updateBoardUI();
 
-  setTimeout(() => {
+  clearTimeout(cpuThinkTimer);
+  cpuThinkTimer = setTimeout(() => {
+    gameState.isCpuActing = false;
     if (gameState.isGameOver || gameState.isOnline) return;
-    const cpuBest = getBestYakuFor5(gameState.cpuHand, gameState.cpuIsReach);
-    if (cpuBest) {
+
+    const hand5 = gameState.cpuHand.slice(0, 5);
+    const cpuBest = getBestYakuFor5(hand5, gameState.cpuIsReach);
+    if (cpuBest && hand5.length === 5) {
       const isIppatsu = gameState.cpuIsReach && !gameState.cpuReachHasTurnPassed;
       const isTenchi = (gameState.turnCount === 0);
       const isHaitei = (gameState.deck.length === 0);
       if (!gameState.isOnline) triggerCpuSignalByEvent('react');
       triggerWinCutinExclusive('ツモ', cpuBest.yaku, cpuBest.effectiveScore, { isTenchi, isIppatsu, isHaitei });
-      executeRoundEnd('ツモ', 'cpu', cpuBest, [...gameState.cpuHand], gameState.cpuHand[gameState.cpuHand.length - 1], isIppatsu, isTenchi, isHaitei);
+      executeRoundEnd('ツモ', 'cpu', cpuBest, [...hand5], hand5[hand5.length - 1], isIppatsu, isTenchi, isHaitei);
       return;
     }
 
@@ -2635,7 +2672,12 @@ function checkMasterChallengeCondition() {
 }
 
 function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppatsu = false, isTenchi = false, isHaitei = false) {
-  clearAllTimers();
+  clearInterval(turnTimer);
+  clearInterval(resTimer);
+  clearTimeout(cpuActionTimer);
+  clearTimeout(cpuThinkTimer);
+  gameState.isCpuActing = false;
+
   const yaku = bestObj.yaku;
   let points = bestObj.effectiveScore;
   const bonusList = [];
