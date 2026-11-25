@@ -1,376 +1,217 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>２人打ち ジャンポーカー 〜ジャンP２〜</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-body {
-  background-color: #091315;
-  color: #f5f6fa;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", sans-serif;
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-#game-wrapper {
-  width: 100%;
-  max-width: 440px;
-  height: 100%;
-  max-height: 950px;
-  background: #102023;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 0 24px rgba(0, 0, 0, 0.92);
-  overflow: hidden;
-  font-size: 1.02rem;
-}
-.screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: radial-gradient(circle at top, #162e33 0%, #0d1a1d 100%);
-  z-index: 1;
-}
-.screen.active {
-  display: flex;
-  z-index: 10;
-}
-.btn-gold {
-  background: linear-gradient(180deg, #f9d423 0%, #e6b800 100%);
-  color: #10181a;
-  border: 2px solid #fff3b0;
-  border-radius: 8px;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 3px 0 #8a6d00, 0 5px 12px rgba(0, 0, 0, 0.45);
-  transition: transform 0.08s ease, filter 0.12s ease;
-}
-.btn-gold:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #8a6d00;
-}
-.btn-gold:disabled {
-  filter: grayscale(0.6) brightness(0.65);
-  cursor: not-allowed;
-  box-shadow: none;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>２人打ち ジャンポーカー 〜ジャンP２〜</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      width: 100%; height: 100%; background-color: #091315; color: #f5f6fa;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      display: flex; justify-content: center; align-items: center; overflow: hidden;
+    }
+    #game-wrapper {
+      width: 100%; max-width: 440px; height: 100dvh; max-height: 920px;
+      background: radial-gradient(circle at top, #152b30 0%, #0b181b 75%);
+      display: flex; flex-direction: column; position: relative;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.92); overflow: hidden;
+    }
+    .screen {
+      display: none; position: absolute; inset: 0; width: 100%; height: 100%;
+      flex-direction: column; padding: 10px 12px; overflow-y: auto; z-index: 1;
+    }
+    .screen.active { display: flex; z-index: 10; }
 
-/* カード表示（手札・リザルト・役一覧サンプル） */
-.jp-card {
-  width: 56px;
-  height: 78px;
-  background: linear-gradient(160deg, #ffffff 0%, #eef2f5 100%);
-  color: #141a1f;
-  border: 2px solid #2c3e50;
-  border-radius: 7px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 4px 5px;
-  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.5);
-  transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
-  flex-shrink: 0;
-}
-.jp-card.selected {
-  transform: translate3d(0, -10px, 0);
-  border-color: #f1c40f;
-  box-shadow: 0 8px 16px rgba(241, 196, 15, 0.45);
-}
-.jp-card.locked {
-  opacity: 0.72;
-  filter: brightness(0.82);
-}
-.jp-card.win-tile-mark {
-  border: 2.5px solid #ff3838 !important;
-  box-shadow: 0 0 12px rgba(255, 56, 56, 0.85) !important;
-}
-.jp-card.red-suit {
-  color: #d62828;
-}
-.jp-card-diag {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: rotate(-18deg);
-  pointer-events: none;
-  gap: 2px;
-}
-.jp-card-suit-big {
-  font-size: 1.35rem;
-  font-weight: 900;
-  line-height: 1;
-}
-.jp-card-rank-big {
-  font-size: 1.55rem;
-  font-weight: 950;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-.jp-card-top {
-  font-size: 0.72rem;
-  font-weight: 900;
-  line-height: 1;
-  z-index: 2;
-}
-.jp-card-bot {
-  font-size: 0.72rem;
-  font-weight: 900;
-  line-height: 1;
-  text-align: right;
-  transform: rotate(180deg);
-  z-index: 2;
-}
+    .btn-gold {
+      background: linear-gradient(180deg, #f9d423 0%, #d4a017 100%);
+      color: #10181a; border: 2px solid #fff3b0; border-radius: 8px;
+      font-weight: 900; cursor: pointer;
+      box-shadow: 0 3px 0 #7a5400, 0 5px 12px rgba(0, 0, 0, 0.45);
+      transition: transform 0.08s ease, filter 0.12s ease;
+    }
+    .btn-gold:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #7a5400; }
+    .btn-gold:disabled {
+      background: #3b4244; color: #7e888a; border-color: #4f585a;
+      box-shadow: none; cursor: not-allowed; filter: grayscale(0.5);
+    }
 
-/* ボツ画像準拠JOKERデザイン */
-.jp-card.joker-card {
-  background: linear-gradient(145deg, #0c1015 0%, #1a212b 55%, #0c1015 100%);
-  border: 2px solid #f1c40f;
-  color: #f1c40f;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 0 10px rgba(241, 196, 15, 0.35), inset 0 0 8px rgba(241, 196, 15, 0.2);
-}
-.jp-joker-diag-text {
-  font-size: 0.92rem;
-  font-weight: 950;
-  letter-spacing: 0.06em;
-  color: #ffd43b;
-  text-shadow: 0 0 6px rgba(241, 196, 15, 0.75), 1px 1px 0 #000;
-  transform: rotate(-28deg);
-}
+    #screen-title { justify-content: center; align-items: center; text-align: center; gap: 10px; }
+    .credit-box {
+      width: 100%; max-width: 340px; background: rgba(241, 196, 15, 0.12);
+      border: 1.5px solid #c9a318; border-radius: 8px; padding: 10px 14px;
+      font-size: 0.84rem; font-weight: 800; line-height: 1.6; color: #fff; margin: 4px 0 6px 0;
+    }
 
-/* ミニカード（ドラ・河・リザルトドラ） */
-.mini-card {
-  width: 24px;
-  height: 32px;
-  background: #f8f9fa;
-  color: #111;
-  border: 1.5px solid #2c3e50;
-  border-radius: 4px;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.72rem;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.05;
-  flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
-}
-.mini-card.red {
-  color: #e74c3c;
-}
-.mini-card.joker {
-  background: #12161f;
-  border-color: #f1c40f;
-  color: #f1c40f;
-}
-.mini-card.reach-tile {
-  border: 2px solid #ff3838;
-  box-shadow: 0 0 8px rgba(255, 56, 56, 0.85);
-}
+    .jp-card {
+      width: 56px; height: 78px;
+      background: linear-gradient(160deg, #ffffff 0%, #eef2f5 100%);
+      color: #141a1f; border: 2px solid #2c3e50; border-radius: 7px;
+      position: relative; display: flex; flex-direction: column; justify-content: space-between;
+      padding: 4px 5px; box-shadow: 0 3px 7px rgba(0, 0, 0, 0.5);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+      flex-shrink: 0; cursor: pointer;
+    }
+    .jp-card.selected {
+      transform: translate3d(0, -10px, 0); border-color: #f1c40f;
+      box-shadow: 0 8px 16px rgba(241, 196, 15, 0.5);
+    }
+    .jp-card.locked { opacity: 0.72; filter: brightness(0.82); }
+    .jp-card.win-tile-mark {
+      border: 2.5px solid #ff3838 !important;
+      box-shadow: 0 0 12px rgba(255, 56, 56, 0.85) !important;
+    }
+    .jp-card.red-suit { color: #d62828; }
+    .jp-card-diag {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      transform: rotate(-18deg); pointer-events: none; gap: 2px;
+    }
+    .jp-card-suit-big { font-size: 1.32rem; font-weight: 900; line-height: 1; }
+    .jp-card-rank-big { font-size: 1.5rem; font-weight: 950; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.04em; }
+    .jp-card-top { font-size: 0.72rem; font-weight: 900; line-height: 1; z-index: 2; }
+    .jp-card-bot { font-size: 0.72rem; font-weight: 900; line-height: 1; text-align: right; transform: rotate(180deg); z-index: 2; }
 
-/* 固定吹き出し（通信モード上下） */
-.speech-bubble-row {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 3px 8px;
-  background: rgba(15, 34, 39, 0.92);
-  border: 1px solid rgba(241, 196, 15, 0.45);
-  border-radius: 12px;
-  min-height: 24px;
-  font-size: 0.72rem;
-}
-.speech-bubble-text {
-  color: #fff;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.speech-hide-btn {
-  background: rgba(231, 76, 60, 0.25);
-  border: 1px solid #e74c3c;
-  color: #ff8787;
-  border-radius: 4px;
-  font-size: 0.62rem;
-  padding: 1px 5px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
+    .jp-card.joker-card {
+      background: linear-gradient(145deg, #0c1015 0%, #1a212b 55%, #0c1015 100%);
+      border: 2px solid #f1c40f; color: #f1c40f; justify-content: center; align-items: center;
+      box-shadow: 0 0 10px rgba(241, 196, 15, 0.35), inset 0 0 8px rgba(241, 196, 15, 0.2);
+    }
+    .jp-joker-diag-text {
+      font-size: 0.9rem; font-weight: 950; letter-spacing: 0.06em; color: #ffd43b;
+      text-shadow: 0 0 6px rgba(241, 196, 15, 0.75), 1px 1px 0 #000; transform: rotate(-24deg);
+    }
 
-/* 下段シグナルバー（通信モード） */
-#online-signal-bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 36px;
-  background: #081113;
-  border-top: 1px solid #234349;
-  display: none;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
-  overflow-x: auto;
-  z-index: 25;
-}
-.signal-chip {
-  background: #152b30;
-  color: #ecf0f1;
-  border: 1px solid #34495e;
-  border-radius: 12px;
-  padding: 3px 9px;
-  font-size: 0.68rem;
-  font-weight: bold;
-  white-space: nowrap;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-.signal-chip.active {
-  background: #2980b9;
-  border-color: #5dade2;
-  color: #fff;
-}
+    .mini-card {
+      width: 25px; height: 33px; background: #f8f9fa; color: #111;
+      border: 1.5px solid #2c3e50; border-radius: 4px; display: inline-flex; flex-direction: column;
+      align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900;
+      font-variant-numeric: tabular-nums; line-height: 1.05; flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+    }
+    .mini-card.red { color: #e74c3c; }
+    .mini-card.joker { background: #12161f; border-color: #f1c40f; color: #f1c40f; }
+    .mini-card.reach-tile { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.85); }
+    .mini-card.win-tile-mark { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.9); }
 
-/* カットイン演出 */
-#cutin-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 60;
-  pointer-events: none;
-}
-.cutin-banner {
-  width: 100%;
-  padding: 14px 10px;
-  text-align: center;
-  font-weight: 950;
-  letter-spacing: 0.06em;
-  border-top: 2px solid #f1c40f;
-  border-bottom: 2px solid #f1c40f;
-  background: linear-gradient(90deg, rgba(10, 18, 22, 0.92), rgba(140, 20, 20, 0.96), rgba(10, 18, 22, 0.92));
-  color: #fff;
-  box-shadow: 0 0 24px rgba(241, 196, 15, 0.55);
-  animation: cutinPop 0.25s ease-out;
-}
-.cutin-banner.rare-cutin {
-  background: linear-gradient(90deg, #1b0633, #8e1b66, #d4af37, #8e1b66, #1b0633);
-  border-top: 3px solid #fff3b0;
-  border-bottom: 3px solid #fff3b0;
-  box-shadow: 0 0 32px rgba(255, 215, 0, 0.9);
-}
-@keyframes cutinPop {
-  0% { transform: scaleX(0.2); opacity: 0; }
-  100% { transform: scaleX(1); opacity: 1; }
-}
+    #screen-game { padding: 6px 8px 8px 8px; gap: 4px; justify-content: flex-start; overflow: hidden; }
+    .speech-bubble-row {
+      display: none; align-items: center; justify-content: space-between; gap: 6px;
+      padding: 2px 8px; background: rgba(255, 252, 238, 0.95); color: #102023;
+      border: 1.5px solid #f1c40f; border-radius: 10px; min-height: 22px; font-size: 0.72rem; font-weight: 900;
+    }
+    .speech-hide-btn {
+      background: #162a2d; color: #f1c40f; border: 1px solid #f1c40f;
+      border-radius: 6px; padding: 1px 6px; font-size: 0.64rem; font-weight: 800; cursor: pointer;
+    }
+    .river-strip {
+      background: #091315; border: 1px solid #1e3b40; border-radius: 6px;
+      padding: 3px 6px; height: 41px; display: flex; align-items: center; gap: 4px;
+      overflow-x: auto; scroll-behavior: smooth; flex-shrink: 0;
+    }
+    #player-hand-container {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
+      min-height: 88px; align-items: end; padding-top: 10px; justify-items: center;
+    }
+    .hand-empty-slot {
+      width: 56px; height: 78px; border-radius: 7px;
+      border: 1px dashed rgba(241, 196, 15, 0.3); background: rgba(0, 0, 0, 0.22);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 800; color: rgba(241, 196, 15, 0.55);
+    }
+    #beginner-guide-box {
+      background: rgba(241, 196, 15, 0.14); border: 1px solid rgba(241, 196, 15, 0.45);
+      border-radius: 6px; padding: 3px 8px; font-size: 0.7rem; color: #ffeaa7;
+      font-weight: 700; height: 24px; line-height: 18px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    #online-signal-bar {
+      display: none; gap: 5px; overflow-x: auto; padding: 2px 0; flex-shrink: 0;
+    }
+    .signal-chip {
+      flex: 0 0 auto; background: #14282c; color: #b9d2d6; border: 1px solid #2e5961;
+      border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer;
+    }
+    .signal-chip.active { background: #f1c40f; color: #111; border-color: #fff0a8; }
 
-/* モーダル（役一覧・マニュアル） */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.82);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-.cat-panel-btn {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 5px;
-  padding: 5px 2px;
-  font-size: 0.68rem;
-  font-weight: 900;
-  cursor: pointer;
-  color: #fff;
-}
-.cat-1 { background: #8e44ad; }
-.cat-2 { background: #2980b9; }
-.cat-3 { background: #27ae60; }
-.cat-4 { background: #c0392b; }
-.cat-5 { background: #d35400; }
-.yaku-tab-btn {
-  background: #1a3338;
-  color: #ecf0f1;
-  border: 1px solid #2d555d;
-  border-radius: 5px;
-  padding: 4px 8px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  white-space: nowrap;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-.yaku-tab-btn.active {
-  background: #f1c40f;
-  color: #111;
-  border-color: #fff;
-}
-</style>
+    #cutin-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.72);
+      z-index: 200; align-items: center; justify-content: center; padding: 16px; pointer-events: none;
+    }
+    .cutin-banner {
+      width: 100%; max-width: 380px; padding: 14px 16px; border-radius: 12px;
+      background: linear-gradient(135deg, #1b2f36 0%, #0d191d 100%);
+      border: 2px solid #f1c40f; color: #fff; text-align: center;
+      box-shadow: 0 0 24px rgba(241, 196, 15, 0.45);
+    }
+    .cutin-banner.rare-cutin {
+      background: linear-gradient(135deg, #4a0e17 0%, #1a092e 50%, #3d2204 100%);
+      border: 2.5px solid #ff6b6b; box-shadow: 0 0 28px rgba(255, 107, 107, 0.75);
+    }
+
+    #rule-modal {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82);
+      z-index: 150; align-items: center; justify-content: center; padding: 10px;
+    }
+    .rule-modal-card {
+      width: 100%; max-width: 420px; max-height: 90dvh; background: #102327;
+      border: 2px solid #f1c40f; border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 8px; overflow-y: auto;
+    }
+    #rule-category-panels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .cat-select-btn {
+      padding: 5px 2px; border-radius: 6px; border: 1px solid #355f66; background: #162e33;
+      color: #dcebf0; font-size: 0.65rem; font-weight: 900; cursor: pointer; text-align: center;
+    }
+    .cat-select-btn.active { background: #f1c40f; color: #111; border-color: #fff0a8; }
+    #rule-menu-bar { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 3px; }
+    .yaku-tab-btn {
+      flex: 0 0 auto; padding: 4px 8px; border-radius: 6px; border: 1px solid #2e5961;
+      background: #0c191c; color: #c5dce0; font-size: 0.7rem; font-weight: 800; cursor: pointer;
+    }
+    .yaku-tab-btn.active { background: #2980b9; color: #fff; border-color: #85c1e9; }
+  </style>
 </head>
 <body>
 <div id="game-wrapper">
+  <div id="cutin-overlay"><div id="cutin-banner" class="cutin-banner"></div></div>
 
   <!-- 1. タイトル画面 -->
-  <div id="screen-title" class="screen active" style="justify-content: center; align-items: center; padding: 18px; text-align: center;">
-    <div style="font-size: 0.78rem; letter-spacing: 0.14em; color: #f1c40f; font-weight: bold; margin-bottom: 4px;">MAHJONG × POKER BATTLE</div>
-    <h1 style="font-size: 1.85rem; font-weight: 950; color: #fff; text-shadow: 0 3px 10px rgba(241,196,15,0.45); line-height: 1.2;">２人打ち ジャンポーカー</h1>
-    <div style="font-size: 1.05rem; color: #f1c40f; font-weight: 900; margin: 4px 0 18px 0;">〜ジャンP２〜</div>
-
-    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showModeSelect();" style="width: 230px; height: 44px; font-size: 0.98rem; margin-bottom: 10px;">CPU対戦スタート</button>
-    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showOnlineLobby();" style="width: 230px; height: 44px; font-size: 0.95rem; background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%); border-color: #5dade2; color: #fff; margin-bottom: 14px;">🌐 通信・ルール部屋へ参戦</button>
-
-    <div style="display: flex; gap: 8px; justify-content: center;">
-      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="background: rgba(0,0,0,0.35); color: #f1c40f; border: 1px solid #f1c40f; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">役一覧確認</button>
-      <button onclick="SoundEngine.playSE('select_card'); openRuleModal('manual');" style="background: rgba(0,0,0,0.35); color: #2ecc71; border: 1px solid #2ecc71; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">jp2マニュアル</button>
+  <div id="screen-title" class="screen active">
+    <div style="font-size: 1.05rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px;">２人打ち</div>
+    <div style="font-size: 2.15rem; font-weight: 900; color: #fff; letter-spacing: 2px; text-shadow: 0 3px 10px rgba(0,0,0,0.6);">ジャンポーカー</div>
+    <div style="font-size: 1.05rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px;">〜 ジャンP２ 〜</div>
+    <div style="font-size: 0.78rem; color: #2ecc71; font-weight: 800; margin-top: 2px;">『麻雀✕ポーカーの融合したオリジナル５枚役！』</div>
+    <div class="credit-box">制作／ボドゲ厨房：美理慈庵<br>企画：料理長K</div>
+    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showModeSelect();" style="width: 100%; max-width: 310px; height: 46px; font-size: 1rem;">🎮 CPU対戦スタート</button>
+    <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); showOnlineLobby();" style="width: 100%; max-width: 310px; height: 46px; font-size: 1rem; background: linear-gradient(180deg, #3498db 0%, #1f6391 100%); border-color: #5dade2; color: #fff;">🌐 通信・ルール部屋へ参戦</button>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 310px; margin-top: 2px;">
+      <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="height: 38px; font-size: 0.85rem;">📜 役一覧確認</button>
+      <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openRuleModal('manual');" style="height: 38px; font-size: 0.85rem;">📖 jp2マニュアル</button>
     </div>
   </div>
-    <!-- 2. CPU対戦モード選択画面 -->
+
+  <!-- 2. CPU対戦モード選択画面 -->
   <div id="screen-mode" class="screen" style="justify-content: center; align-items: center; padding: 14px; text-align: center; gap: 8px;">
     <h3 style="color: #f1c40f; font-size: 1.1rem; font-weight: 900;">CPU対戦モードを選択</h3>
     <div style="font-size: 0.72rem; color: #a3e4d7; margin-bottom: 4px;">全モード 第2サイクル（オーラス）は表ドラ2枚・裏ドラ2枚！</div>
-
     <button onclick="SoundEngine.playSE('select_card'); selectMode('beginner');" style="width: 100%; max-width: 340px; padding: 9px 12px; background: #142a38; border: 2px solid #3498db; border-radius: 8px; color: #fff; text-align: left; cursor: pointer;">
       <div style="font-size: 0.92rem; font-weight: 900; color: #5dade2;">📘 ビギナーモード</div>
       <div style="font-size: 0.7rem; color: #d6eaf8;">役を覚える初級編・手札ガイド＆第2サイクルオーラス</div>
     </button>
-
     <button onclick="SoundEngine.playSE('select_card'); selectMode('main');" style="width: 100%; max-width: 340px; padding: 9px 12px; background: #143326; border: 2px solid #2ecc71; border-radius: 8px; color: #fff; text-align: left; cursor: pointer;">
       <div style="font-size: 0.92rem; font-weight: 900; color: #58d68d;">📗 メインモード</div>
       <div style="font-size: 0.7rem; color: #d4efdf;">ダマテン策士と読み合う中級編・第2サイクルオーラス</div>
     </button>
-
     <button onclick="SoundEngine.playSE('select_card'); selectMode('master');" style="width: 100%; max-width: 340px; padding: 9px 12px; background: linear-gradient(135deg, #3b1212 0%, #4d230a 100%); border: 2px solid #ff6b35; border-radius: 8px; color: #fff; text-align: left; cursor: pointer;">
       <div style="font-size: 0.92rem; font-weight: 900; color: #ff9f43;">🔥 MASTER CHALLENGE / 鬼レンチャレンジ</div>
       <div style="font-size: 0.7rem; color: #fad7a0;">【10連チャン達成で完全制覇！】第2オーラス親権消滅で即終了！</div>
     </button>
-
     <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; margin-top: 6px; cursor: pointer; font-size: 0.85rem;">＜ タイトルに戻る</button>
   </div>
 
   <!-- 3. 通信＆ルール部屋ロビー画面 -->
-  <div id="screen-online" class="screen" style="justify-content: flex-start; align-items: center; padding: 12px 14px; text-align: center; overflow-y: auto; gap: 8px;">
+  <div id="screen-online" class="screen" style="justify-content: flex-start; align-items: center; padding: 10px 12px; text-align: center; overflow-y: auto; gap: 7px;">
     <h3 style="color: #5dade2; font-size: 1.05rem; font-weight: 900;">通信＆ルール部屋ロビー</h3>
     <div style="font-size: 0.7rem; color: #ff7675; font-weight: bold; background: rgba(255,118,117,0.12); border: 1px solid rgba(255,118,117,0.4); padding: 4px 8px; border-radius: 5px; width: 100%;">
       ⚠️ 通信対戦時は全般で30秒の制限時間が適用されます！
@@ -388,17 +229,16 @@ body {
     <div style="width: 100%; background: #152b30; border: 1px solid #29525a; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px;">
       <div style="font-size: 0.72rem; color: #5dade2; font-weight: bold;">【通信対戦ホスト】ルール選択して作成</div>
       <select id="host-room-rule-select" style="background: #0c191c; color: #fff; border: 1px solid #3498db; border-radius: 5px; padding: 5px 8px; font-size: 0.75rem;">
-        <option value="shoushi">⚔️ 勝負師の部屋（通常・制限なし）</option>
+        <option value="shoushi">⚔️ 勝負師の部屋（公式ガチンコ勝負）</option>
         <option value="shiren">🔥 試練の部屋（要リーチ基本役限定）</option>
-        <option value="damaten">🧠 ダマテン部屋の部屋（リーチ禁止）</option>
+        <option value="damaten">🧠 ダマテンの部屋（リーチ禁止）</option>
       </select>
-      <button class="btn-gold" onclick="createOnlineRoom();" style="height: 36px; font-size: 0.82rem;">通信ルームを開設する</button>
-
+      <button class="btn-gold" onclick="createOnlineRoom();" style="height: 35px; font-size: 0.82rem;">通信ルームを開設する</button>
       <div id="online-room-id-box" style="display: none; flex-direction: column; gap: 5px; background: #0b1619; border: 1px solid #f1c40f; border-radius: 6px; padding: 6px;">
-        <div style="font-size: 0.72rem; color: #f1c40f;">ルームID: <strong id="online-room-id-val" style="font-size: 0.88rem; letter-spacing: 0.06em;"></strong></div>
-        <div style="display: flex; gap: 5px; justify-content: center;">
+        <div style="font-size: 0.72rem; color: #f1c40f;">ルームID: <strong id="online-room-id-val" style="font-size: 0.88rem; letter-spacing: 0.06em;">-</strong></div>
+        <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
           <button onclick="copyOnlineRoomId();" style="background: #2980b9; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.68rem; font-weight: bold; cursor: pointer;">📋 ID＆招待URLコピー</button>
-          <button onclick="shareOnlineRoomInvite();" style="background: #27ae60; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.68rem; font-weight: bold; cursor: pointer;">📤 リンクごと共有</button>
+          <button onclick="shareOnlineRoomInvite();" style="background: #27ae60; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.68rem; font-weight: bold; cursor: pointer;">📤 招待共有</button>
         </div>
       </div>
     </div>
@@ -406,51 +246,44 @@ body {
     <div style="width: 100%; background: #152b30; border: 1px solid #29525a; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px;">
       <div style="font-size: 0.72rem; color: #2ecc71; font-weight: bold;">【通信対戦ゲスト】IDでルームに参加</div>
       <div style="display: flex; gap: 6px;">
-        <input id="online-join-input" type="text" placeholder="例: JP2-1234" style="flex: 1; background: #0c191c; color: #fff; border: 1px solid #2ecc71; border-radius: 5px; padding: 5px 8px; font-size: 0.78rem;">
-        <button onclick="joinOnlineRoom();" style="background: #27ae60; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">ルームに参加する</button>
+        <input id="online-join-input" type="text" placeholder="例: JP2-1234" style="flex: 1; background: #0b1619; color: #fff; border: 1px solid #2ecc71; border-radius: 5px; padding: 6px 8px; font-size: 0.78rem;" />
+        <button onclick="joinOnlineRoom();" style="background: #27ae60; color: #fff; border: none; border-radius: 5px; padding: 0 12px; font-size: 0.78rem; font-weight: bold; cursor: pointer;">参加する</button>
       </div>
     </div>
 
-    <div id="online-status-msg" style="font-size: 0.74rem; color: #f1c40f; min-height: 20px; font-weight: bold;"></div>
-    <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.82rem;">＜ タイトルに戻る</button>
+    <div id="online-status-msg" style="font-size: 0.72rem; color: #f9d423; min-height: 18px; font-weight: bold;"></div>
+    <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.84rem;">＜ タイトルに戻る</button>
   </div>
 
-  <!-- 4. ルーレット画面（♠青 vs ♥赤 2択） -->
-  <div id="screen-roulette" class="screen" style="justify-content: center; align-items: center; padding: 16px; text-align: center;">
-    <h3 style="color: #f1c40f; margin-bottom: 6px; font-size: 1.12rem; font-weight: 900;">席順・親決めルーレット（♠青 vs ♥赤）</h3>
-    <div id="roulette-warning-banner" style="font-size: 0.74rem; color: #ff6b6b; font-weight: bold; margin-bottom: 10px; background: rgba(255,56,56,0.15); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,56,56,0.4); display: none;">⚠️ 通信対戦時は開始後30秒制限あり！</div>
-
-    <div id="roulette-box" style="width: 112px; height: 112px; background: #182e33; border: 3px solid #f1c40f; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 10px auto; box-shadow: 0 0 14px rgba(241,196,15,0.45);">
-      <div id="roulette-suit" style="font-size: 3rem; color: #3498db; line-height: 1; font-weight: 900;">♠</div>
-    </div>
-
-    <div style="font-size: 0.72rem; color: #bdc3c7; margin-bottom: 6px;">♠（青）当選＝自席が♠・先親 ／ ♥（赤）当選＝自席が♥・子スタート</div>
-    <div id="roulette-result-text" style="font-size: 0.82rem; color: #2ecc71; font-weight: bold; min-height: 32px; margin-bottom: 10px;"></div>
-
-    <div id="roulette-action-area" style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-      <button id="btn-cpu-spin" class="btn-gold" onclick="SoundEngine.playSE('select_card'); startCpuManualRoulette();" style="width: 220px; height: 42px; font-size: 0.95rem;">🎲 ルーレットスタート</button>
-      <button id="btn-online-game-start" class="btn-gold" onclick="SoundEngine.playSE('select_card'); confirmOnlineGameStart();" style="width: 220px; height: 44px; font-size: 0.98rem; background: #27ae60; color: #fff; border-color: #2ecc71; display: none;">🚀 ゲーム開始 (♠側親)</button>
-      <div id="roulette-wait-msg" style="font-size: 0.78rem; color: #f1c40f; font-weight: bold; display: none;">♠親側がゲーム開始ボタンを押すのを待っています...</div>
-      <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; margin-top: 4px; cursor: pointer; font-size: 0.8rem;">＜ タイトルに戻る</button>
-    </div>
+  <!-- 4. 場所決めルーレット画面 -->
+  <div id="screen-roulette" class="screen" style="justify-content: center; align-items: center; text-align: center; gap: 12px;">
+    <h3 style="color: #f1c40f; font-size: 1.15rem; font-weight: 900;">場所決めルーレット（2択）</h3>
+    <div id="roulette-warning-banner" style="display: none; font-size: 0.72rem; color: #ff7675; font-weight: bold;">⚠️ 30秒制限タイマー適用モード</div>
+    <div id="roulette-suit" style="font-size: 4.2rem; font-weight: 900; color: #3498db; line-height: 1.1;">♠</div>
+    <div id="roulette-result-text" style="font-size: 0.85rem; color: #ecf0f1; font-weight: bold; min-height: 36px;">「ルーレットスタート」を押してください</div>
+    <button id="btn-cpu-spin" class="btn-gold" onclick="startCpuManualRoulette();" style="padding: 10px 22px; font-size: 0.92rem;">ルーレットスタート</button>
+    <button id="btn-online-game-start" class="btn-gold" onclick="confirmOnlineGameStart();" style="display: none; padding: 10px 22px; font-size: 0.92rem;">🚀 ゲーム開始</button>
+    <div id="roulette-wait-msg" style="display: none; font-size: 0.78rem; color: #5dade2; font-weight: bold;">ホストがゲームを開始するのを待っています...</div>
+    <button onclick="showModeSelect();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.82rem;">＜ モード選択へ戻る</button>
   </div>
-    <!-- 5. メイン対戦画面 -->
-  <div id="screen-game" class="screen" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 5px; padding: 7px 10px 44px 10px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #162a2d; border-radius: 5px;">
-      <span id="opponent-label" style="font-size: 0.82rem; color: #e74c3c; font-weight: bold;">相手手札</span>
+
+  <!-- 5. メイン対戦画面 -->
+  <div id="screen-game" class="screen">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #162a2d; border-radius: 5px; border: 1px solid #244348;">
+      <span id="opponent-label" style="font-size: 0.8rem; color: #e74c3c; font-weight: bold;">相手手札</span>
       <div id="cpu-hand-mini" style="display: flex; gap: 3px;"></div>
     </div>
 
     <div id="speech-bubble-top" class="speech-bubble-row">
-      <span id="speech-top-text" class="speech-bubble-text"></span>
+      <span id="speech-top-text"></span>
       <button class="speech-hide-btn" onclick="hideSpeechBubble('top');">非表示</button>
     </div>
 
-    <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 40px; display: flex; align-items: center; overflow-x: auto;" id="cpu-river-scroll"></div>
+    <div id="cpu-river-scroll" class="river-strip"></div>
 
     <!-- 中央ステータスボード（左＝♠青固定、右＝♥赤固定） -->
-    <div style="background: #182e33; border: 2px solid #f1c40f; border-radius: 8px; padding: 7px 10px; font-size: 0.86rem; display: flex; flex-direction: column; gap: 4px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem;">
+    <div style="background: #182e33; border: 2px solid #f1c40f; border-radius: 8px; padding: 6px 10px; font-size: 0.84rem; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
         <div>
           <span id="board-cycle-label" style="color: #f1c40f; font-weight: 900;">第1サイクル ♠場</span>
           <span id="board-streak-label" style="color: #2ecc71; font-weight: bold;">(0連チャン)</span>
@@ -458,8 +291,8 @@ body {
         <span id="board-timer-label" style="color: #ff6b6b; font-weight: 900; display: none;">⏱30s</span>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; background: #0d1c20; border-radius: 5px; padding: 4px 7px;">
-        <span id="board-dora-label" style="font-size: 0.7rem; color: #f9d423; font-weight: bold;">ドラ：</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #0d1c20; border-radius: 5px; padding: 3px 7px;">
+        <span id="board-dora-label" style="font-size: 0.7rem; color: #f9d423; font-weight: bold;">ドラ(表1/裏1):</span>
         <div id="board-dora-container" style="display: flex; gap: 3px; align-items: center;"></div>
       </div>
 
@@ -468,582 +301,92 @@ body {
         <span>山札: <strong id="board-deck-count" style="color: #5dade2;">42</strong></span>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-top: 1px solid #294e56; padding-top: 4px; font-size: 0.78rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-top: 1px solid #294e56; padding-top: 4px; font-size: 0.76rem;">
         <div style="background: rgba(52, 152, 219, 0.14); border: 1px solid rgba(52, 152, 219, 0.5); border-radius: 5px; padding: 3px 6px; display: flex; justify-content: space-between; align-items: center;">
-          <span id="board-spade-player" style="color: #5dade2; font-weight: 900;">♠YOU(30pt)</span>
+          <span id="board-spade-player" style="color: #5dade2; font-weight: 900;">YOU(30pt)</span>
           <span id="board-spade-role" style="color: #f1c40f; font-weight: 900; font-size: 0.7rem;">[親]</span>
         </div>
         <div style="background: rgba(231, 76, 60, 0.14); border: 1px solid rgba(231, 76, 60, 0.5); border-radius: 5px; padding: 3px 6px; display: flex; justify-content: space-between; align-items: center;">
-          <span id="board-heart-player" style="color: #ff7675; font-weight: 900;">♥相手(30pt)</span>
+          <span id="board-heart-player" style="color: #ff7675; font-weight: 900;">相手(30pt)</span>
           <span id="board-heart-role" style="color: #bdc3c7; font-weight: 900; font-size: 0.7rem;">[子]</span>
         </div>
       </div>
     </div>
 
-    <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 40px; display: flex; align-items: center; overflow-x: auto;" id="player-river-scroll"></div>
+    <div id="player-river-scroll" class="river-strip"></div>
 
     <div id="speech-bubble-bottom" class="speech-bubble-row">
-      <span id="speech-bottom-text" class="speech-bubble-text"></span>
+      <span id="speech-bottom-text"></span>
       <button class="speech-hide-btn" onclick="hideSpeechBubble('bottom');">非表示</button>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex-shrink: 0;">
       <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="height: 35px; font-size: 0.82rem; background: #f1c40f; color: #000;">役一覧</button>
-      <button id="btn-reach" class="btn-gold" onclick="togglePlayerReach()" style="height: 35px; font-size: 0.82rem; background: #f1c40f; color: #000;" disabled>リーチ</button>
-      <button id="btn-win" class="btn-gold" onclick="playerWin()" style="height: 35px; font-size: 0.82rem; background: #555544; color: #888;" disabled>和了</button>
-      <button id="btn-draw" class="btn-gold" onclick="playerDraw()" style="height: 35px; font-size: 0.82rem; background: #555544; color: #888;" disabled>ドロー</button>
+      <button id="btn-reach" class="btn-gold" onclick="togglePlayerReach();" style="height: 35px; font-size: 0.82rem; background: #f1c40f; color: #000;" disabled>リーチ</button>
+      <button id="btn-win" class="btn-gold" onclick="playerWin();" style="height: 35px; font-size: 0.82rem; background: #555544; color: #888;" disabled>和了</button>
+      <button id="btn-draw" class="btn-gold" onclick="playerDraw();" style="height: 35px; font-size: 0.82rem; background: #555544; color: #888;" disabled>ドロー</button>
     </div>
 
-    <div style="background: #162a2d; border: 1px solid #254449; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
-      <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; min-height: 86px; align-items: flex-end; padding-top: 8px;"></div>
-      <div id="beginner-guide-box" style="background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; border-radius: 5px; padding: 0 8px; font-size: 0.7rem; color: #f1c40f; text-align: center; font-weight: bold; height: 24px; line-height: 24px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; visibility: hidden;"></div>
-      <div id="hand-status-msg" style="font-size: 0.66rem; color: #bdc3c7; text-align: center; height: 18px; line-height: 18px;">あなたの親番です。カードを2回タップして打牌するか和了できます。</div>
+    <div style="background: #162a2d; border: 1px solid #254449; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;">
+      <div id="player-hand-container"></div>
+      <div id="beginner-guide-box" style="visibility: hidden;"></div>
+      <div id="hand-status-msg" style="font-size: 0.72rem; color: #d5e3e6; text-align: center; font-weight: bold;">準備中...</div>
     </div>
 
     <div id="online-signal-bar"></div>
-    <div id="cutin-overlay"><div id="cutin-banner" class="cutin-banner"></div></div>
   </div>
 
   <!-- 6. リザルト画面 -->
-  <div id="screen-result" class="screen" style="justify-content: center; align-items: center; padding: 12px 10px; text-align: center;">
-    <div id="res-timer-badge" style="font-size: 0.82rem; color: #ff6b6b; font-weight: 900; margin-bottom: 2px; display: none;">⏱ 次の操作まで: 30秒</div>
-    <div id="res-streak-banner" style="font-size: 1.05rem; font-weight: 950; color: #f1c40f; margin-bottom: 2px; min-height: 1.4em; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"></div>
-    <h2 id="res-title" style="color: #f1c40f; font-size: 1.12rem; margin-bottom: 2px; font-weight: 900;">リザルト</h2>
-    <div id="res-subtitle" style="font-size: 0.78rem; color: #fff; margin-bottom: 5px;">成立役：ストレート</div>
-
-    <div style="background: #162a2d; border: 1px solid #f1c40f; border-radius: 6px; padding: 6px; width: 100%; max-width: 345px; margin-bottom: 6px;">
-      <div style="font-size: 0.64rem; color: #bdc3c7; margin-bottom: 3px;">和了手札（和了牌は赤枠表示）</div>
-      <div id="res-hand-container" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 5px;"></div>
-      <div style="font-size: 0.64rem; color: #bdc3c7; margin-bottom: 2px;">表ドラ / 裏ドラ開示</div>
-      <div id="res-dora-container" style="display: flex; justify-content: center; gap: 3px; margin-bottom: 5px; flex-wrap: wrap;"></div>
-      <div style="font-size: 0.64rem; color: #f1c40f; margin-bottom: 2px; border-top: 1px solid #254449; padding-top: 3px;">【 収支内訳 】</div>
-      <div id="res-details" style="font-size: 0.66rem; color: #fff; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; text-align: left; padding: 2px 4px; margin-bottom: 4px; max-height: 68px; overflow-y: auto;"></div>
-      <div id="res-total-score-badge" style="background: rgba(241,196,15,0.2); border: 1px solid #f1c40f; border-radius: 4px; padding: 3px; font-size: 0.74rem; color: #f1c40f; font-weight: bold;">【 総合収支 】 +0 pt</div>
+  <div id="screen-result" class="screen" style="justify-content: center; align-items: center; text-align: center; gap: 8px;">
+    <div id="res-streak-banner" style="min-height: 24px; font-weight: 900;"></div>
+    <h3 id="res-title" style="color: #f1c40f; font-size: 1.2rem; font-weight: 900;">リザルト</h3>
+    <div id="res-subtitle" style="font-size: 0.84rem; color: #ecf0f1; font-weight: bold;"></div>
+    <div id="res-hand-container" style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; min-height: 82px; align-items: center;"></div>
+    <div style="display: flex; align-items: center; gap: 6px; justify-content: center; flex-wrap: wrap;">
+      <span style="font-size: 0.72rem; color: #f9d423; font-weight: bold;">ドラ/裏ドラ:</span>
+      <div id="res-dora-container" style="display: flex; gap: 3px; align-items: center;"></div>
     </div>
-
-    <div id="res-total-pt" style="font-size: 0.92rem; color: #2ecc71; font-weight: bold; margin-bottom: 6px;">👤 YOU: 30pt vs 相手: 30pt</div>
-    <div id="res-ending-msg" style="font-size: 0.84rem; color: #ffd43b; font-weight: 900; min-height: 20px; margin-bottom: 4px;"></div>
-
-    <div id="res-action-area" style="display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 240px; align-items: center;">
-      <button id="btn-next-round" class="btn-gold" onclick="SoundEngine.playSE('select_card'); handleResultNextAction();" style="width: 200px; height: 36px; font-size: 0.85rem;">次の対戦へ</button>
-      <button id="btn-rematch" class="btn-gold" onclick="SoundEngine.playSE('select_card'); requestRematch();" style="width: 200px; height: 36px; background: #2980b9; color: #fff; border-color: #3498db; font-size: 0.85rem; display: none;">🔄 再戦を希望する</button>
-      <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.75rem;">タイトルへ戻る</button>
-    </div>
-    <div id="rematch-status-msg" style="font-size: 0.7rem; color: #f1c40f; margin-top: 2px; font-weight: bold; min-height: 16px;"></div>
-  </div>
-
-  <!-- 7. 役一覧＆マニュアルモーダル -->
-  <div id="rule-modal" class="modal-overlay">
-    <div style="background: #162a2d; border: 2px solid #f1c40f; border-radius: 10px; width: 94%; max-width: 390px; height: 86%; display: flex; flex-direction: column; overflow: hidden;">
-      <div style="background: #091315; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1c40f;">
-        <h3 id="modal-main-title" style="color: #f1c40f; font-size: 0.9rem; font-weight: 900;">全役一覧データベース</h3>
-        <button onclick="SoundEngine.playSE('select_card'); closeRuleModal();" style="background: #e74c3c; border: none; color: #fff; width: 22px; height: 22px; border-radius: 4px; font-weight: bold; cursor: pointer;">✕</button>
-      </div>
-      <div id="rule-category-panels" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 6px; background: #0c181b; border-bottom: 1px solid #254449; flex-shrink: 0;">
-        <button class="cat-panel-btn cat-1" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(1);">状態役</button>
-        <button class="cat-panel-btn cat-2" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(2);">基本役</button>
-        <button class="cat-panel-btn cat-3" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(3);">中級役</button>
-        <button class="cat-panel-btn cat-4" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(4);">役満</button>
-        <button class="cat-panel-btn cat-5" onclick="SoundEngine.playSE('select_card'); filterYakuCategory(5);">JOKER</button>
-      </div>
-      <div id="menu-slide-guide-text" style="font-size: 0.65rem; color: #bdc3c7; text-align: center; padding: 3px 0 1px 0; background: #102023; font-weight: bold; border-top: 1px dashed rgba(241,196,15,0.3);">←スライド→</div>
-      <div id="rule-menu-bar" style="display: flex; gap: 5px; overflow-x: auto; padding: 6px; background: #102023; border-bottom: 1px solid #254449; flex-shrink: 0;"></div>
-      <div style="padding: 10px 12px; overflow-y: auto; flex-grow: 1; text-align: left;" id="modal-content-body">
-        <div id="rule-yaku-header" style="font-size: 0.72rem; color: #f1c40f; font-weight: bold; margin-bottom: 4px;"></div>
-        <h4 id="rule-yaku-title" style="font-size: 1rem; color: #fff; font-weight: 900; margin-bottom: 6px;"></h4>
-        <p id="rule-yaku-desc" style="font-size: 0.78rem; color: #ecf0f1; line-height: 1.5; margin-bottom: 10px;"></p>
-        <div id="rule-sample-label" style="font-size: 0.7rem; color: #bdc3c7; margin-bottom: 5px;">サンプル手札</div>
-        <div id="rule-sample-cards" style="display: flex; gap: 5px; justify-content: flex-start; overflow-x: auto; padding-bottom: 4px;"></div>
-      </div>
+    <div id="res-details" style="width: 100%; max-width: 350px; background: rgba(0,0,0,0.35); border: 1px solid #2c5259; border-radius: 8px; padding: 7px 10px; font-size: 0.76rem; text-align: left; line-height: 1.45;"></div>
+    <div id="res-total-score-badge" style="font-size: 0.92rem; font-weight: 900; color: #f1c40f;"></div>
+    <div id="res-total-pt" style="font-size: 0.82rem; font-weight: 800; color: #a3e4d7;"></div>
+    <div id="res-ending-msg" style="font-size: 0.95rem; font-weight: 900; color: #ffd43b; min-height: 22px;"></div>
+    <div id="res-timer-badge" style="display: none; font-size: 0.78rem; color: #ff7675; font-weight: 900;"></div>
+    <div id="rematch-status-msg" style="font-size: 0.74rem; color: #5dade2; font-weight: bold; min-height: 18px;"></div>
+    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+      <button id="btn-next-round" class="btn-gold" onclick="handleResultNextAction();" style="padding: 9px 18px; font-size: 0.88rem;">次の局へ</button>
+      <button id="btn-rematch" class="btn-gold" onclick="requestRematch();" style="display: none; padding: 9px 18px; font-size: 0.88rem; background: linear-gradient(180deg, #3498db 0%, #21618c 100%); border-color: #85c1e9; color: #fff;">🔁 再戦する</button>
+      <button class="btn-gold" onclick="showTitle();" style="padding: 9px 16px; font-size: 0.85rem; background: #26383c; border-color: #4f737a; color: #ecf0f1;">タイトルへ</button>
     </div>
   </div>
 
+  <!-- 役一覧＆マニュアルモーダル -->
+  <div id="rule-modal">
+    <div class="rule-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4 id="modal-main-title" style="color: #f1c40f; font-size: 1rem; font-weight: 900;">全役一覧データベース</h4>
+        <button onclick="closeRuleModal();" style="background: #c0392b; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">閉じる</button>
+      </div>
+      <div id="rule-category-panels">
+        <button class="cat-select-btn" onclick="filterYakuCategory(1);">①状態役</button>
+        <button class="cat-select-btn active" onclick="filterYakuCategory(2);">②基本役</button>
+        <button class="cat-select-btn" onclick="filterYakuCategory(3);">③中級役</button>
+        <button class="cat-select-btn" onclick="filterYakuCategory(4);">④役満</button>
+        <button class="cat-select-btn" onclick="filterYakuCategory(5);">⑤JOKER役</button>
+      </div>
+      <div id="menu-slide-guide-text" style="font-size: 0.66rem; color: #95a5a6;">※横スクロールで各役を選択できます</div>
+      <div id="rule-menu-bar"></div>
+      <div style="background: #0b181b; border: 1px solid #24474e; border-radius: 8px; padding: 9px; display: flex; flex-direction: column; gap: 5px;">
+        <div id="rule-yaku-header" style="font-size: 0.72rem; color: #f9d423; font-weight: 800;"></div>
+        <div id="rule-yaku-title" style="font-size: 0.96rem; color: #fff; font-weight: 900;"></div>
+        <div id="rule-yaku-desc" style="font-size: 0.76rem; color: #d5e3e6; line-height: 1.5;"></div>
+        <div id="rule-sample-label" style="font-size: 0.7rem; color: #f1c40f; font-weight: bold; margin-top: 2px;">構成サンプル：</div>
+        <div id="rule-sample-cards" style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;"></div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
-const SoundEngine = {
-  ctx: null,
-  init() {
-    if (!this.ctx) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) this.ctx = new AC();
-    }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
-    }
-  },
-  tone(freq, dur, type = 'sine', vol = 0.14, delay = 0) {
-    this.init();
-    if (!this.ctx) return;
-    const now = this.ctx.currentTime + delay;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(now);
-    osc.stop(now + dur);
-  },
-  playSE(name) {
-    switch (name) {
-      case 'select_card':
-        this.tone(760, 0.06, 'triangle', 0.12);
-        break;
-      case 'draw_card':
-        this.tone(520, 0.07, 'sine', 0.12);
-        this.tone(680, 0.08, 'sine', 0.1, 0.04);
-        break;
-      case 'discard_card':
-        this.tone(240, 0.09, 'triangle', 0.16);
-        break;
-      case 'roulette_spin':
-        this.tone(580, 0.04, 'square', 0.07);
-        break;
-      case 'reach_declare':
-        this.tone(523.25, 0.1, 'sawtooth', 0.12, 0);
-        this.tone(659.25, 0.1, 'sawtooth', 0.12, 0.08);
-        this.tone(783.99, 0.18, 'sawtooth', 0.14, 0.16);
-        break;
-      case 'ippatsu_shout':
-        this.tone(880, 0.12, 'sawtooth', 0.16, 0);
-        this.tone(1174.66, 0.22, 'sawtooth', 0.16, 0.1);
-        break;
-      case 'win_basic':
-        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.tone(f, 0.14, 'triangle', 0.14, i * 0.08));
-        break;
-      case 'win_mid':
-        [587.33, 739.99, 880, 1174.66].forEach((f, i) => this.tone(f, 0.16, 'sawtooth', 0.14, i * 0.08));
-        break;
-      case 'win_joker':
-      case 'win_yakuman':
-        [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => this.tone(f, 0.22, 'sawtooth', 0.16, i * 0.07));
-        break;
-      case 'lose_basic':
-        this.tone(311.13, 0.16, 'sawtooth', 0.13, 0);
-        this.tone(233.08, 0.25, 'sawtooth', 0.13, 0.14);
-        break;
-      case 'timer_warning_pip':
-        this.tone(980, 0.08, 'sine', 0.14);
-        break;
-      case 'timer_warning_bone':
-        this.tone(185, 0.35, 'sawtooth', 0.18);
-        break;
-      case 'signal_notify':
-        this.tone(920, 0.07, 'sine', 0.11, 0);
-        this.tone(1240, 0.09, 'sine', 0.11, 0.06);
-        break;
-    }
-  }
-};
-
-const RARE_YAKU_NAMES = new Set([
-  "天地人和",
-  "シン・AKB48",
-  "酷使苦情",
-  "ロイヤルストレートフラッシュ",
-  "5カード",
-  "七三元",
-  "黒龍",
-  "赤龍",
-  "ブラックジャック",
-  "レッドクイーン"
-]);
-
-function triggerCutinBanner(titleText, subText = '', isRare = false) {
-  const overlay = document.getElementById('cutin-overlay');
-  const banner = document.getElementById('cutin-banner');
-  if (!overlay || !banner) return;
-  banner.className = 'cutin-banner' + (isRare ? ' rare-cutin' : '');
-  banner.innerHTML = `<div style="font-size:1.18rem;">${titleText}</div>` +
-    (subText ? `<div style="font-size:0.78rem; color:#ffe066; margin-top:3px;">${subText}</div>` : '');
-  overlay.style.display = 'flex';
-  clearTimeout(window.__cutinTimer);
-  window.__cutinTimer = setTimeout(() => {
-    overlay.style.display = 'none';
-  }, isRare ? 1650 : 1200);
-}
-
-function checkValidStraight(vals, numJokers) {
-  const clean = vals.filter(v => v > 0);
-  if (clean.length + numJokers !== 5) return false;
-  const unique = new Set(clean);
-  if (unique.size !== clean.length) return false;
-  for (let start = 2; start <= 10; start++) {
-    const seq = [start, start + 1, start + 2, start + 3, start + 4];
-    if (clean.every(v => seq.includes(v))) return true;
-  }
-  const wheelSeq = [14, 2, 3, 4, 5];
-  if (clean.every(v => wheelSeq.includes(v))) return true;
-  return false;
-}
-
-function checkValid3Straight(vals3, numJokers) {
-  const clean = vals3.filter(v => v > 0);
-  if (clean.length + numJokers !== 3) return false;
-  const unique = new Set(clean);
-  if (unique.size !== clean.length) return false;
-  for (let start = 2; start <= 12; start++) {
-    const seq = [start, start + 1, start + 2];
-    if (clean.every(v => seq.includes(v))) return true;
-  }
-  return false;
-}
-
-function hasValsSet(vals, numJokers, targetArr) {
-  if (vals.length + numJokers !== targetArr.length) return false;
-  const pool = [...vals];
-  let jokersLeft = numJokers;
-  for (let t of targetArr) {
-    const idx = pool.indexOf(t);
-    if (idx !== -1) {
-      pool.splice(idx, 1);
-    } else if (jokersLeft > 0) {
-      jokersLeft--;
-    } else {
-      return false;
-    }
-  }
-  return pool.length === 0 && jokersLeft === 0;
-}
-  const YAKU_REGISTRY = [
-  // ① 状態役・特例状態役
-  {
-    name: "リーチ", score: 2, catId: 1, catName: "① 状態役", catClass: "cat-1",
-    catHeader: "【状態加点】聴牌時の宣言！",
-    desc: "テンパイ宣言で成立（場へ1pt供託）。基本役（10点以下）の和了必須条件。得点＋2pt加算。",
-    sample: null, jokerType: "allowed", requireReach: false, check: () => false
-  },
-  {
-    name: "ダブルリーチ", score: 3, catId: 1, catName: "① 状態役", catClass: "cat-1",
-    catHeader: "【状態加点】初巡でのリーチ成立！",
-    desc: "配牌後、自分の第1打牌（0巡目）でのテンパイ宣言で成立（場へ1pt供託・通常リーチとは重複せず+3pt）。",
-    sample: null, jokerType: "allowed", requireReach: false, check: () => false
-  },
-  {
-    name: "一発", score: 1, catId: 1, catName: "① 状態役", catClass: "cat-1",
-    catHeader: "【状態加点】リーチ後即座の和了！",
-    desc: "リーチ／ダブルリーチ宣言後、1巡以内のツモまたは相手打牌でのロン和了で＋1pt加算。",
-    sample: null, jokerType: "allowed", requireReach: false, check: () => false
-  },
-  {
-    name: "親権", score: 1, catId: 1, catName: "① 状態役", catClass: "cat-1",
-    catHeader: "【状態加点】親番和了ボーナス！",
-    desc: "親番（[親]マーク）のプレイヤーが和了した際に＋1pt加算。",
-    sample: null, jokerType: "allowed", requireReach: false, check: () => false
-  },
-  {
-    name: "海底", score: 1, catId: 1, catName: "① 状態役", catClass: "cat-1",
-    catHeader: "【状態加点】最後の牌での和了！",
-    desc: "山札の最後の牌（残り0枚時点）でのツモ和了で＋1pt加算。",
-    sample: null, jokerType: "allowed", requireReach: false, check: () => false
-  },
-  {
-    name: "天地人和", score: 5, catId: 1, catName: "① 状態役", catClass: "cat-1",
-    catHeader: "【特例状態役】初手5枚完成時点でベース役が成立！",
-    desc: "初手5枚時点でベースとなる役が完成した場合のみ適用！5点＋ベース役＋ドラ・裏ドラ。",
-    sample: null, jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (gameState.turnCount !== 0) return false;
-      for (let other of YAKU_REGISTRY) {
-        if (other.name === "天地人和" || other.catId === 1) continue;
-        if (other.jokerType === 'forbidden' && jokers.length > 0) continue;
-        if (other.jokerType === 'required' && jokers.length === 0) continue;
-        try {
-          if (other.check(cards, jokers, normals, vals, suits, uniqueSuits)) return true;
-        } catch (e) {}
-      }
-      return false;
-    }
-  },
-
-  // ② 基本役（要リーチ・JOKER不可）
-  {
-    name: "ストレート", score: 4, catId: 2, catName: "② 基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】基本役（ストレート系）",
-    desc: "スートを問わず連番5枚（A-2-3-4-5 または 2〜10 / 10-J-Q-K-A混色）。要リーチ・JOKER不可。",
-    sample: [{suit:'♠',val:3},{suit:'♥',val:4},{suit:'♦',val:5},{suit:'♣',val:6},{suit:'♠',val:7}],
-    jokerType: "forbidden", requireReach: true,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5) return false;
-      const isRoyal = vals.includes(10) && vals.includes(11) && vals.includes(12) && vals.includes(13) && vals.includes(14);
-      if (isRoyal && uniqueSuits.length > 1) return false;
-      return checkValidStraight(vals, 0);
-    }
-  },
-  {
-    name: "フラッシュ", score: 5, catId: 2, catName: "② 基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】基本役（フラッシュ系）",
-    desc: "同じスート5枚のうち絵札（J,Q,K,A）が2枚以上含まれる（ストレートフラッシュ系除く）。要リーチ・JOKER不可。",
-    sample: [{suit:'♥',val:3},{suit:'♥',val:6},{suit:'♥',val:7},{suit:'♥',val:12},{suit:'♥',val:14}],
-    jokerType: "forbidden", requireReach: true,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5 || uniqueSuits.length !== 1) return false;
-      if (checkValidStraight(vals, 0)) return false;
-      const faceCnt = normals.filter(c => c.val >= 11).length;
-      return faceCnt >= 2;
-    }
-  },
-  {
-    name: "フルハウス", score: 6, catId: 2, catName: "② 基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】基本役（フルハウス系）",
-    desc: "スリーカード＋ワンペアの形（七三元・トイハウス除く）。要リーチ・JOKER不可。",
-    sample: [{suit:'♠',val:13},{suit:'♥',val:13},{suit:'♦',val:13},{suit:'♣',val:5},{suit:'♠',val:5}],
-    jokerType: "forbidden", requireReach: true,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5) return false;
-      const counts = Object.values(vals.reduce((a, v) => ((a[v] = (a[v] || 0) + 1), a), {})).sort((a, b) => b - a);
-      return counts[0] === 3 && counts[1] === 2;
-    }
-  },
-  {
-    name: "ニューハウス", score: 7, catId: 2, catName: "② 基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】基本役（同スート3連番＋ペア）",
-    desc: "任意のワンペア（2枚）＋同一スートの3連番（3枚）。要リーチ・JOKER不可。",
-    sample: [{suit:'♠',val:9},{suit:'♥',val:9},{suit:'♠',val:4},{suit:'♠',val:5},{suit:'♠',val:6}],
-    jokerType: "forbidden", requireReach: true,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5) return false;
-      const counts = vals.reduce((a, v) => ((a[v] = (a[v] || 0) + 1), a), {});
-      for (const key of Object.keys(counts)) {
-        const pVal = parseInt(key, 10);
-        if (counts[pVal] >= 2) {
-          const temp = [...cards];
-          let removed = 0;
-          for (let i = temp.length - 1; i >= 0 && removed < 2; i--) {
-            if (temp[i].val === pVal) {
-              temp.splice(i, 1);
-              removed++;
-            }
-          }
-          if (temp.length === 3 && temp[0].suit === temp[1].suit && temp[1].suit === temp[2].suit) {
-            if (checkValid3Straight(temp.map(c => c.val), 0)) return true;
-          }
-        }
-      }
-      return false;
-    }
-  },
-  {
-    name: "ロイヤルストレート", score: 8, catId: 2, catName: "② 基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】基本役（10・J・Q・K・A混色）",
-    desc: "スート混色で 10・J・Q・K・A を揃える。要リーチ・JOKER不可。",
-    sample: [{suit:'♠',val:10},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:14}],
-    jokerType: "forbidden", requireReach: true,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5) return false;
-      return vals.includes(10) && vals.includes(11) && vals.includes(12) && vals.includes(13) && vals.includes(14) && uniqueSuits.length > 1;
-    }
-  },
-
-  // ③ 中級役（ダマテン可・JOKER可：使用時-2点）
-  {
-    name: "ブラックジャック", score: 12, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】黒Jペア＋黒混合3連番",
-    desc: "黒J（J=11）のペア ＋ 黒スート（♠・♣混合可）の3連番。JOKER使用時は-2pt。",
-    sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:2},{suit:'♣',val:3},{suit:'♠',val:4}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5) return false;
-      if (!normals.every(c => c.suit === '♠' || c.suit === '♣')) return false;
-      const blackJs = normals.filter(c => c.val === 11).length;
-      if (blackJs + jokers.length < 2) return false;
-      for (let useJFromJ = 0; useJFromJ <= Math.min(jokers.length, 2 - Math.min(blackJs, 2)); useJFromJ++) {
-        const jNeedForPair = 2 - blackJs;
-        if (jNeedForPair < 0 || jNeedForPair > jokers.length) continue;
-        const jRem = jokers.length - jNeedForPair;
-        const remNormals = [...normals];
-        let remJ = 2 - jNeedForPair;
-        for (let i = remNormals.length - 1; i >= 0 && remJ > 0; i--) {
-          if (remNormals[i].val === 11) {
-            remNormals.splice(i, 1);
-            remJ--;
-          }
-        }
-        if (remNormals.length + jRem === 3 && checkValid3Straight(remNormals.map(c => c.val), jRem)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  },
-  {
-    name: "レッドクイーン", score: 12, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】赤Qペア＋赤混合3連番",
-    desc: "赤Q（Q=12）のペア ＋ 赤スート（♥・♦混合可）の3連番。JOKER使用時は-2pt。",
-    sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:5},{suit:'♦',val:6},{suit:'♥',val:7}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5) return false;
-      if (!normals.every(c => c.suit === '♥' || c.suit === '♦')) return false;
-      const redQs = normals.filter(c => c.val === 12).length;
-      if (redQs + jokers.length < 2) return false;
-      const jNeedForPair = Math.max(0, 2 - redQs);
-      if (jNeedForPair > jokers.length) return false;
-      const jRem = jokers.length - jNeedForPair;
-      const remNormals = [...normals];
-      let remQ = 2 - jNeedForPair;
-      for (let i = remNormals.length - 1; i >= 0 && remQ > 0; i--) {
-        if (remNormals[i].val === 12) {
-          remNormals.splice(i, 1);
-          remQ--;
-        }
-      }
-      return remNormals.length + jRem === 3 && checkValid3Straight(remNormals.map(c => c.val), jRem);
-    }
-  },
-  {
-    name: "ツーペイコウ", score: 13, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】JJQKK または QQKAA の2パターンのみ",
-    desc: "絵札ペアをジョイントする形は JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ。JOKER使用時は-2pt。",
-    sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:13}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5) return false;
-      return hasValsSet(vals, jokers.length, [11, 11, 12, 13, 13]) || hasValsSet(vals, jokers.length, [12, 12, 13, 14, 14]);
-    }
-  },
-  {
-    name: "トイハウス", score: 14, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】絵札のみのフルハウス",
-    desc: "絵札（J,Q,K,A）のみで構成されたフルハウス形式。JOKER使用時は-2pt。",
-    sample: [{suit:'♠',val:13},{suit:'♥',val:13},{suit:'♦',val:12},{suit:'♣',val:12},{suit:'♠',val:12}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5 || !normals.every(c => c.val >= 11)) return false;
-      const counts = Object.values(vals.reduce((a, v) => ((a[v] = (a[v] || 0) + 1), a), {})).sort((a, b) => b - a);
-      if (jokers.length === 0) return counts[0] === 3 && counts[1] === 2;
-      if (jokers.length === 1) return (counts[0] === 3 && counts[1] === 1) || (counts[0] === 2 && counts[1] === 2);
-      if (jokers.length === 2) return counts[0] === 2;
-      return false;
-    }
-  },
-  {
-    name: "ストレートフラッシュ", score: 15, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】同スート連番5枚",
-    desc: "同じスートの連番5枚（ロイヤルストレートフラッシュ除く）。JOKER使用時は-2pt。",
-    sample: [{suit:'♥',val:4},{suit:'♥',val:5},{suit:'♥',val:6},{suit:'♥',val:7},{suit:'♥',val:8}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5 || uniqueSuits.length !== 1) return false;
-      const isRoyal = vals.includes(10) && vals.includes(11) && vals.includes(12) && vals.includes(13) && vals.includes(14);
-      if (isRoyal) return false;
-      return checkValidStraight(vals, jokers.length);
-    }
-  },
-  {
-    name: "黒龍", score: 18, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】黒スート偶数5枚",
-    desc: "♠または♣の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は-2pt。",
-    sample: [{suit:'♠',val:2},{suit:'♠',val:4},{suit:'♠',val:6},{suit:'♠',val:8},{suit:'♠',val:10}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5 || uniqueSuits.length !== 1) return false;
-      if (!['♠', '♣'].includes(uniqueSuits[0])) return false;
-      return normals.every(c => [2, 4, 6, 8, 10].includes(c.val));
-    }
-  },
-  {
-    name: "赤龍", score: 18, catId: 3, catName: "③ 中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】赤スート偶数5枚",
-    desc: "♥または♦の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は-2pt。",
-    sample: [{suit:'♥',val:2},{suit:'♥',val:4},{suit:'♥',val:6},{suit:'♥',val:8},{suit:'♥',val:10}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5 || uniqueSuits.length !== 1) return false;
-      if (!['♥', '♦'].includes(uniqueSuits[0])) return false;
-      return normals.every(c => [2, 4, 6, 8, 10].includes(c.val));
-    }
-  },
-
-  // ④ 役満
-  {
-    name: "4カード", score: 20, catId: 4, catName: "④ 役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・JOKER不可❌】役満級役",
-    desc: "同じ数字4枚＋任意の1枚。4カードのみJOKER不可。",
-    sample: [{suit:'♠',val:9},{suit:'♥',val:9},{suit:'♦',val:9},{suit:'♣',val:9},{suit:'♠',val:2}],
-    jokerType: "forbidden", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5) return false;
-      const counts = Object.values(vals.reduce((a, v) => ((a[v] = (a[v] || 0) + 1), a), {}));
-      return counts.some(cnt => cnt >= 4);
-    }
-  },
-  {
-    name: "七三元", score: 21, catId: 4, catName: "④ 役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】777とAAの特殊フルハウス",
-    desc: "7×3 と A(14)×2 の構成。JOKER使用時は-2pt。",
-    sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:14},{suit:'♠',val:14}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5) return false;
-      const c7 = vals.filter(v => v === 7).length;
-      const cA = vals.filter(v => v === 14).length;
-      if (c7 + cA + jokers.length !== 5) return false;
-      for (let a7 = 0; a7 <= jokers.length; a7++) {
-        if (c7 + a7 >= 3 && cA + (jokers.length - a7) >= 2) return true;
-      }
-      return false;
-    }
-  },
-  {
-    name: "ロイヤルストレートフラッシュ", score: 30, catId: 4, catName: "④ 役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】同一スート10・J・Q・K・A",
-    desc: "同じスートで 10・J・Q・K・A を揃える最高峰の役満。JOKER使用時は-2pt。",
-    sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:14}],
-    jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (cards.length !== 5 || uniqueSuits.length !== 1 || jokers.length > 1) return false;
-      return hasValsSet(vals, jokers.length, [10, 11, 12, 13, 14]);
-    }
-  },
-
-  // ⑤ JOKER必須役（-2点免除）
-  {
-    name: "AKB48", score: 24, catId: 5, catName: "⑤ JOKER必須役", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】A・K・4・8＋JOKER",
-    desc: "スート問わず A(14), K(13), 4, 8 ＋ JOKER の5枚。JOKER必須役のため-2点免除。",
-    sample: [{suit:'♠',val:14},{suit:'♥',val:13},{suit:'',val:0,isJoker:true},{suit:'♦',val:4},{suit:'♣',val:8}],
-    jokerType: "required", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      return jokers.length === 1 && cards.length === 5 && hasValsSet(vals, 1, [14, 13, 4, 8]);
-    }
-  },
-  {
-    name: "5カード", score: 25, catId: 5, catName: "⑤ JOKER必須役", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】同数字4枚＋JOKER",
-    desc: "同じ数字4枚＋JOKERの5枚。JOKER必須役のため-2点免除。",
-    sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:7},{suit:'',val:0,isJoker:true}],
-    jokerType: "required", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length !== 1 || cards.length !== 5) return false;
-      const counts = Object.values(vals.reduce((a, v) => ((a[v] = (a[v] || 0) + 1), a), {}));
-      return counts.some(cnt => cnt >= 4);
-    }
-  },
-  {
-    name: "酷使苦情", score: 29, catId: 5, catName: "⑤ JOKER必須役", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】5・9・4・9・J＋4スート",
-    desc: "5・9・4・9・J(11) の数字構成かつ4スート（♠・♥・♦・♣）を揃える役。JOKER必須役のため-2点免除。",
-    sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:11},{suit:'',val:0,isJoker:true}],
-    jokerType: "required", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      return jokers.length === 1 && cards.length === 5 && hasValsSet(vals, 1, [5, 9, 4, 9, 11]) && uniqueSuits.length === 4;
-    }
-  },
-  {
-    name: "シン・AKB48", score: 48, catId: 5, catName: "⑤ JOKER必須役", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】♥のA・K・4・8＋JOKER",
-    desc: "通常牌4枚がすべて ♥ で A(14)・K(13)・4・8 ＋ JOKER の5枚。JOKER必須役のため-2点免除。",
-    sample: [{suit:'♥',val:14},{suit:'♥',val:13},{suit:'',val:0,isJoker:true},{suit:'♥',val:4},{suit:'♥',val:8}],
-    jokerType: "required", requireReach: false,
-    check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      return jokers.length === 1 && cards.length === 5 && hasValsSet(vals, 1, [14, 13, 4, 8]) && normals.every(c => c.suit === '♥');
-    }
-  }
-];
-  const gameState = {
+const gameState = {
   mode: 'beginner',
   roomRule: 'shoushi',
   isOnline: false,
@@ -1078,8 +421,7 @@ function hasValsSet(vals, numJokers, targetArr) {
   cpuIsReach: false,
   isColdWinTriggered: false,
   isGameOver: false,
-  lastWinTile: null,
-  lastWinner: null
+  pendingRonCard: null
 };
 
 const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v6';
@@ -1252,6 +594,9 @@ function bindPeerDataChannel(conn) {
       applyRouletteResult(Boolean(payload.isHostSpade));
     } else if (payload.type === 'GAME_START') {
       initGameSession();
+    } else if (payload.type === 'RON_PASS') {
+      gameState.pendingRonCard = null;
+      setTimeout(cpuTurnRoutine, 500);
     }
   });
 }
@@ -1292,14 +637,14 @@ function startRoomMatch(roomRule) {
       const s = suits[count % 2];
       suitEl.innerText = s;
       suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
-      SoundEngine.playSE('roulette_spin');
+      SoundEngine.playSE('roulette_spin', { step: count });
       count++;
       if (count > 14) {
         clearInterval(timer);
         applyRouletteResult(Math.random() < 0.5);
       }
     }, 90);
-  }, 700);
+  }, 600);
 }
 
 function createOnlineRoom() {
@@ -1333,8 +678,8 @@ function createOnlineRoom() {
     const data = JSON.parse(raw);
     if (data.roomId === roomId && data.guestJoined) {
       clearInterval(window.onlinePollTimer);
-      document.getElementById('online-status-msg').innerText = '✨ 挑戦者が入室しました！自動ルーレット開始...';
-      setTimeout(() => { startOnlineAutoRoulette(roomId); }, 900);
+      document.getElementById('online-status-msg').innerText = '✨ 友達が接続しました！ルーレットへ移行します...';
+      setTimeout(() => { startOnlineAutoRoulette(roomId); }, 800);
     }
   }, 800);
 }
@@ -1406,7 +751,7 @@ function startOnlineAutoRoulette(roomId) {
       const s = suits[count % 2];
       suitEl.innerText = s;
       suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
-      SoundEngine.playSE('roulette_spin');
+      SoundEngine.playSE('roulette_spin', { step: count });
       count++;
       if (count > 16) {
         clearInterval(timer);
@@ -1441,13 +786,21 @@ function selectMode(mode) {
   gameState.roomRule = 'shoushi';
   gameState.spadePlayer = 'YOU';
   gameState.heartPlayer = '相手';
+  gameState.playerScore = 30;
+  gameState.cpuScore = 30;
+  gameState.streakCount = 0;
+  gameState.kyotaku = 0;
+  gameState.cycle = 1;
+  gameState.fieldSuit = '♠';
+  gameState.isGameOver = false;
   document.getElementById('online-signal-bar').style.display = 'none';
   switchScreen('screen-roulette');
   document.getElementById('roulette-warning-banner').style.display = 'none';
   document.getElementById('btn-cpu-spin').style.display = 'inline-block';
+  document.getElementById('btn-cpu-spin').disabled = false;
   document.getElementById('btn-online-game-start').style.display = 'none';
   document.getElementById('roulette-wait-msg').style.display = 'none';
-  document.getElementById('roulette-result-text').innerText = '「ルーレットスタート」ボタンを押してください';
+  document.getElementById('roulette-result-text').innerText = '「ルーレットスタート」を押してください';
 }
 
 function startCpuManualRoulette() {
@@ -1461,7 +814,7 @@ function startCpuManualRoulette() {
     const s = suits[count % 2];
     suitEl.innerText = s;
     suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
-    SoundEngine.playSE('roulette_spin');
+    SoundEngine.playSE('roulette_spin', { step: count });
     count++;
     if (count > 16) {
       clearInterval(timer);
@@ -1496,11 +849,11 @@ function applyRouletteResult(isHostSpade) {
   const btnGameStart = document.getElementById('btn-online-game-start');
   const waitMsg = document.getElementById('roulette-wait-msg');
 
-  if (gameState.isOnline && gameState.isHost && gameState.roomRule === 'shoushi') {
+  if (gameState.isOnline && gameState.isHost) {
     btnGameStart.style.display = 'inline-block';
     waitMsg.style.display = 'none';
-    resultTextEl.innerHTML += '<br><span style="color:#2ecc71; font-size:0.74rem;">[♠親権者] 任意のタイミングでゲーム開始を押してください</span>';
-  } else if (gameState.isOnline && !gameState.isHost && gameState.roomRule === 'shoushi') {
+    resultTextEl.innerHTML += '<br><span style="color:#2ecc71; font-size:0.74rem;">🚀 ゲーム開始 (♠側親) を押してスタートしてください</span>';
+  } else if (gameState.isOnline && !gameState.isHost) {
     btnGameStart.style.display = 'none';
     waitMsg.style.display = 'block';
     window.guestGameStartTimer = setInterval(() => {
@@ -1517,7 +870,7 @@ function applyRouletteResult(isHostSpade) {
     waitMsg.style.display = 'none';
     setTimeout(() => {
       initGameSession();
-    }, 1100);
+    }, 900);
   }
 }
 
@@ -1533,7 +886,8 @@ function confirmOnlineGameStart() {
   }
   initGameSession();
 }
-  function initDeck() {
+
+function initDeck() {
   const suits = ['♠', '♥', '♦', '♣'];
   gameState.deck = [];
   suits.forEach(suit => {
@@ -1580,8 +934,8 @@ function initGameSession() {
   gameState.playerReachTileIndex = null;
   gameState.cpuReachTileIndex = null;
   gameState.cpuIsReach = false;
-  gameState.lastWinTile = null;
-  gameState.lastWinner = null;
+  gameState.isColdWinTriggered = false;
+  gameState.pendingRonCard = null;
 
   if (gameState.isPlayerParent) {
     for (let i = 0; i < 5; i++) gameState.playerHand.push(gameState.deck.pop());
@@ -1594,8 +948,12 @@ function initGameSession() {
   }
 
   if (gameState.streakCount > 0 && gameState.streakCount % 3 === 0) {
-    if (gameState.isPlayerParent) gameState.playerScore -= 2;
-    else gameState.cpuScore -= 2;
+    if (gameState.isPlayerParent) {
+      gameState.cpuScore -= 2;
+    } else {
+      gameState.playerScore -= 2;
+      SoundEngine.playSE('player_lose_pt');
+    }
     gameState.kyotaku += 2;
   }
 
@@ -1623,7 +981,7 @@ function initGameSession() {
   } else {
     document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
     document.getElementById('btn-draw').disabled = true;
-    setTimeout(cpuTurnRoutine, 900);
+    setTimeout(cpuTurnRoutine, 850);
   }
 }
 
@@ -1696,7 +1054,9 @@ function startTurnTimerIfNeeded() {
     } else if (turnTimeLeft <= 0) {
       clearInterval(turnTimer);
       SoundEngine.playSE('timer_warning_bone');
-      if (gameState.playerHand.length === 5) {
+      if (gameState.pendingRonCard) {
+        passPendingRon();
+      } else if (gameState.playerHand.length === 5) {
         const idx = (gameState.selectedCardIdx !== null && gameState.selectedCardIdx < 5) ? gameState.selectedCardIdx : 4;
         discardPlayerCard(idx);
       } else if (!gameState.hasDrawn && gameState.playerHand.length === 4) {
@@ -1709,7 +1069,8 @@ function startTurnTimerIfNeeded() {
 function updateBoardUI() {
   const isOrasuCycle = (gameState.cycle >= 2);
   const cycleText = isOrasuCycle ? `第${gameState.cycle}サイクル (オーラス)` : `第${gameState.cycle}サイクル`;
-  document.getElementById('board-cycle-label').innerText = `${cycleText} ${gameState.fieldSuit}場`;
+  const mySeatSuit = gameState.isPlayerParent ? gameState.fieldSuit : (gameState.fieldSuit === '♠' ? '♥' : '♠');
+  document.getElementById('board-cycle-label').innerText = `${cycleText} ${mySeatSuit}場`;
   document.getElementById('board-streak-label').innerText = `(${gameState.streakCount}連チャン)`;
   document.getElementById('board-dora-label').innerText = `ドラ(表${getDoraCountForCycle()}/裏${getDoraCountForCycle()}):`;
   document.getElementById('board-kyotaku').innerText = `${gameState.kyotaku}pt`;
@@ -1719,8 +1080,11 @@ function updateBoardUI() {
   const heartScore = (gameState.heartPlayer === 'YOU') ? gameState.playerScore : gameState.cpuScore;
   document.getElementById('board-spade-player').innerText = `${gameState.spadePlayer}(${spadeScore}pt)`;
   document.getElementById('board-heart-player').innerText = `${gameState.heartPlayer}(${heartScore}pt)`;
-  document.getElementById('board-spade-role').innerText = (gameState.fieldSuit === '♠') ? '[親]' : '[子]';
-  document.getElementById('board-heart-role').innerText = (gameState.fieldSuit === '♠') ? '[子]' : '[親]';
+
+  const spadeIsYou = gameState.spadePlayer === 'YOU';
+  const youIsParent = gameState.isPlayerParent;
+  document.getElementById('board-spade-role').innerText = (spadeIsYou ? youIsParent : !youIsParent) ? '[親]' : '[子]';
+  document.getElementById('board-heart-role').innerText = (!spadeIsYou ? youIsParent : !youIsParent) ? '[親]' : '[子]';
 
   const doraContainer = document.getElementById('board-dora-container');
   doraContainer.innerHTML = '';
@@ -1747,13 +1111,21 @@ function resetReachButtonUI() {
 function renderHands() {
   const container = document.getElementById('player-hand-container');
   container.innerHTML = '';
-  gameState.playerHand.forEach((card, idx) => {
-    const isSelected = (gameState.selectedCardIdx === idx);
-    const isLocked = gameState.isPlayerReach && gameState.playerHand.length === 5 && idx !== (gameState.playerHand.length - 1);
-    const el = createCardElement(card, isSelected, false, () => onPlayerCardTap(idx), false, false);
+  for (let slot = 0; slot < 5; slot++) {
+    const card = gameState.playerHand[slot];
+    if (!card) {
+      const empty = document.createElement('div');
+      empty.className = 'hand-empty-slot';
+      empty.innerText = 'DRAW';
+      container.appendChild(empty);
+      continue;
+    }
+    const isSelected = (gameState.selectedCardIdx === slot);
+    const isLocked = gameState.isPlayerReach && gameState.playerHand.length === 5 && slot !== (gameState.playerHand.length - 1);
+    const el = createCardElement(card, isSelected, false, () => onPlayerCardTap(slot), false, false);
     if (isLocked) el.classList.add('locked');
     container.appendChild(el);
-  });
+  }
 }
 
 function renderRivers() {
@@ -1789,7 +1161,7 @@ function onPlayerCardTap(idx) {
     return;
   }
   if (gameState.isPlayerReach && idx !== (gameState.playerHand.length - 1)) {
-    SoundEngine.playSE('lose_basic');
+    SoundEngine.playSE('player_lose_pt');
     document.getElementById('hand-status-msg').innerText = 'リーチ中はツモ牌（一番右）を選択してください。';
     return;
   }
@@ -1807,6 +1179,7 @@ function onPlayerCardTap(idx) {
 function discardPlayerCard(idx) {
   if (idx < 0 || idx >= gameState.playerHand.length) return;
   clearInterval(turnTimer);
+  gameState.pendingRonCard = null;
   const [discarded] = gameState.playerHand.splice(idx, 1);
   gameState.selectedCardIdx = null;
   gameState.hasDrawn = false;
@@ -1817,6 +1190,7 @@ function discardPlayerCard(idx) {
     gameState.playerReachTileIndex = gameState.playerRiver.length;
     gameState.playerScore -= 1;
     gameState.kyotaku += 1;
+    SoundEngine.playSE('player_lose_pt');
     if (gameState.playerRiver.length === 0 && gameState.turnCount <= 1) {
       gameState.isDoubleReach = true;
       SoundEngine.playSE('ippatsu_shout');
@@ -1844,7 +1218,7 @@ function discardPlayerCard(idx) {
 
 function togglePlayerReach() {
   if (gameState.isOnline && gameState.roomRule === 'damaten') {
-    SoundEngine.playSE('lose_basic');
+    SoundEngine.playSE('player_lose_pt');
     document.getElementById('hand-status-msg').innerText = '❌ このダマテンの部屋ではリーチが禁止されています！';
     return;
   }
@@ -1864,7 +1238,27 @@ function togglePlayerReach() {
   document.getElementById('hand-status-msg').innerText = 'リーチ宣言中：打牌するカードを2回タップしてください。';
 }
 
+function passPendingRon() {
+  gameState.pendingRonCard = null;
+  sendPeerPayload({ type: 'RON_PASS' });
+  if (gameState.deck.length === 0) {
+    handleDrawGame();
+    return;
+  }
+  const btnDraw = document.getElementById('btn-draw');
+  btnDraw.disabled = false;
+  btnDraw.style.background = '#f1c40f';
+  btnDraw.style.color = '#000';
+  document.getElementById('hand-status-msg').innerText = 'あなたのターンです。「ドロー」を押してください。';
+  updateActionButtons();
+  startTurnTimerIfNeeded();
+}
+
 function playerDraw() {
+  if (gameState.pendingRonCard) {
+    gameState.pendingRonCard = null;
+    sendPeerPayload({ type: 'RON_PASS' });
+  }
   if (gameState.hasDrawn || gameState.playerHand.length !== 4) return;
   if (gameState.deck.length === 0) {
     handleDrawGame();
@@ -1891,12 +1285,6 @@ function playerDraw() {
   renderHands();
   updateActionButtons();
   startTurnTimerIfNeeded();
-}
-
-function getCandidate5Hand(hand, extraTile = null) {
-  if (extraTile && hand.length === 4) return [...hand, extraTile];
-  if (hand.length === 5) return [...hand];
-  return null;
 }
 
 function getBestYakuFor5(cards5, isReachActive) {
@@ -1941,11 +1329,23 @@ function checkIsTenpaiFor4(hand4, isReachActive) {
   return candidates.some(cand => Boolean(getBestYakuFor5([...hand4, cand], isReachActive)));
 }
 
+function isFuritenOnCard(card) {
+  if (!card) return false;
+  const discardedNormals = gameState.playerRiver.filter(c => !c.isJoker);
+  if (!card.isJoker && discardedNormals.some(d => d.suit === card.suit && d.val === card.val)) return true;
+  if (!card.isJoker && discardedNormals.length >= 4 && discardedNormals.every(d => d.suit === card.suit)) return true;
+  return false;
+}
+
 function updateActionButtons() {
   const handLen = gameState.playerHand.length;
   let canWin = false;
 
-  if (handLen === 5) {
+  if (gameState.pendingRonCard && handLen === 4) {
+    const candidate5 = [...gameState.playerHand, gameState.pendingRonCard];
+    const best = getBestYakuFor5(candidate5, gameState.isPlayerReach);
+    if (best && !isFuritenOnCard(gameState.pendingRonCard)) canWin = true;
+  } else if (handLen === 5) {
     const best = getBestYakuFor5(gameState.playerHand, gameState.isPlayerReach);
     if (best) canWin = true;
   } else if (handLen === 4 && gameState.selectedCardIdx !== null && gameState.selectedCardIdx < 4) {
@@ -1956,7 +1356,7 @@ function updateActionButtons() {
 
   const btnWin = document.getElementById('btn-win');
   btnWin.disabled = !canWin;
-  btnWin.style.background = canWin ? '#27ae60' : '#555544';
+  btnWin.style.background = canWin ? '#e74c3c' : '#555544';
   btnWin.style.color = canWin ? '#fff' : '#888';
 
   let canReach = false;
@@ -1990,8 +1390,14 @@ function playerWin() {
   const handLen = gameState.playerHand.length;
   let fullHand = null;
   let winTile = null;
+  let winType = 'ツモ';
 
-  if (handLen === 5) {
+  if (gameState.pendingRonCard && handLen === 4 && !isFuritenOnCard(gameState.pendingRonCard)) {
+    winTile = gameState.pendingRonCard;
+    fullHand = [...gameState.playerHand, winTile];
+    winType = 'ロン';
+    gameState.pendingRonCard = null;
+  } else if (handLen === 5) {
     fullHand = [...gameState.playerHand];
     winTile = gameState.playerHand[gameState.playerHand.length - 1];
   } else if (handLen === 4 && gameState.selectedCardIdx !== null && gameState.selectedCardIdx < 4) {
@@ -2013,10 +1419,10 @@ function playerWin() {
     if (best.yaku.score >= 24 || best.yaku.jokerType === 'required') SoundEngine.playSE('win_yakuman');
     else if (best.yaku.score >= 12) SoundEngine.playSE('win_mid');
     else SoundEngine.playSE('win_basic');
-    triggerCutinBanner(`ツモ和了：${best.yaku.name}！`, `+${best.effectiveScore}pt`, isRare);
+    triggerCutinBanner(`${winType}和了：${best.yaku.name}！`, `+${best.effectiveScore}pt`, isRare);
   }
 
-  executeRoundEnd('ツモ', 'player', best, fullHand, winTile, isIppatsu);
+  executeRoundEnd(winType, 'player', best, fullHand, winTile, isIppatsu);
 }
 
 function checkCpuRonOnPlayerDiscard(discarded) {
@@ -2078,9 +1484,7 @@ function cpuTurnRoutine() {
     }
 
     let discardIdx = gameState.cpuHand.length - 1;
-    if (gameState.cpuIsReach) {
-      discardIdx = gameState.cpuHand.length - 1;
-    } else {
+    if (!gameState.cpuIsReach) {
       for (let i = 0; i < gameState.cpuHand.length; i++) {
         if (gameState.cpuHand[i].isJoker) continue;
         if (checkIsTenpaiFor4(gameState.cpuHand.filter((_, idx) => idx !== i), true)) {
@@ -2106,6 +1510,17 @@ function cpuTurnRoutine() {
     renderRivers();
     updateBoardUI();
 
+    if (gameState.playerHand.length === 4 && !isFuritenOnCard(discarded)) {
+      const ronCheck = getBestYakuFor5([...gameState.playerHand, discarded], gameState.isPlayerReach);
+      if (ronCheck) {
+        gameState.pendingRonCard = discarded;
+        document.getElementById('hand-status-msg').innerText = '⚡ ロンチャンス！赤い「和了」を押すか「ドロー」で進行してください。';
+        updateActionButtons();
+        startTurnTimerIfNeeded();
+        return;
+      }
+    }
+
     if (gameState.deck.length === 0) {
       handleDrawGame();
       return;
@@ -2123,7 +1538,7 @@ function cpuTurnRoutine() {
 
 function handleDrawGame() {
   clearAllTimers();
-  SoundEngine.playSE('lose_basic');
+  SoundEngine.playSE('player_lose_pt');
   const checkTenpai = (h) => h.length === 4
     ? checkIsTenpaiFor4(h, true)
     : h.some((_, i) => checkIsTenpaiFor4(h.filter((_, idx) => idx !== i), true));
@@ -2213,13 +1628,14 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
 
   if (gameState.turnCount === 0 && yaku.name !== '天地人和') {
     const tenchi = YAKU_REGISTRY.find(y => y.name === '天地人和');
-    if (tenchi && tenchi.check(exactHand5, exactHand5.filter(c => c.isJoker), exactHand5.filter(c => !c.isJoker), exactHand5.filter(c => !c.isJoker).map(c => c.val), exactHand5.filter(c => !c.isJoker).map(c => c.suit), [...new Set(exactHand5.filter(c => !c.isJoker).map(c => c.suit))])) {
+    const jks = exactHand5.filter(c => c.isJoker);
+    const nms = exactHand5.filter(c => !c.isJoker);
+    if (tenchi && tenchi.check(exactHand5, jks, nms, nms.map(c => c.val), nms.map(c => c.suit), [...new Set(nms.map(c => c.suit))])) {
       points += tenchi.score;
       bonusList.push(`天地人和 +${tenchi.score}pt`);
     }
   }
 
-  const allDoras = [...gameState.doraCards, ...gameState.uraDoraCards];
   let doraHits = 0;
   let suitDoraHits = 0;
   exactHand5.forEach(c => {
@@ -2233,7 +1649,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
       });
     }
   });
-  allDoras.forEach(d => {
+  [...gameState.doraCards, ...gameState.uraDoraCards].forEach(d => {
     if (d && !d.isJoker && d.suit === mySuit) suitDoraHits++;
   });
 
@@ -2268,6 +1684,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   } else {
     gameState.cpuScore += totalGain;
     gameState.playerScore -= points;
+    SoundEngine.playSE('player_lose_pt');
     if (!gameState.isPlayerParent) {
       gameState.streakCount++;
     } else {
@@ -2284,7 +1701,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   const streakBanner = document.getElementById('res-streak-banner');
   if (gameState.mode === 'master') {
     const s = gameState.streakCount;
-    const stepSize = s >= 10 ? '1.35rem' : s >= 8 ? '1.25rem' : s >= 6 ? '1.18rem' : s >= 4 ? '1.1rem' : '1.0rem';
+    const stepSize = s >= 10 ? '1.38rem' : s >= 8 ? '1.26rem' : s >= 6 ? '1.16rem' : s >= 4 ? '1.08rem' : '1.0rem';
     streakBanner.innerHTML = s >= 2
       ? `<span style="font-size:${stepSize}; color:#ff9f43;">🔥 ${s}連チャン達成！</span>`
       : `<span>現在 ${s}連チャン</span>`;
@@ -2432,6 +1849,9 @@ function closeRuleModal() {
 
 function filterYakuCategory(catId) {
   currentRuleCategory = catId;
+  document.querySelectorAll('.cat-select-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (i + 1) === catId);
+  });
   const filtered = YAKU_REGISTRY.filter(y => y.catId === catId);
   const bar = document.getElementById('rule-menu-bar');
   bar.innerHTML = '';
