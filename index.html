@@ -203,7 +203,14 @@
       padding: 5px 8px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;
     }
     .center-board-top {
-      display: flex; justify-content: space-between; align-items: center; gap: 4px; font-size: 0.72rem;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; font-size: 0.72rem;
+    }
+    .cycle-stack-box {
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center; line-height: 1.25;
+    }
+    .board-right-stats {
+      display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
+      font-size: 0.7rem; color: #d5dbdb; font-weight: bold; line-height: 1.3;
     }
     .center-board-3col {
       display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px;
@@ -219,9 +226,10 @@
     }
     #board-timer-center-badge {
       display: none; background: linear-gradient(180deg, #ff7675 0%, #c0392b 100%);
-      color: #fff; border: 1.5px solid #ffd43b; border-radius: 999px;
-      padding: 0 8px; font-size: 0.76rem; font-weight: 950; font-variant-numeric: tabular-nums;
-      box-shadow: 0 0 8px rgba(255, 118, 117, 0.7); line-height: 1.3;
+      color: #fff; border: 2px solid #ffd43b; border-radius: 12px;
+      padding: 3px 11px; font-size: 1.06rem; font-weight: 950; font-variant-numeric: tabular-nums;
+      box-shadow: 0 0 12px rgba(255, 118, 117, 0.85); line-height: 1.15; text-align: center;
+      letter-spacing: 0.02em;
     }
     #player-hand-container {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
@@ -259,12 +267,18 @@
       80% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(0.98); }
     }
+    @keyframes ippatsuPulse {
+      0% { transform: scale(0.84) rotate(-1.5deg); filter: brightness(1.35); }
+      35% { transform: scale(1.06) rotate(1deg); filter: brightness(1.5); }
+      70% { transform: scale(0.98) rotate(-0.5deg); filter: brightness(1.2); }
+      100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+    }
     #cutin-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82);
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.84);
       z-index: 200; align-items: center; justify-content: center; padding: 16px; pointer-events: none;
     }
     .cutin-banner {
-      width: 100%; max-width: 360px; padding: 16px 18px; border-radius: 12px;
+      width: 100%; max-width: 364px; padding: 16px 18px; border-radius: 12px;
       background: linear-gradient(135deg, #1b2f36 0%, #0d191d 100%);
       border: 2px solid #f1c40f; color: #fff; text-align: center;
       box-shadow: 0 0 26px rgba(241, 196, 15, 0.5);
@@ -273,12 +287,16 @@
     .cutin-banner.rare-cutin {
       background: linear-gradient(135deg, #5c0a17 0%, #1d0736 50%, #4d2603 100%);
       border: 3px solid #ff7675;
-      box-shadow: 0 0 34px rgba(255, 118, 117, 0.9), inset 0 0 14px rgba(255, 212, 59, 0.45);
+      box-shadow: 0 0 36px rgba(255, 118, 117, 0.95), 0 0 60px rgba(241, 196, 15, 0.45), inset 0 0 16px rgba(255, 212, 59, 0.5);
+      animation: ippatsuPulse 0.65s ease-out;
     }
     .cutin-banner.ippatsu-cutin {
-      background: linear-gradient(135deg, #7a1212 0%, #5c3b00 55%, #2b0606 100%);
-      border: 3px solid #ffd43b;
-      box-shadow: 0 0 36px rgba(255, 212, 59, 0.95), 0 0 18px rgba(255, 56, 56, 0.8);
+      background: linear-gradient(135deg, #a80c0c 0%, #7a3b00 45%, #3d0404 100%);
+      border: 3.5px solid #ffd43b;
+      outline: 2px solid #ff3838;
+      box-shadow: 0 0 42px rgba(255, 212, 59, 1), 0 0 70px rgba(255, 56, 56, 0.92), inset 0 0 20px rgba(255, 243, 176, 0.65);
+      animation: ippatsuPulse 0.7s ease-out;
+      padding: 20px 18px;
     }
     .cutin-banner.mid-cutin {
       background: linear-gradient(135deg, #153642 0%, #0d1f26 100%);
@@ -445,14 +463,15 @@
 
     <div class="center-status-board">
       <div class="center-board-top">
-        <div>
-          <span id="board-cycle-label" style="color: #f1c40f; font-weight: 900;">第1サイクル ♠場</span>
-          <span id="board-streak-label" style="color: #2ecc71; font-weight: bold;">(0連チャン)</span>
+        <div class="cycle-stack-box">
+          <div id="board-cycle-label" style="color: #f1c40f; font-weight: 900; font-size: 0.74rem;">第1サイクル ♠場</div>
+          <div id="board-streak-label" style="color: #2ecc71; font-weight: 800; font-size: 0.7rem;">(0連チャン)</div>
         </div>
         <span id="board-timer-center-badge">⏱ 30s</span>
-        <span style="font-size: 0.68rem; color: #d5dbdb; font-weight: bold;">
-          供託:<strong id="board-kyotaku" style="color: #f1c40f;">0pt</strong> 山:<strong id="board-deck-count" style="color: #5dade2;">42</strong>
-        </span>
+        <div class="board-right-stats">
+          <div>供託:<strong id="board-kyotaku" style="color: #f1c40f;">0pt</strong></div>
+          <div>山:<strong id="board-deck-count" style="color: #5dade2;">42</strong></div>
+        </div>
       </div>
 
       <div class="center-board-3col">
@@ -557,7 +576,6 @@
     </div>
   </div>
 </div>
-
 <script>
 const SoundEngine = {
   ctx: null,
@@ -655,9 +673,10 @@ const SoundEngine = {
         break;
       }
       case 'ippatsu_shout':
-        this.tone(880, 0.12, 'sawtooth', 0.16, 0);
-        this.tone(1174.66, 0.22, 'sawtooth', 0.16, 0.1);
-        this.tone(1567.98, 0.28, 'triangle', 0.16, 0.18);
+        this.filteredNoise(0.14, 'highpass', 2600, 5400, 0.2, 0, 1.2);
+        this.tone(659.25, 0.14, 'sawtooth', 0.18, 0, 1046.5);
+        this.tone(1046.5, 0.22, 'sawtooth', 0.18, 0.09, 1567.98);
+        this.tone(1567.98, 0.36, 'triangle', 0.2, 0.17, 2093.0);
         break;
       case 'win_basic':
         [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.tone(f, 0.14, 'triangle', 0.14, i * 0.08));
@@ -716,66 +735,84 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   const banner = document.getElementById('cutin-banner');
   if (!overlay || !banner) return;
 
-  let bannerClass = 'cutin-banner';
-  let titleText = `${winType}和了：${yaku.name}！`;
-  let subText = `+${effectiveScore}pt`;
-  let seName = 'win_basic';
-  let duration = 1200;
+  const showBanner = (bannerClass, tagText, titleText, subText, seName, duration) => {
+    SoundEngine.playSE(seName);
+    banner.className = bannerClass;
+    banner.innerHTML =
+      (tagText ? `<div style="font-size:0.72rem; color:#ffd43b; font-weight:950; letter-spacing:0.12em; margin-bottom:4px;">${tagText}</div>` : '') +
+      `<div style="font-size:1.2rem; font-weight:950; letter-spacing:0.04em;">${titleText}</div>` +
+      (subText ? `<div style="font-size:0.8rem; color:#ffe066; margin-top:4px; font-weight:800;">${subText}</div>` : '');
+    overlay.style.display = 'flex';
+    clearTimeout(window.__cutinTimer);
+    window.__cutinTimer = setTimeout(() => {
+      overlay.style.display = 'none';
+    }, duration);
+  };
 
-  if (isIppatsu) {
-    bannerClass = 'cutin-banner ippatsu-cutin';
-    titleText = `⚡ 一発${winType}和了！ ⚡`;
-    subText = `${yaku.name}（+${effectiveScore}pt）`;
-    seName = 'ippatsu_shout';
-    duration = 1750;
-  } else if (isTenchi) {
-    bannerClass = 'cutin-banner rare-cutin';
-    titleText = `✨ 天地人和・${yaku.name}！ ✨`;
-    subText = `初手完成特例（+${effectiveScore}pt）`;
-    seName = 'win_rare';
-    duration = 1700;
+  let baseClass = 'cutin-banner';
+  let baseTag = '';
+  let baseTitle = `${winType}和了：${yaku.name}`;
+  let baseSub = `+${effectiveScore}pt`;
+  let baseSE = 'win_basic';
+  let baseDuration = 1150;
+
+  if (isTenchi) {
+    baseClass = 'cutin-banner rare-cutin';
+    baseTag = '✨ RARE SPECIAL / 天地人和 ✨';
+    baseTitle = `天地人和・${yaku.name}！`;
+    baseSub = `初手完成特例（+${effectiveScore}pt）`;
+    baseSE = 'win_rare';
+    baseDuration = 1650;
   } else if (RARE_YAKU_NAMES.has(yaku.name)) {
-    bannerClass = 'cutin-banner rare-cutin';
-    titleText = `👑 レア役：${yaku.name}！ 👑`;
-    subText = `${winType}和了（+${effectiveScore}pt）`;
-    seName = 'win_rare';
-    duration = 1650;
+    baseClass = 'cutin-banner rare-cutin';
+    baseTag = '👑 RARE CATEGORY / 希少役 👑';
+    baseTitle = `${yaku.name}！`;
+    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSE = 'win_rare';
+    baseDuration = 1650;
   } else if (yaku.catId === 5) {
-    bannerClass = 'cutin-banner rare-cutin';
-    titleText = `🃏 JOKER必須役：${yaku.name}！`;
-    subText = `${winType}和了（+${effectiveScore}pt）`;
-    seName = 'win_yakuman';
-    duration = 1550;
+    baseClass = 'cutin-banner rare-cutin';
+    baseTag = '🃏 JOKER MUST';
+    baseTitle = `${yaku.name}！`;
+    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSE = 'win_yakuman';
+    baseDuration = 1550;
   } else if (yaku.catId === 4) {
-    bannerClass = 'cutin-banner rare-cutin';
-    titleText = `🔥 役満級：${yaku.name}！`;
-    subText = `${winType}和了（+${effectiveScore}pt）`;
-    seName = 'win_yakuman';
-    duration = 1550;
+    baseClass = 'cutin-banner rare-cutin';
+    baseTag = '🔥 YAKUMAN';
+    baseTitle = `${yaku.name}！`;
+    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSE = 'win_yakuman';
+    baseDuration = 1550;
   } else if (yaku.catId === 3) {
-    bannerClass = 'cutin-banner mid-cutin';
-    titleText = `${yaku.name}`;
-    subText = `${winType}和了（+${effectiveScore}pt）`;
-    seName = 'win_mid';
-    duration = 1300;
-  } else {
-    titleText = `${winType}和了：${yaku.name}`;
-    subText = `+${effectiveScore}pt`;
-    seName = 'win_basic';
-    duration = 1150;
+    baseClass = 'cutin-banner mid-cutin';
+    baseTag = '◆ MIDDLE YAKU';
+    baseTitle = `${yaku.name}`;
+    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSE = 'win_mid';
+    baseDuration = 1300;
   }
 
-  if (isHaitei) subText = `🌊 海底（+1pt） / ${subText}`;
+  if (isHaitei) {
+    baseSub = `🌊 海底（+1pt） / ${baseSub}`;
+  }
 
-  SoundEngine.playSE(seName);
-  banner.className = bannerClass;
-  banner.innerHTML = `<div style="font-size:1.12rem; font-weight:900;">${titleText}</div>` +
-    `<div style="font-size:0.76rem; color:#ffe066; margin-top:3px; font-weight:800;">${subText}</div>`;
-  overlay.style.display = 'flex';
-  clearTimeout(window.__cutinTimer);
-  window.__cutinTimer = setTimeout(() => {
-    overlay.style.display = 'none';
-  }, duration);
+  if (isIppatsu) {
+    showBanner(
+      'cutin-banner ippatsu-cutin',
+      '⚡⚡ IPPATSU FEVER / 一発確定 ⚡⚡',
+      `一発${winType}和了：${yaku.name}！`,
+      `一発ボーナス（+1pt） / ${baseSub}`,
+      'ippatsu_shout',
+      950
+    );
+    clearTimeout(window.__cutinTimer);
+    window.__cutinTimer = setTimeout(() => {
+      showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, Math.max(1150, baseDuration - 300));
+    }, 850);
+  } else {
+    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, baseDuration);
+  }
 }
 
 function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare') {
@@ -1200,8 +1237,7 @@ const gameState = {
   isGameOver: false,
   pendingRonCard: null
 };
-
-const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
+  const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
 
 const BASE_SIGNAL_LIST = [
   { text: "通ればリーチ…", type: "attack" },
@@ -1907,7 +1943,7 @@ function startTurnTimerIfNeeded() {
 
 function updateBoardUI() {
   const isOrasuCycle = (gameState.cycle >= 2);
-  const cycleText = isOrasuCycle ? `第${gameState.cycle}サイクル (オーラス)` : `第${gameState.cycle}サイクル`;
+  const cycleText = isOrasuCycle ? `第${gameState.cycle}サイクル(オーラス)` : `第${gameState.cycle}サイクル`;
   const mySeatSuit = gameState.isPlayerParent ? gameState.fieldSuit : (gameState.fieldSuit === '♠' ? '♥' : '♠');
   document.getElementById('board-cycle-label').innerText = `${cycleText} ${mySeatSuit}場`;
   document.getElementById('board-streak-label').innerText = `(${gameState.streakCount}連チャン)`;
