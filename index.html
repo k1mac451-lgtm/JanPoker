@@ -54,7 +54,6 @@
       font-size: 0.8rem; font-weight: 800; line-height: 1.55; color: #fff;
     }
 
-    /* モード選択画面 */
     #screen-mode {
       justify-content: center; align-items: center; text-align: center; gap: 10px; padding: 14px 16px;
     }
@@ -85,7 +84,6 @@
       padding: 2px 12px; border-radius: 999px; border: 1px solid #ffe082; margin-bottom: 2px;
     }
 
-    /* カードデザイン：白カードは左上にスート、右下に数値 */
     .jp-card {
       width: 55px; height: 76px;
       background: linear-gradient(165deg, #ffffff 0%, #eef2f5 100%);
@@ -118,7 +116,6 @@
       padding: 1px 3px; border-radius: 3px; line-height: 1.1; box-shadow: 0 1px 3px rgba(0,0,0,0.6);
     }
 
-    /* JOKERデザイン：黒塗り金縁＋右肩上がりの斜めリボンで JOKER */
     .jp-card.joker-card {
       background: linear-gradient(160deg, #0b1017 0%, #15212d 55%, #090d12 100%);
       border: 2px solid #f1c40f; color: #111; justify-content: center; align-items: center;
@@ -140,7 +137,6 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
     }
 
-    /* 役一覧サンプル用バランスカード */
     .rule-sample-card {
       width: 46px; height: 64px;
       background: linear-gradient(165deg, #ffffff 0%, #eef2f5 100%);
@@ -162,7 +158,6 @@
       line-height: 1.2; transform: rotate(-26deg);
     }
 
-    /* ミニカード */
     .mini-card {
       width: 28px; height: 35px; background: #f8f9fa; color: #111;
       border: 1.5px solid #2c3e50; border-radius: 4px; display: inline-flex; flex-direction: column;
@@ -177,7 +172,6 @@
     .mini-card.reach-tile { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.85); }
     .mini-card.win-tile-mark { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.9); }
 
-    /* 対戦画面：固定高さ・差分描画でカクツキ防止 */
     #screen-game { padding: 8px 10px 16px 10px; gap: 5px; justify-content: flex-start; overflow-y: auto; }
     .speech-bubble-slot {
       height: 22px; min-height: 22px; max-height: 22px;
@@ -260,7 +254,6 @@
     }
     .signal-chip.active { background: #f1c40f; color: #111; border-color: #fff0a8; }
 
-    /* 入室前イベント＆和了カットイン */
     @keyframes logoFadeIn {
       0% { opacity: 0; transform: scale(0.9); }
       25% { opacity: 1; transform: scale(1.02); }
@@ -309,7 +302,6 @@
       text-align: left; font-size: 0.72rem; line-height: 1.4;
     }
 
-    /* 役一覧＆マニュアルモーダル：5枚役サンプルは横並び（1列5枚） */
     #rule-modal {
       display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
       z-index: 150; align-items: center; justify-content: center; padding: 12px;
@@ -550,7 +542,7 @@
     </div>
   </div>
 
-  <!-- 役一覧＆マニュアルモーダル：5枚役サンプルは横並び（1列5枚） -->
+  <!-- 役一覧＆マニュアルモーダル -->
   <div id="rule-modal">
     <div class="rule-modal-card">
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -641,23 +633,19 @@ const SoundEngine = {
   },
   playSE(name, extra = {}) {
     switch (name) {
-      /* カード選択中：「ザッ」 */
       case 'select_card':
         this.filteredNoise(0.065, 'bandpass', 1900, 1150, 0.22, 0, 2.2);
         this.tone(420, 0.04, 'triangle', 0.06, 0.01, 290);
         break;
-      /* ドロー音：「シュッ」 */
       case 'draw_card':
         this.filteredNoise(0.11, 'bandpass', 950, 3600, 0.24, 0, 1.8);
         this.tone(380, 0.085, 'sine', 0.08, 0.005, 920);
         break;
-      /* 捨て札アタック音：「パシッ」 */
       case 'discard_card':
         this.filteredNoise(0.045, 'highpass', 1400, 650, 0.34, 0, 1.1);
         this.tone(540, 0.055, 'triangle', 0.22, 0, 145);
         this.tone(190, 0.065, 'sine', 0.18, 0.004, 78);
         break;
-      /* リーチ音：カジノのレイズアップイメージ「チャリーン」 */
       case 'reach_declare':
       case 'reach_cutin':
         this.filteredNoise(0.07, 'highpass', 3800, 5200, 0.14, 0, 1.4);
@@ -830,7 +818,6 @@ function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare
   }, 1200);
 }
 
-/* 連番5枚（A-2-3-4-5〜10-J-Q-K-Aまで有効、A跨ぎ不可） */
 function isValidFiveSequence(vals5) {
   if (!Array.isArray(vals5) || vals5.length !== 5) return false;
   const unique = new Set(vals5);
@@ -889,6 +876,18 @@ function hasValsSet(vals, numJokers, targetArr) {
     }
   }
   return pool.length === 0 && jokersLeft === 0;
+}
+
+/* AKB48：スート問わず A(14)・K(13)・4・8 ＋ JOKER の5枚 */
+function isValidAKB48(cards, jokers, normals, vals) {
+  if (cards.length !== 5 || jokers.length !== 1) return false;
+  return hasValsSet(vals, 1, [14, 13, 4, 8]);
+}
+
+/* シン・AKB48：通常牌4枚がすべて ♥ で A(14)・K(13)・4・8 ＋ JOKER の5枚 */
+function isValidShinAKB48(cards, jokers, normals, vals) {
+  if (!isValidAKB48(cards, jokers, normals, vals)) return false;
+  return normals.length === 4 && normals.every(c => c.suit === '♥');
 }
 
 /* 酷使苦情：5・9・4・9（各1枚）＋ 4スート（♠・♥・♦・♣）揃い ＋ JOKER 1枚 */
@@ -1189,7 +1188,7 @@ const YAKU_REGISTRY = [
     sample: [{suit:'♠',val:14},{suit:'♥',val:13},{suit:'',val:0,isJoker:true},{suit:'♦',val:4},{suit:'♣',val:8}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      return jokers.length === 1 && cards.length === 5 && hasValsSet(vals, 1, [14, 13, 4, 8]);
+      return isValidAKB48(cards, jokers, normals, vals);
     }
   },
   {
@@ -1221,7 +1220,7 @@ const YAKU_REGISTRY = [
     sample: [{suit:'♥',val:14},{suit:'♥',val:13},{suit:'',val:0,isJoker:true},{suit:'♥',val:4},{suit:'♥',val:8}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      return jokers.length === 1 && cards.length === 5 && hasValsSet(vals, 1, [14, 13, 4, 8]) && normals.every(c => c.suit === '♥');
+      return isValidShinAKB48(cards, jokers, normals, vals);
     }
   }
 ];
@@ -1267,7 +1266,8 @@ const gameState = {
   isGameOver: false,
   pendingRonCard: null
 };
- const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
+  <script>
+const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
 
 const BASE_SIGNAL_LIST = [
   { text: "通ればリーチ…", type: "attack" },
@@ -1310,7 +1310,7 @@ const beginnerAdviceList = [
   "💡 ヒント：基本役（10点以下）はリーチ宣言が和了の条件だよ！",
   "💡 ヒント：中級役・役満はリーチなし（ダマテン）でも和了できるよ！",
   "💡 ヒント：対戦画面は表ドラのみ、リザルトで表ドラ・裏ドラが開示されるよ！",
-  "💡 ヒント：ツーペイコウは JJQKK または QQKAA の2パターンのみ！",
+  "💡 ヒント：A・K・4・8＋JOKERが揃えばAKB48（24点・-2pt免除）！",
   "💡 ヒント：不要なカードは2回タップで打牌できるよ！"
 ];
 
@@ -2203,6 +2203,18 @@ function playerDraw() {
   startTurnTimerIfNeeded();
 }
 
+/* 4枚手札に JOKER + (A, K, 4, 8 のうち3種) が揃っている場合、残り1枚（A/K/4/8の不足分）でAKB48／シン・AKB48テンパイ */
+function isAKB48Tenpai4(hand4) {
+  if (!Array.isArray(hand4) || hand4.length !== 4) return false;
+  const jokers = hand4.filter(c => c.isJoker);
+  const normals = hand4.filter(c => !c.isJoker);
+  if (jokers.length !== 1 || normals.length !== 3) return false;
+  const akbVals = [14, 13, 4, 8];
+  const nVals = normals.map(c => c.val);
+  if (new Set(nVals).size !== 3) return false;
+  return nVals.every(v => akbVals.includes(v));
+}
+
 function getBestYakuFor5(cards5, isReachActive) {
   if (!cards5 || cards5.length !== 5) return null;
   const jokers = cards5.filter(c => c.isJoker);
@@ -2236,6 +2248,8 @@ function getBestYakuFor5(cards5, isReachActive) {
 
 function checkIsTenpaiFor4(hand4, isReachActive) {
   if (!hand4 || hand4.length !== 4) return false;
+  if (isAKB48Tenpai4(hand4)) return true;
+
   const testSuits = ['♠', '♥', '♦', '♣'];
   const candidates = [];
   for (const s of testSuits) {
@@ -2859,4 +2873,4 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-</html> 
+</html>
