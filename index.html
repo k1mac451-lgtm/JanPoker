@@ -54,7 +54,7 @@
       font-size: 0.8rem; font-weight: 800; line-height: 1.55; color: #fff;
     }
 
-    /* モード選択画面（1000001816_3.png 準拠） */
+    /* モード選択画面 */
     #screen-mode {
       justify-content: center; align-items: center; text-align: center; gap: 10px; padding: 14px 16px;
     }
@@ -138,6 +138,28 @@
       line-height: 1.25;
       transform: rotate(-26deg);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+    }
+
+    /* 役一覧サンプル用バランスカード（枠内に余裕を持って収まり視認性良好） */
+    .rule-sample-card {
+      width: 46px; height: 64px;
+      background: linear-gradient(165deg, #ffffff 0%, #eef2f5 100%);
+      color: #141a1f; border: 1.5px solid #2c3e50; border-radius: 6px;
+      position: relative; display: flex; flex-direction: column; justify-content: space-between;
+      padding: 3px 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+      flex-shrink: 0;
+    }
+    .rule-sample-card.red-suit { color: #d62828; }
+    .rule-sample-suit { font-size: 1.08rem; font-weight: 900; line-height: 1; align-self: flex-start; }
+    .rule-sample-rank { font-size: 1.18rem; font-weight: 950; line-height: 1; align-self: flex-end; font-variant-numeric: tabular-nums; }
+    .rule-sample-card.joker-card {
+      background: linear-gradient(160deg, #0b1017 0%, #15212d 55%, #090d12 100%);
+      border: 1.5px solid #f1c40f; justify-content: center; align-items: center; padding: 0; overflow: hidden;
+    }
+    .rule-sample-joker-ribbon {
+      width: 136%; background: linear-gradient(180deg, #ffd43b 0%, #e0a800 100%);
+      color: #0e1419; font-size: 0.56rem; font-weight: 950; text-align: center;
+      line-height: 1.2; transform: rotate(-26deg);
     }
 
     /* ミニカード */
@@ -299,7 +321,7 @@
     .yaku-tab-btn.active { background: #2980b9; color: #fff; border-color: #85c1e9; }
     #rule-sample-cards {
       display: flex; flex-direction: row; justify-content: center; align-items: center;
-      gap: 6px; flex-wrap: nowrap; width: 100%; margin-top: 4px;
+      gap: 6px; flex-wrap: nowrap; width: 100%; margin-top: 2px;
     }
   </style>
 </head>
@@ -539,6 +561,7 @@
 <script>
 const SoundEngine = {
   ctx: null,
+  noiseBuffer: null,
   init() {
     if (!this.ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
@@ -547,8 +570,17 @@ const SoundEngine = {
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
+    if (this.ctx && !this.noiseBuffer) {
+      const len = Math.floor(this.ctx.sampleRate * 0.4);
+      const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      this.noiseBuffer = buf;
+    }
   },
-  tone(freq, dur, type = 'sine', vol = 0.14, delay = 0) {
+  tone(freq, dur, type = 'sine', vol = 0.14, delay = 0, endFreq = null) {
     this.init();
     if (!this.ctx) return;
     const now = this.ctx.currentTime + delay;
@@ -556,33 +588,72 @@ const SoundEngine = {
     const gain = this.ctx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    if (endFreq !== null) {
+      osc.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), now + dur);
+    }
+    gain.gain.setValueAtTime(Math.max(0.0001, vol), now);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
     osc.connect(gain);
     gain.connect(this.ctx.destination);
     osc.start(now);
-    osc.stop(now + dur);
+    osc.stop(now + dur + 0.01);
+  },
+  filteredNoise(dur, filterType, startFreq, endFreq, vol = 0.18, delay = 0, q = 1.6) {
+    this.init();
+    if (!this.ctx || !this.noiseBuffer) return;
+    const now = this.ctx.currentTime + delay;
+    const src = this.ctx.createBufferSource();
+    src.buffer = this.noiseBuffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = filterType;
+    filter.Q.setValueAtTime(q, now);
+    filter.frequency.setValueAtTime(startFreq, now);
+    if (endFreq !== null) {
+      filter.frequency.exponentialRampToValueAtTime(Math.max(80, endFreq), now + dur);
+    }
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(vol, now + Math.min(0.012, dur * 0.25));
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    src.start(now);
+    src.stop(now + dur + 0.01);
   },
   playSE(name, extra = {}) {
     switch (name) {
-      case 'select_card': this.tone(760, 0.06, 'triangle', 0.12); break;
-      case 'draw_card':
-        this.tone(520, 0.07, 'sine', 0.12);
-        this.tone(680, 0.08, 'sine', 0.1, 0.04);
+      /* カード選択中：「ザッ」 */
+      case 'select_card':
+        this.filteredNoise(0.065, 'bandpass', 1900, 1150, 0.22, 0, 2.2);
+        this.tone(420, 0.04, 'triangle', 0.06, 0.01, 290);
         break;
-      case 'discard_card': this.tone(240, 0.09, 'triangle', 0.16); break;
+      /* ドロー音：「シュッ」 */
+      case 'draw_card':
+        this.filteredNoise(0.11, 'bandpass', 950, 3600, 0.24, 0, 1.8);
+        this.tone(380, 0.085, 'sine', 0.08, 0.005, 920);
+        break;
+      /* 捨て札アタック音：「パシッ」 */
+      case 'discard_card':
+        this.filteredNoise(0.045, 'highpass', 1400, 650, 0.34, 0, 1.1);
+        this.tone(540, 0.055, 'triangle', 0.22, 0, 145);
+        this.tone(190, 0.065, 'sine', 0.18, 0.004, 78);
+        break;
+      /* リーチ音：カジノのレイズアップイメージ「チャリーン」 */
+      case 'reach_declare':
+      case 'reach_cutin':
+        this.filteredNoise(0.07, 'highpass', 3800, 5200, 0.14, 0, 1.4);
+        this.tone(2093.0, 0.08, 'sine', 0.12, 0, 2349.3);
+        this.tone(2793.8, 0.26, 'sine', 0.16, 0.045);
+        this.tone(4186.0, 0.32, 'triangle', 0.12, 0.055);
+        this.tone(5587.7, 0.22, 'sine', 0.08, 0.09);
+        break;
       case 'roulette_spin':
       case 'roulette_tick': {
         const pitch = 360 + (extra.step || 0) * 24;
         this.tone(Math.min(pitch, 920), 0.045, 'square', 0.07);
         break;
       }
-      case 'reach_declare':
-      case 'reach_cutin':
-        this.tone(2637.02, 0.07, 'sine', 0.13, 0);
-        this.tone(3520, 0.16, 'triangle', 0.12, 0.045);
-        this.tone(4186.01, 0.22, 'sine', 0.1, 0.09);
-        break;
       case 'ippatsu_shout':
         this.tone(880, 0.12, 'sawtooth', 0.16, 0);
         this.tone(1174.66, 0.22, 'sawtooth', 0.16, 0.1);
@@ -781,7 +852,7 @@ const YAKU_REGISTRY = [
   {
     name: "一発", score: 1, catId: 1, catName: "状態役", catClass: "cat-1",
     catHeader: "【状態加点】リーチ後即座の和了！",
-    desc: "リーチ／ダブルリーチ宣言後、1巡以内のツモまたは相手打牌でのロン和了で＋1pt加算。",
+    desc: "リーチ／ダブルリーチ宣言後、最初の和了チャンス（相手打牌ロンまたは宣言後最初のツモ和了）で＋1pt加算。",
     sample: null, jokerType: "allowed", requireReach: false, check: () => false
   },
   {
@@ -1117,6 +1188,8 @@ const gameState = {
   isPlayerReach: false,
   isPlayerReachPending: false,
   isDoubleReach: false,
+  playerReachTurn: null,
+  cpuReachTurn: null,
   playerReachHasTurnPassed: false,
   cpuReachHasTurnPassed: false,
   turnCount: 0,
@@ -1185,6 +1258,19 @@ function formatRank(val) {
   if (val === 13) return 'K';
   if (val === 14) return 'A';
   return String(val);
+}
+
+function createRuleSampleCard(cardData) {
+  const el = document.createElement('div');
+  if (cardData.isJoker) {
+    el.className = 'rule-sample-card joker-card';
+    el.innerHTML = `<div class="rule-sample-joker-ribbon">JOKER</div>`;
+    return el;
+  }
+  const isRed = (cardData.suit === '♥' || cardData.suit === '♦');
+  el.className = 'rule-sample-card' + (isRed ? ' red-suit' : '');
+  el.innerHTML = `<div class="rule-sample-suit">${cardData.suit}</div><div class="rule-sample-rank">${formatRank(cardData.val)}</div>`;
+  return el;
 }
 
 function createCardElement(cardData, isSelected = false, isMini = false, onClickCallback = null, isReachTile = false, isWinTile = false) {
@@ -1659,6 +1745,8 @@ function initGameSession() {
   gameState.isPlayerReach = false;
   gameState.isPlayerReachPending = false;
   gameState.isDoubleReach = false;
+  gameState.playerReachTurn = null;
+  gameState.cpuReachTurn = null;
   gameState.playerReachHasTurnPassed = false;
   gameState.cpuReachHasTurnPassed = false;
   gameState.turnCount = 0;
@@ -1923,7 +2011,7 @@ function onPlayerCardTap(idx) {
     return;
   }
   if (gameState.isPlayerReach && idx !== (gameState.playerHand.length - 1)) {
-    SoundEngine.playSE('player_lose_pt');
+    SoundEngine.playSE('select_card');
     document.getElementById('hand-status-msg').innerText = 'リーチ中はツモ牌（一番右）を選択してください。';
     return;
   }
@@ -1949,10 +2037,10 @@ function discardPlayerCard(idx) {
   if (gameState.isPlayerReachPending) {
     gameState.isPlayerReachPending = false;
     gameState.isPlayerReach = true;
+    gameState.playerReachTurn = gameState.turnCount;
     gameState.playerReachTileIndex = gameState.playerRiver.length;
     gameState.playerScore -= 1;
     gameState.kyotaku += 1;
-    SoundEngine.playSE('player_lose_pt');
     if (gameState.playerRiver.length === 0 && gameState.turnCount <= 1) {
       gameState.isDoubleReach = true;
       triggerInfoCutinBanner('ダブルリーチ宣言！（+3pt）', '初巡最速宣言達成！', 'ippatsu_shout');
@@ -1962,6 +2050,9 @@ function discardPlayerCard(idx) {
     resetReachButtonUI();
     document.getElementById('btn-reach').disabled = true;
   } else {
+    if (gameState.isPlayerReach && gameState.playerReachTurn !== null && gameState.turnCount > gameState.playerReachTurn) {
+      gameState.playerReachHasTurnPassed = true;
+    }
     SoundEngine.playSE('discard_card');
   }
 
@@ -1978,7 +2069,7 @@ function discardPlayerCard(idx) {
 
 function togglePlayerReach() {
   if (gameState.isOnline && gameState.roomRule === 'damaten') {
-    SoundEngine.playSE('player_lose_pt');
+    SoundEngine.playSE('select_card');
     document.getElementById('hand-status-msg').innerText = '❌ このダマテンの部屋ではリーチが禁止されています！';
     return;
   }
@@ -2145,6 +2236,14 @@ function updateActionButtons() {
   }
 }
 
+function checkPlayerIppatsuEligible(winType) {
+  if (!gameState.isPlayerReach || gameState.playerReachTurn === null) return false;
+  if (winType === 'ロン') {
+    return (gameState.turnCount - gameState.playerReachTurn) <= 1;
+  }
+  return !gameState.playerReachHasTurnPassed && (gameState.turnCount - gameState.playerReachTurn) <= 2;
+}
+
 function playerWin() {
   clearInterval(turnTimer);
   const handLen = gameState.playerHand.length;
@@ -2170,7 +2269,7 @@ function playerWin() {
   const best = getBestYakuFor5(fullHand, gameState.isPlayerReach);
   if (!best) return;
 
-  const isIppatsu = gameState.isPlayerReach && !gameState.playerReachHasTurnPassed;
+  const isIppatsu = checkPlayerIppatsuEligible(winType);
   const isTenchi = (gameState.turnCount === 0);
   const isHaitei = (winType === 'ツモ' && gameState.deck.length === 0);
   if (!gameState.isOnline) triggerCpuSignalByEvent('react');
@@ -2278,6 +2377,7 @@ function cpuTurnRoutine() {
         : (gameState.mode === 'master' ? 0.82 : (gameState.mode === 'main' ? 0.28 : 0.55));
       if (canCpuReach && Math.random() < reachProb) {
         gameState.cpuIsReach = true;
+        gameState.cpuReachTurn = gameState.turnCount;
         gameState.cpuScore -= 1;
         gameState.kyotaku += 1;
         if (!gameState.isOnline) triggerCpuSignalByEvent('attack');
@@ -2294,7 +2394,7 @@ function cpuTurnRoutine() {
     } else if (gameState.cpuIsReach) {
       gameState.cpuReachHasTurnPassed = true;
     }
-    if (gameState.isPlayerReach) {
+    if (gameState.isPlayerReach && gameState.playerReachTurn !== null && gameState.turnCount > gameState.playerReachTurn) {
       gameState.playerReachHasTurnPassed = true;
     }
 
@@ -2654,7 +2754,7 @@ function filterYakuCategory(catId) {
   }
 }
 
-/* 5枚役サンプルを横並び（1列5枚）で描画 */
+/* 5枚役サンプルを枠内バランス良く横並び（1列5枚）で描画 */
 function selectRuleYaku(idx) {
   const yaku = YAKU_REGISTRY[idx];
   if (!yaku) return;
@@ -2669,7 +2769,7 @@ function selectRuleYaku(idx) {
     sampleLabel.style.display = 'block';
     sampleCont.style.display = 'flex';
     yaku.sample.forEach(c => {
-      sampleCont.appendChild(createCardElement(c, false, false, null, false, false));
+      sampleCont.appendChild(createRuleSampleCard(c));
     });
   } else {
     sampleLabel.style.display = 'none';
