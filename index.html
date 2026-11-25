@@ -18,12 +18,18 @@
       display: flex; flex-direction: column; position: relative;
       box-shadow: 0 0 24px rgba(0, 0, 0, 0.9); overflow: hidden;
     }
+
+    /* 画面は必ず1つだけ表示（重なり防止） */
     .screen {
+      display: none !important;
       position: absolute; inset: 0; width: 100%; height: 100%;
-      display: none; flex-direction: column; padding: 10px 12px;
+      flex-direction: column; padding: 12px;
       overflow-y: auto; z-index: 1;
     }
-    .screen.active { display: flex; z-index: 10; }
+    .screen.active {
+      display: flex !important;
+      z-index: 10;
+    }
 
     .btn-gold {
       background: linear-gradient(180deg, #f7d336 0%, #d4a017 100%);
@@ -50,13 +56,13 @@
       font-weight: 800;
       line-height: 1.6;
       color: #fff;
-      margin: 4px 0 8px 0;
+      margin: 4px 0 6px 0;
     }
 
     /* 3. CPUモード選択画面 */
     #screen-mode { justify-content: center; align-items: center; gap: 11px; }
     .mode-card-btn {
-      width: 100%; max-width: 350px; border-radius: 12px; padding: 13px 12px;
+      width: 100%; max-width: 350px; border-radius: 12px; padding: 12px;
       text-align: center; cursor: pointer; display: flex; flex-direction: column; gap: 4px;
       transition: transform 0.08s ease;
     }
@@ -74,6 +80,9 @@
       color: #111; font-size: 0.7rem; font-weight: 900;
       padding: 2px 14px; border-radius: 999px; letter-spacing: 0.5px;
     }
+
+    /* 4. ルーレット画面 */
+    #screen-roulette { justify-content: center; align-items: center; text-align: center; gap: 12px; }
 
     /* 5. メイン対戦画面 */
     #screen-game { padding: 6px 8px 10px 8px; gap: 5px; justify-content: flex-start; overflow: hidden; }
@@ -250,7 +259,7 @@
   <!-- 1. タイトル画面 -->
   <div id="screen-title" class="screen active">
     <div style="font-size: 1.05rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px;">２人打ち</div>
-    <div style="font-size: 2.2rem; font-weight: 900; color: #fff; letter-spacing: 2px; text-shadow: 0 3px 10px rgba(0,0,0,0.6);">
+    <div style="font-size: 2.15rem; font-weight: 900; color: #fff; letter-spacing: 2px; text-shadow: 0 3px 10px rgba(0,0,0,0.6);">
       ジャンポーカー
     </div>
     <div style="font-size: 1.05rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px;">〜 ジャンP２ 〜</div>
@@ -354,8 +363,8 @@
     </button>
   </div>
 
-  <!-- 3. CPU対戦モード選択画面 -->
-  <div id="screen-mode">
+  <!-- 3. CPUモード選択画面 -->
+  <div id="screen-mode" class="screen">
     <h2 style="color: #f1c40f; font-size: 1.2rem; font-weight: 900; text-align: center;">CPU対戦モードを選択</h2>
     <div style="font-size: 0.76rem; color: #bdc3c7; text-align: center; max-width: 320px; line-height: 1.4;">
       全モード第2サイクル（オーラス）はドラ2枚・裏ドラ2枚！
@@ -387,7 +396,7 @@
   </div>
 
   <!-- 4. ルーレット画面（♠青 vs ♥赤 2択） -->
-  <div id="screen-roulette" style="justify-content: center; align-items: center; text-align: center; gap: 10px;">
+  <div id="screen-roulette" class="screen">
     <h3 style="color: #f1c40f; font-size: 1.15rem; font-weight: 900;">席順・親決めルーレット</h3>
     <div id="roulette-warning-banner"
       style="font-size: 0.74rem; color: #ff5252; font-weight: 800; background: rgba(255,56,56,0.14); padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(255,82,82,0.45); display: none;">
@@ -408,10 +417,14 @@
     <div id="roulette-wait-msg" style="font-size: 0.8rem; color: #f1c40f; font-weight: 800; display: none;">
       ホスト側の開始操作を待っています...
     </div>
+    <button onclick="SoundEngine.playSE('select_card'); showTitle();"
+      style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.82rem; margin-top: 4px;">
+      ＜ タイトルに戻る
+    </button>
   </div>
 
   <!-- 5. メイン対戦画面 -->
-  <div id="screen-game">
+  <div id="screen-game" class="screen">
     <div class="opp-bar">
       <span id="opp-seat-title" style="font-size: 0.86rem; color: #e74c3c; font-weight: 900;">相手手札</span>
       <div id="cpu-hand-mini" style="display: flex; gap: 3px;"></div>
@@ -487,7 +500,7 @@
   </div>
 
   <!-- 6. リザルト画面 -->
-  <div id="screen-result" style="justify-content: space-between; gap: 8px; padding: 12px;">
+  <div id="screen-result" class="screen" style="justify-content: space-between; gap: 8px; padding: 12px;">
     <div style="display: flex; flex-direction: column; gap: 7px; overflow-y: auto;">
       <div id="res-streak-banner" style="text-align: center; font-weight: 900;"></div>
       <h2 id="res-title" style="color: #f1c40f; text-align: center; font-size: 1.25rem;">リザルト</h2>
@@ -596,7 +609,6 @@ const SoundEngine = {
     else if (type === 'roulette_spin') this.beep(840, 0.03, 'sine', 0.03);
     else if (type === 'signal_pop') { this.beep(932, 0.045, 'sine', 0.038); this.beep(1244, 0.065, 'sine', 0.038, 0.05); }
     else if (type === 'reach_declare') {
-      // カジノのチップレイズ金属音（チャリーン）
       this.beep(1318.5, 0.08, 'sine', 0.065, 0);
       this.beep(1760, 0.13, 'triangle', 0.06, 0.045);
       this.beep(2093, 0.2, 'sine', 0.055, 0.09);
@@ -1126,7 +1138,6 @@ function showCutinBanner(text, seType = 'reach_declare') {
 
 function onTapHandCard(idx) {
   if (gameState.playerHand.length !== 5 || gameState.pendingRonTile) return;
-  // リーチ確定後はツモ牌（右端 idx === 4）のみ選択・打牌可能
   if (gameState.isPlayerReach && idx !== 4) return;
 
   if (gameState.selectedCardIdx === idx) {
@@ -1141,7 +1152,6 @@ function onTapHandCard(idx) {
 function discardPlayerCard(idx) {
   if (gameState.isPlayerReach && idx !== 4) idx = 4;
 
-  // リーチ宣言保留中の場合、捨てた後の4枚がテンパイしているか検証
   if (gameState.isPlayerReachPending) {
     const rest4 = gameState.playerHand.filter((_, i) => i !== idx);
     if (!checkHand4Tenpai(rest4)) {
@@ -1191,7 +1201,6 @@ function discardPlayerCard(idx) {
     return;
   }
 
-  // CPUロン判定
   if (gameState.cpuHand.length === 4) {
     const cpuRonYaku = evaluateHand5([...gameState.cpuHand, discarded], gameState.cpuIsReach, gameState.roomRule);
     if (cpuRonYaku) {
