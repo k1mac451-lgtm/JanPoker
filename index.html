@@ -884,19 +884,16 @@ function hasValsSet(vals, numJokers, targetArr) {
   return pool.length === 0 && jokersLeft === 0;
 }
 
-/* AKB48：スート問わず A(14)・K(13)・4・8 ＋ JOKER の5枚 */
 function isValidAKB48(cards, jokers, normals, vals) {
   if (cards.length !== 5 || jokers.length !== 1) return false;
   return hasValsSet(vals, 1, [14, 13, 4, 8]);
 }
 
-/* シン・AKB48：通常牌4枚がすべて ♥ で A(14)・K(13)・4・8 ＋ JOKER の5枚 */
 function isValidShinAKB48(cards, jokers, normals, vals) {
   if (!isValidAKB48(cards, jokers, normals, vals)) return false;
   return normals.length === 4 && normals.every(c => c.suit === '♥');
 }
 
-/* 酷使苦情：5・9・4・9（各1枚）＋ 4スート（♠・♥・♦・♣）揃い ＋ JOKER 1枚 */
 function isValidKushiKujou(cards, jokers, normals, vals, uniqueSuits) {
   if (cards.length !== 5 || jokers.length !== 1 || normals.length !== 4) return false;
   if (uniqueSuits.length !== 4) return false;
@@ -1318,7 +1315,7 @@ const beginnerAdviceList = [
   "💡 ヒント：中級役・役満はリーチなし（ダマテン）でも和了できるよ！",
   "💡 ヒント：対戦画面は表ドラのみ、リザルトで表ドラ・裏ドラが開示されるよ！",
   "💡 ヒント：A・K・4・8＋JOKERが揃えばAKB48（24点・-2pt免除）！",
-  "💡 ヒント：不要なカードは2回タップで打牌できるよ！"
+  "💡 ヒント：相手捨て牌でロンできる時は「和了」が赤点灯するよ！"
 ];
 
 function getRandomBeginnerAdvice() {
@@ -1471,6 +1468,33 @@ function setupPeerConnection(roomId, asHost) {
   } catch (e) {}
 }
 
+function handleOpponentDiscardReceived(card) {
+  if (!card || gameState.isGameOver) return;
+  gameState.cpuRiver.push(card);
+  SoundEngine.playSE('discard_card');
+  renderRivers();
+  updateBoardUI();
+
+  if (gameState.playerHand.length === 4 && !isFuritenOnCard(card)) {
+    const ronCheck = getBestYakuFor5([...gameState.playerHand, card], gameState.isPlayerReach);
+    if (ronCheck) {
+      gameState.pendingRonCard = card;
+      document.getElementById('hand-status-msg').innerText = '⚡ ロンチャンス！赤い「和了」を押してロン和了できます。';
+      updateActionButtons();
+      startTurnTimerIfNeeded();
+      return;
+    }
+  }
+
+  const btnDraw = document.getElementById('btn-draw');
+  btnDraw.disabled = false;
+  btnDraw.style.background = '#f1c40f';
+  btnDraw.style.color = '#000';
+  document.getElementById('hand-status-msg').innerText = 'あなたのターンです。「ドロー」を押してください。';
+  updateActionButtons();
+  startTurnTimerIfNeeded();
+}
+
 function bindPeerDataChannel(conn) {
   if (!conn) return;
   conn.on('data', (payload) => {
@@ -1481,9 +1505,13 @@ function bindPeerDataChannel(conn) {
       applyRouletteResult(Boolean(payload.isHostSpade));
     } else if (payload.type === 'GAME_START') {
       initGameSession();
+    } else if (payload.type === 'OPPONENT_DISCARD' && payload.card) {
+      handleOpponentDiscardReceived(payload.card);
     } else if (payload.type === 'RON_PASS') {
       gameState.pendingRonCard = null;
-      setTimeout(cpuTurnRoutine, 500);
+      if (!gameState.isOnline) {
+        setTimeout(cpuTurnRoutine, 500);
+      }
     }
   });
 }
@@ -1889,7 +1917,11 @@ function initGameSession() {
   } else {
     document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
     document.getElementById('btn-draw').disabled = true;
-    setTimeout(cpuTurnRoutine, 850);
+    if (!gameState.isOnline) {
+      setTimeout(cpuTurnRoutine, 850);
+    } else {
+      startTurnTimerIfNeeded();
+    }
   }
 }
 
@@ -2143,6 +2175,12 @@ function discardPlayerCard(idx) {
   updateBoardUI();
   updateActionButtons();
 
+  if (gameState.isOnline) {
+    sendPeerPayload({ type: 'OPPONENT_DISCARD', card: discarded });
+    startTurnTimerIfNeeded();
+    return;
+  }
+
   if (checkCpuRonOnPlayerDiscard(discarded)) return;
   setTimeout(cpuTurnRoutine, 750);
 }
@@ -2218,7 +2256,6 @@ function playerDraw() {
   startTurnTimerIfNeeded();
 }
 
-/* 4枚手札に JOKER + (A, K, 4, 8 のうち3種) が揃っている場合、残り1枚（A/K/4/8の不足分）でAKB48／シン・AKB48テンパイ */
 function isAKB48Tenpai4(hand4) {
   if (!Array.isArray(hand4) || hand4.length !== 4) return false;
   const jokers = hand4.filter(c => c.isJoker);
@@ -2433,7 +2470,7 @@ function chooseCpuDiscardIndex() {
 }
 
 function cpuTurnRoutine() {
-  if (gameState.isGameOver) return;
+  if (gameState.isGameOver || gameState.isOnline) return;
   if (gameState.deck.length === 0) {
     handleDrawGame();
     return;
@@ -2446,7 +2483,7 @@ function cpuTurnRoutine() {
   updateBoardUI();
 
   setTimeout(() => {
-    if (gameState.isGameOver) return;
+    if (gameState.isGameOver || gameState.isOnline) return;
     const cpuBest = getBestYakuFor5(gameState.cpuHand, gameState.cpuIsReach);
     if (cpuBest) {
       const isIppatsu = gameState.cpuIsReach && !gameState.cpuReachHasTurnPassed;
