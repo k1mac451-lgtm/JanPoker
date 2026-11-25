@@ -1270,7 +1270,7 @@ function triggerSpecialLogoBanner(text, mode = 'simple', durationMs = 2000) {
   }, durationMs);
 }
 
-function triggerWin演出体系(yaku, isIppatsu, isHaitei, isTenchi) {
+function triggerWinEffects(yaku, isIppatsu, isHaitei, isTenchi) {
   const logos = [];
   const isRareYaku = Boolean(yaku && RARE_YAKU_NAMES.has(yaku.name));
 
@@ -1575,7 +1575,7 @@ function executeRoundEnd(winType, winner, yaku, hand5, winTile, fromRemote = fal
   const isDealer = isPlayerWin ? gameState.isPlayerParent : !gameState.isPlayerParent;
   const mySuit = isPlayerWin ? (gameState.spadePlayer === 'YOU' ? '♠' : '♥') : (gameState.spadePlayer === '相手' ? '♠' : '♥');
 
-  triggerWin演出体系(yaku, isIppatsu, isHaitei, isTenchi);
+  triggerWinEffects(yaku, isIppatsu, isHaitei, isTenchi);
 
   let total = yaku.score;
   const details = [`${yaku.name}: ${yaku.score}pt`];
