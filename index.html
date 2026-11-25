@@ -140,7 +140,7 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
     }
 
-    /* 役一覧サンプル用バランスカード（枠内に余裕を持って収まり視認性良好） */
+    /* 役一覧サンプル用バランスカード */
     .rule-sample-card {
       width: 46px; height: 64px;
       background: linear-gradient(165deg, #ffffff 0%, #eef2f5 100%);
@@ -830,6 +830,24 @@ function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare
   }, 1200);
 }
 
+/* 連番5枚（A-2-3-4-5〜10-J-Q-K-Aまで有効、A跨ぎ不可） */
+function isValidFiveSequence(vals5) {
+  if (!Array.isArray(vals5) || vals5.length !== 5) return false;
+  const unique = new Set(vals5);
+  if (unique.size !== 5) return false;
+  const sorted = [...vals5].sort((a, b) => a - b);
+  let isConsecutive = true;
+  for (let i = 1; i < 5; i++) {
+    if (sorted[i] !== sorted[i - 1] + 1) {
+      isConsecutive = false;
+      break;
+    }
+  }
+  if (isConsecutive) return true;
+  const wheelSorted = [2, 3, 4, 5, 14];
+  return sorted.every((v, idx) => v === wheelSorted[idx]);
+}
+
 function checkValidStraight(vals, numJokers) {
   const clean = vals.filter(v => v > 0);
   if (clean.length + numJokers !== 5) return false;
@@ -871,6 +889,15 @@ function hasValsSet(vals, numJokers, targetArr) {
     }
   }
   return pool.length === 0 && jokersLeft === 0;
+}
+
+/* 酷使苦情：5・9・4・9（各1枚）＋ 4スート（♠・♥・♦・♣）揃い ＋ JOKER 1枚 */
+function isValidKushiKujou(cards, jokers, normals, vals, uniqueSuits) {
+  if (cards.length !== 5 || jokers.length !== 1 || normals.length !== 4) return false;
+  if (uniqueSuits.length !== 4) return false;
+  const sortedVals = [...vals].sort((a, b) => a - b);
+  const targetSorted = [4, 5, 9, 9];
+  return sortedVals.every((v, i) => v === targetSorted[i]);
 }
 
 const YAKU_REGISTRY = [
@@ -924,15 +951,18 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ストレート", score: 4, catId: 2, catName: "基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】基本役（ストレート系）",
-    desc: "スートを問わず連番5枚（A-2-3-4-5 または 2〜10 / 10-J-Q-K-A混色）。要リーチ・JOKER不可。",
-    sample: [{suit:'♠',val:3},{suit:'♥',val:4},{suit:'♦',val:5},{suit:'♣',val:6},{suit:'♠',val:7}],
+    catHeader: "【要リーチ・JOKER不可❌】絵札1枚以上絡む連番5枚",
+    desc: "連番5枚（A-2-3-4-5〜10-J-Q-K-Aまで有効、A跨ぎ不可）のうち、絵札（J,Q,K,A）が1枚以上絡む混色5枚。2〜10のみは無効（同スート5枚はストレートフラッシュ）。要リーチ・JOKER不可。",
+    sample: [{suit:'♠',val:8},{suit:'♥',val:9},{suit:'♦',val:10},{suit:'♣',val:11},{suit:'♠',val:12}],
     jokerType: "forbidden", requireReach: true,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      if (jokers.length > 0 || cards.length !== 5) return false;
+      if (jokers.length > 0 || cards.length !== 5 || uniqueSuits.length < 2) return false;
+      if (!isValidFiveSequence(vals)) return false;
+      const hasPictureCard = normals.some(c => c.val >= 11);
+      if (!hasPictureCard) return false;
       const isRoyal = vals.includes(10) && vals.includes(11) && vals.includes(12) && vals.includes(13) && vals.includes(14);
-      if (isRoyal && uniqueSuits.length > 1) return false;
-      return checkValidStraight(vals, 0);
+      if (isRoyal) return false;
+      return true;
     }
   },
   {
@@ -1176,12 +1206,12 @@ const YAKU_REGISTRY = [
   },
   {
     name: "酷使苦情", score: 29, catId: 5, catName: "JOKER", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】5・9・4・9・J＋4スート",
-    desc: "5・9・4・9・J(11) の数字構成かつ4スート（♠・♥・♦・♣）を揃える役。JOKER必須役のため-2点免除。",
-    sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:11},{suit:'',val:0,isJoker:true}],
+    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】各スート1枚ずつ＋JOKER（5949ジョー）",
+    desc: "5・9・4・9（各1枚）かつ4スート（♠・♥・♦・♣）コンプリート ＋ JOKERの5枚（コク・シ・ク・ジョー）。JOKER必須役のため-2点免除。",
+    sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:9},{suit:'',val:0,isJoker:true}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
-      return jokers.length === 1 && cards.length === 5 && hasValsSet(vals, 1, [5, 9, 4, 9, 11]) && uniqueSuits.length === 4;
+      return isValidKushiKujou(cards, jokers, normals, vals, uniqueSuits);
     }
   },
   {
@@ -1237,7 +1267,7 @@ const gameState = {
   isGameOver: false,
   pendingRonCard: null
 };
-  const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
+ const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
 
 const BASE_SIGNAL_LIST = [
   { text: "通ればリーチ…", type: "attack" },
@@ -2009,7 +2039,6 @@ function renderHands() {
   }
 }
 
-/* 捨て札（河）は差分追加で再描画負荷とカクツキを抑制 */
 function renderRivers() {
   const pRiver = document.getElementById('player-river-scroll');
   if (gameState.playerRiver.length === 0) {
@@ -2790,7 +2819,6 @@ function filterYakuCategory(catId) {
   }
 }
 
-/* 5枚役サンプルを枠内バランス良く横並び（1列5枚）で描画 */
 function selectRuleYaku(idx) {
   const yaku = YAKU_REGISTRY[idx];
   if (!yaku) return;
@@ -2831,4 +2859,4 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-</html>
+</html> 
