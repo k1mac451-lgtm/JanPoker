@@ -45,12 +45,12 @@ body {
 .mode-title { font-size: 1rem; font-weight: bold; color: #f1c40f; margin-bottom: 2px; }
 .mode-desc { font-size: 0.72rem; color: #bdc3c7; line-height: 1.3; }
 
+/* カードデザイン：1スート1数値・左上スート／右下数値・JOKER右肩上がり階段 */
 .card {
-  background: #ffffff; color: #111; border-radius: 6px;
-  display: flex; flex-direction: column; justify-content: space-between;
-  position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  background: #ffffff; color: #111111; border-radius: 6px;
+  position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.45);
   cursor: pointer; transition: transform 0.14s ease-out, box-shadow 0.14s ease-out, border-color 0.14s ease-out;
-  border: 2px solid #ccc; flex-shrink: 0; overflow: hidden;
+  border: 2px solid #b8c2c8; flex-shrink: 0; overflow: hidden;
 }
 .card.selected {
   transform: translate3d(0, -10px, 0);
@@ -59,35 +59,63 @@ body {
 }
 .card.red { color: #e74c3c; }
 .card.black { color: #111111; }
-.card.joker { background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); color: #f1c40f; border-color: #f1c40f; }
-
-.card-diag-layer {
-  position: inset; inset: 0; width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  transform: rotate(-22deg); pointer-events: none; z-index: 1;
-}
-.card-diag-text {
-  font-weight: 900; line-height: 1; letter-spacing: -1px;
-  text-shadow: 0 1px 1px rgba(255,255,255,0.6);
-}
-.card.joker .card-diag-text {
-  text-shadow: 0 0 8px rgba(241, 196, 15, 0.55);
+.card.joker {
+  background: linear-gradient(135deg, #1b2733 0%, #0d131a 100%);
+  color: #f1c40f; border-color: #f1c40f;
 }
 
-.card-hand { width: 54px; height: 74px; }
-.card-hand .card-diag-text { font-size: 1.28rem; }
+.card-corner-suit {
+  position: absolute; top: 4px; left: 6px;
+  font-weight: 900; line-height: 1; pointer-events: none;
+}
+.card-corner-val {
+  position: absolute; bottom: 4px; right: 6px;
+  font-weight: 900; line-height: 1; letter-spacing: -0.5px; pointer-events: none;
+}
+.card-joker-stair {
+  position: absolute; inset: 0; pointer-events: none;
+  display: flex; flex-direction: column; justify-content: space-between; padding: 6px 5px;
+}
+.joker-step-word {
+  font-weight: 900; font-style: italic; letter-spacing: 0.5px; line-height: 1;
+  text-shadow: 0 0 8px rgba(241, 196, 15, 0.65);
+}
+.joker-step-word:nth-child(1) { align-self: flex-start; transform: translateX(0px); }
+.joker-step-word:nth-child(2) { align-self: center; transform: translateX(2px); }
+.joker-step-word:nth-child(3) { align-self: flex-end; transform: translateX(0px); }
 
-.card-river { width: 28px; height: 36px; border-radius: 4px; border-width: 1px; }
-.card-river .card-diag-text { font-size: 0.72rem; }
+.card-hand { width: 56px; height: 78px; }
+.card-hand .card-corner-suit { font-size: 1.05rem; top: 4px; left: 6px; }
+.card-hand .card-corner-val { font-size: 1.35rem; bottom: 5px; right: 6px; }
+.card-hand .joker-step-word { font-size: 0.72rem; }
+
+.card-river { width: 30px; height: 40px; border-radius: 4px; border-width: 1px; }
+.card-river .card-corner-suit { font-size: 0.62rem; top: 2px; left: 3px; }
+.card-river .card-corner-val { font-size: 0.78rem; bottom: 2px; right: 3px; }
+.card-river .joker-step-word { font-size: 0.44rem; }
 .card-river.reach-tile { border: 2px solid #ff3838 !important; box-shadow: 0 0 6px #ff3838; }
 
-.card-mini { width: 18px; height: 26px; border-radius: 3px; background: #2c3e50; border: 1px solid #f1c40f; }
+.card-mini {
+  width: 20px; height: 28px; border-radius: 3px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #1b4f72,
+    #1b4f72 3px,
+    #2e86c1 3px,
+    #2e86c1 6px
+  );
+  border: 1px solid #85c1e9;
+}
 
 .card-dora { width: 32px; height: 42px; border-radius: 4px; border-width: 1.5px; }
-.card-dora .card-diag-text { font-size: 0.82rem; }
+.card-dora .card-corner-suit { font-size: 0.68rem; top: 2px; left: 4px; }
+.card-dora .card-corner-val { font-size: 0.86rem; bottom: 3px; right: 4px; }
+.card-dora .joker-step-word { font-size: 0.48rem; }
 
-.card-sample { width: 48px; height: 66px; border-radius: 5px; }
-.card-sample .card-diag-text { font-size: 1.12rem; }
+.card-sample { width: 50px; height: 70px; border-radius: 5px; }
+.card-sample .card-corner-suit { font-size: 0.92rem; top: 3px; left: 5px; }
+.card-sample .card-corner-val { font-size: 1.18rem; bottom: 4px; right: 5px; }
+.card-sample .joker-step-word { font-size: 0.64rem; }
 
 .card-win-highlight { border: 2.5px solid #ff3838 !important; box-shadow: 0 0 10px rgba(255, 56, 56, 0.85) !important; }
 
@@ -122,6 +150,55 @@ body {
   100% { color: #f1c40f; text-shadow: 0 0 5px #f39c12; }
 }
 .master-gold-banner { animation: goldGlow 1.8s infinite ease-in-out; }
+
+/* 1. ルーレット前・入室前イベント（フェードインロゴタイトル） */
+#entry-fade-overlay {
+  position: absolute; inset: 0; z-index: 170; display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  background: radial-gradient(circle, rgba(16,32,35,0.96) 0%, rgba(5,11,13,0.99) 100%);
+  padding: 16px; text-align: center; pointer-events: none;
+  animation: entryFadeInOut 1.85s ease-in-out forwards;
+}
+@keyframes entryFadeInOut {
+  0% { opacity: 0; transform: scale(0.92); }
+  22% { opacity: 1; transform: scale(1.02); }
+  78% { opacity: 1; transform: scale(1.0); }
+  100% { opacity: 0; transform: scale(1.04); }
+}
+.entry-logo-box {
+  padding: 14px 20px; border-radius: 12px;
+  border: 2px solid #f1c40f; background: rgba(9, 19, 21, 0.92);
+  box-shadow: 0 0 28px rgba(241, 196, 15, 0.45);
+  max-width: 340px; width: 100%;
+}
+
+/* 2. 対戦開始時：第1サイクル♠場 / オーラスサイクル等のデカ表示スライドイン */
+#cycle-slide-overlay {
+  position: absolute; inset: 0; z-index: 175; display: none;
+  justify-content: center; align-items: center;
+  background: rgba(4, 10, 12, 0.62); pointer-events: none; overflow: hidden;
+}
+.cycle-slide-banner {
+  width: 100%; padding: 16px 12px; text-align: center;
+  background: linear-gradient(90deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.95) 14%, rgba(24,46,51,0.98) 50%, rgba(15,23,42,0.95) 86%, rgba(15,23,42,0) 100%);
+  border-top: 2px solid #f1c40f; border-bottom: 2px solid #f1c40f;
+  box-shadow: 0 0 32px rgba(241, 196, 15, 0.55);
+  animation: cycleSlideInHoldOut 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.cycle-slide-title {
+  font-size: 1.95rem; font-weight: 900; letter-spacing: 2px;
+  color: #ffeaa7; text-shadow: 0 0 18px rgba(241, 196, 15, 0.85), 3px 3px 0 #000;
+}
+.cycle-slide-sub {
+  margin-top: 3px; font-size: 0.78rem; font-weight: bold; letter-spacing: 2px;
+  color: #2ecc71;
+}
+@keyframes cycleSlideInHoldOut {
+  0% { transform: translateX(100%); opacity: 0; }
+  25% { transform: translateX(0%); opacity: 1; }
+  78% { transform: translateX(0%); opacity: 1; }
+  100% { transform: translateX(-100%); opacity: 0; }
+}
 
 /* 通信吹き出し固定表示（中央ボード上下） */
 .online-bubble-bar {
@@ -168,8 +245,7 @@ body {
   animation: typoPopIn 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
 }
 .typo-sub-overlay {
-  margin-top: 6px; font-weight: 900; letter-spacing: 3px;
-  opacity: 0;
+  margin-top: 6px; font-weight: 900; letter-spacing: 3px; opacity: 0;
 }
 .typo-sub-snap-jj {
   font-size: 2.2rem; color: #f1c40f; font-style: italic;
@@ -210,6 +286,23 @@ body {
 <body>
 <div id="game-wrapper">
 
+<!-- 入室前イベント：フェードインロゴ -->
+<div id="entry-fade-overlay">
+  <div id="entry-logo-box" class="entry-logo-box">
+    <div id="entry-logo-kicker" style="font-size: 0.72rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px; margin-bottom: 4px;"></div>
+    <div id="entry-logo-title" style="font-size: 1.55rem; color: #ffffff; font-weight: 900; letter-spacing: 1px;"></div>
+    <div id="entry-logo-sub" style="font-size: 0.72rem; color: #2ecc71; font-weight: bold; margin-top: 4px;"></div>
+  </div>
+</div>
+
+<!-- 対戦開始時：第1サイクル♠場 / オーラスサイクル等スライドイン -->
+<div id="cycle-slide-overlay">
+  <div id="cycle-slide-banner" class="cycle-slide-banner">
+    <div id="cycle-slide-title" class="cycle-slide-title">第1サイクル ♠場</div>
+    <div id="cycle-slide-sub" class="cycle-slide-sub">DEAL START</div>
+  </div>
+</div>
+
 <!-- 一発別格カットイン -->
 <div id="ippatsu-grand-cutin">
   <div class="ippatsu-frame-box">
@@ -249,7 +342,6 @@ body {
   <div id="lobby-self-badge" style="font-size: 0.7rem; color: #f1c40f; font-weight: bold;">プレイヤー: YOU</div>
   <div style="font-size: 0.68rem; color: #bdc3c7; text-align: center; max-width: 330px;">シングルなら各部屋の主と対戦！友達と対戦ならホストが部屋ルールを選択！</div>
 
-  <!-- 開閉式メニューウィンドウ起動ボタン群 -->
   <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; max-width: 340px;">
     <button class="btn-sub-menu" onclick="SoundEngine.playSE('select_card'); openLobbySubWindow('bubble');">💬 吹き出しエディット</button>
     <button class="btn-sub-menu" onclick="SoundEngine.playSE('select_card'); openLobbySubWindow('friends');">👥 ニックネーム＆友達リスト</button>
@@ -297,7 +389,6 @@ body {
       <button onclick="SoundEngine.playSE('select_card'); closeLobbySubWindow();" style="background: #e74c3c; border: none; color: #fff; width: 22px; height: 22px; border-radius: 4px; font-weight: bold; cursor: pointer;">✕</button>
     </div>
 
-    <!-- ① 吹き出しエディットパネル -->
     <div id="subpanel-bubble" style="padding: 10px 12px; overflow-y: auto; display: none; flex-direction: column; gap: 8px; font-size: 0.75rem;">
       <div style="color: #bdc3c7; line-height: 1.4;">
         通信対戦中に中央ボード上下へ固定表示する吹き出しを編集できます（カスタム枠は最大10文字・保存対応）。
@@ -316,7 +407,6 @@ body {
       <div id="bubble-save-feedback" style="color: #2ecc71; font-weight: bold; min-height: 16px; text-align: center;"></div>
     </div>
 
-    <!-- ② ニックネーム＆友達リストパネル -->
     <div id="subpanel-friends" style="padding: 10px 12px; overflow-y: auto; display: none; flex-direction: column; gap: 8px; font-size: 0.75rem;">
       <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #254449;">
         <div style="color: #f1c40f; font-weight: bold; margin-bottom: 4px;">自分のニックネーム登録</div>
@@ -383,9 +473,8 @@ body {
     <span id="cpu-hand-label" style="font-size: 0.82rem; color: #e74c3c; font-weight: bold;">相手手札</span>
     <div id="cpu-hand-mini" style="display: flex; gap: 3px;"></div>
   </div>
-  <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 42px; display: flex; align-items: center; overflow-x: auto;" id="cpu-river-scroll"></div>
+  <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 46px; display: flex; align-items: center; gap: 3px; overflow-x: auto;" id="cpu-river-scroll"></div>
 
-  <!-- 相手側固定吹き出し（通信モード時） -->
   <div id="bubble-bar-opp" class="online-bubble-bar online-bubble-opp">
     <span id="bubble-text-opp"></span>
   </div>
@@ -415,13 +504,12 @@ body {
     </div>
   </div>
 
-  <!-- 自分側固定吹き出し（通信モード時） -->
   <div id="bubble-bar-self" class="online-bubble-bar online-bubble-self">
     <span id="bubble-text-self"></span>
     <button onclick="openLobbySubWindow('bubble')" style="background: rgba(241,196,15,0.2); color: #f1c40f; border: 1px solid #f1c40f; border-radius: 4px; font-size: 0.62rem; padding: 1px 5px; cursor: pointer;">切替</button>
   </div>
 
-  <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 42px; display: flex; align-items: center; overflow-x: auto;" id="player-river-scroll"></div>
+  <div style="background: #091315; border: 1px solid #1a3337; border-radius: 5px; padding: 4px; height: 46px; display: flex; align-items: center; gap: 3px; overflow-x: auto;" id="player-river-scroll"></div>
 
   <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
     <button class="btn-gold" onclick="SoundEngine.playSE('select_card'); openRuleModal('yaku');" style="height: 36px; font-size: 0.85rem; background: #f1c40f; color: #000;">役一覧</button>
@@ -431,7 +519,7 @@ body {
   </div>
 
   <div style="background: #162a2d; border: 1px solid #254449; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
-    <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; min-height: 82px; align-items: flex-end; padding-top: 2px;"></div>
+    <div id="player-hand-container" style="display: flex; justify-content: center; gap: 5px; min-height: 86px; align-items: flex-end; padding-top: 4px;"></div>
     <div id="beginner-guide-box" style="background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; border-radius: 5px; padding: 3px 8px; font-size: 0.7rem; color: #f1c40f; text-align: center; font-weight: bold; height: 26px; line-height: 20px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: none;"></div>
     <div id="hand-status-msg" style="font-size: 0.65rem; color: #bdc3c7; text-align: center; height: 18px;">あなたの親番です。カードを2回タップして打牌するか和了できます。</div>
   </div>
@@ -443,10 +531,10 @@ body {
   <div id="res-streak-banner" style="font-size: 1.1rem; font-weight: 900; color: #f1c40f; margin-bottom: 2px; min-height: 1.5em; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"></div>
   <h2 id="res-title" style="color: #f1c40f; font-size: 1.1rem; margin-bottom: 2px;">リザルト</h2>
   <div id="res-subtitle" style="font-size: 0.8rem; color: #fff; margin-bottom: 4px;">成立役：ストレート</div>
-  <div style="background: #162a2d; border: 1px solid #f1c40f; border-radius: 6px; padding: 6px; width: 100%; max-width: 330px; margin-bottom: 6px;">
+  <div style="background: #162a2d; border: 1px solid #f1c40f; border-radius: 6px; padding: 6px; width: 100%; max-width: 340px; margin-bottom: 6px;">
     <div style="font-size: 0.65rem; color: #bdc3c7; margin-bottom: 2px;">和了手札 (通常サイズ5枚)</div>
     <div id="res-hand-container" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;"></div>
-    <div style="font-size: 0.65rem; color: #bdc3c7; margin-bottom: 2px;">表ドラ / 裏ドラ開示（常時オープンミニカード）</div>
+    <div style="font-size: 0.65rem; color: #bdc3c7; margin-bottom: 2px;">表ドラ / 裏ドラ開示</div>
     <div id="res-dora-container" style="display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; flex-wrap: wrap;"></div>
     <div style="font-size: 0.65rem; color: #f1c40f; margin-bottom: 2px; border-top: 1px solid #254449; padding-top: 2px;">【 収支内訳 】</div>
     <div id="res-details" style="font-size: 0.65rem; color: #fff; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; text-align: left; padding: 2px 4px; margin-bottom: 4px; max-height: 65px; overflow-y: auto;"></div>
@@ -498,7 +586,7 @@ body {
     </div>
   </div>
 </div>
-  <script>
+<script>
 const SoundEngine = {
   ctx: null,
   init() {
@@ -531,25 +619,39 @@ const SoundEngine = {
       for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
       const noise = this.ctx.createBufferSource();
       noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1400, this.ctx.currentTime);
       const gain = this.ctx.createGain();
       gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-      noise.connect(gain); gain.connect(this.ctx.destination);
+      noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
       noise.start();
     } catch (e) {}
   },
+  // 「シュシュシュシュッ！」連続配札SE
+  playDealSeries() {
+    this.init();
+    const offsets = [0, 65, 130, 195, 260];
+    offsets.forEach((ms, idx) => {
+      setTimeout(() => {
+        this.playNoise(0.065, idx === offsets.length - 1 ? 0.2 : 0.15);
+        this.playTone(900 + idx * 140, 0.045, 'triangle', 0.08);
+      }, ms);
+    });
+  },
   playSE(type) {
-    if (type === 'draw_card' || type === 'discard_card') {
+    if (type === 'deal_cards') {
+      this.playDealSeries();
+    } else if (type === 'draw_card' || type === 'discard_card') {
       this.playNoise(0.09, 0.14);
       this.playTone(850, 0.05, 'sine', 0.12);
     } else if (type === 'select_card') {
       this.playTone(620, 0.04, 'triangle', 0.18);
     } else if (type === 'bubble_update') {
-      // リーチやゲーム音に被らない軽快な吹き出し更新通知SE
       this.playTone(1046, 0.06, 'sine', 0.14);
       setTimeout(() => this.playTone(1318, 0.08, 'sine', 0.14), 55);
     } else if (type === 'reach_declare') {
-      // チップレイズ金属音（チャリーン）
       this.playTone(2349, 0.14, 'triangle', 0.22);
       setTimeout(() => this.playTone(3136, 0.22, 'sine', 0.2), 45);
     } else if (type === 'timer_warning_pip') {
@@ -593,12 +695,6 @@ function formatValLabel(val) {
   return String(val);
 }
 
-function getCardDiagLabel(card) {
-  if (!card) return '';
-  if (card.isJoker) return 'JOKER';
-  return `${card.suit}${formatValLabel(card.val)}`;
-}
-
 function createCardElement(card, isHand = true, isSmall = false, idx = null, isReachTile = false, isWinCard = false) {
   const el = document.createElement('div');
   el.className = 'card';
@@ -623,17 +719,32 @@ function createCardElement(card, isHand = true, isSmall = false, idx = null, isR
   if (isReachTile) el.classList.add('reach-tile');
   if (isWinCard) el.classList.add('card-win-highlight');
 
-  const diagLayer = document.createElement('div');
-  diagLayer.className = 'card-diag-layer';
-  const diagText = document.createElement('span');
-  diagText.className = 'card-diag-text';
-  diagText.innerText = getCardDiagLabel(card);
-  diagLayer.appendChild(diagText);
-  el.appendChild(diagLayer);
+  if (card && card.isJoker) {
+    // JOKER：左下から右上へ右肩上がり階段状
+    const stair = document.createElement('div');
+    stair.className = 'card-joker-stair';
+    const w3 = document.createElement('span'); w3.className = 'joker-step-word'; w3.innerText = 'JOKER';
+    const w2 = document.createElement('span'); w2.className = 'joker-step-word'; w2.innerText = 'JOKER';
+    const w1 = document.createElement('span'); w1.className = 'joker-step-word'; w1.innerText = 'JOKER';
+    stair.appendChild(w3); stair.appendChild(w2); stair.appendChild(w1);
+    el.appendChild(stair);
+  } else if (card) {
+    // 通常カード：左上スート・右下数値（1スート1数値のみ・斜め回転なし）
+    const topSuit = document.createElement('span');
+    topSuit.className = 'card-corner-suit';
+    topSuit.innerText = card.suit;
+
+    const botVal = document.createElement('span');
+    botVal.className = 'card-corner-val';
+    botVal.innerText = formatValLabel(card.val);
+
+    el.appendChild(topSuit);
+    el.appendChild(botVal);
+  }
 
   if (isWinCard) {
     const badge = document.createElement('div');
-    badge.style.cssText = 'position:absolute; top:1px; right:1px; background:#ff3838; color:#fff; font-size:0.5rem; font-weight:900; padding:0 3px; border-radius:3px; z-index:2;';
+    badge.style.cssText = 'position:absolute; top:2px; right:2px; background:#ff3838; color:#fff; font-size:0.5rem; font-weight:900; padding:1px 3px; border-radius:3px; z-index:3;';
     badge.innerText = '和了';
     el.appendChild(badge);
   }
@@ -651,7 +762,6 @@ function checkValidStraight(vals, numJokers) {
   const uniqueVals = [...new Set(vals)];
   if (uniqueVals.length !== vals.length) return false;
 
-  // A始点（A-2-3...）および通常昇順（A跨ぎは除外）
   for (let start = 1; start <= 14 - totalLen + 1; start++) {
     const seq = [];
     for (let k = 0; k < totalLen; k++) {
@@ -901,7 +1011,7 @@ function evaluateTenpaiHand(cards, ignoreReachRequirement = false) {
   }
   return null;
 }
-    const gameState = {
+  const gameState = {
   mode: 'beginner', roomRule: 'shoushi', isOnline: false, isHost: true,
   cycle: 1, fieldSuit: '♠', streakCount: 0, isPlayerParent: true,
   spadePlayer: 'YOU', heartPlayer: '相手',
@@ -966,8 +1076,6 @@ function syncProfileLabels() {
   const prof = getOrCreateProfile();
   const badge = document.getElementById('lobby-self-badge');
   if (badge) badge.innerText = `プレイヤー: ${prof.nickname}`;
-  const cpuLabel = document.getElementById('cpu-hand-label');
-  if (cpuLabel) cpuLabel.innerText = gameState.isOnline ? '相手手札' : '相手手札';
 }
 
 function switchScreen(screenId) {
@@ -1003,6 +1111,70 @@ function showOnlineLobby() {
   }
   switchScreen('screen-online');
   restoreLobbyStateIfNeeded();
+}
+
+// ルーレット前・入室前フェードインロゴ演出
+function playEntryFadeLogo(kicker, title, sub, accentColor, onComplete) {
+  const overlay = document.getElementById('entry-fade-overlay');
+  const box = document.getElementById('entry-logo-box');
+  const kickEl = document.getElementById('entry-logo-kicker');
+  const titleEl = document.getElementById('entry-logo-title');
+  const subEl = document.getElementById('entry-logo-sub');
+
+  if (!overlay || !titleEl) {
+    if (onComplete) onComplete();
+    return;
+  }
+
+  kickEl.innerText = kicker || '';
+  titleEl.innerText = title || '';
+  titleEl.style.color = accentColor || '#ffeaa7';
+  subEl.innerText = sub || '';
+  box.style.borderColor = accentColor || '#f1c40f';
+
+  overlay.style.display = 'none';
+  void overlay.offsetWidth;
+  overlay.style.display = 'flex';
+
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    if (onComplete) onComplete();
+  }, 1750);
+}
+
+// 対戦開始時：「シュシュシュシュッ！」配札SE ＋ 第1サイクル♠場／オーラスサイクル等のデカ表示スライドイン
+function playDealAndCycleSlideIn(onReadyForTurn) {
+  const overlay = document.getElementById('cycle-slide-overlay');
+  const banner = document.getElementById('cycle-slide-banner');
+  const titleEl = document.getElementById('cycle-slide-title');
+  const subEl = document.getElementById('cycle-slide-sub');
+
+  const maxCycle = (gameState.mode === 'main' && !gameState.isOnline) ? 4 : 2;
+  const isFinalCycle = (gameState.cycle === maxCycle);
+  const cycleLabel = isFinalCycle ? `オーラスサイクル ${gameState.fieldSuit}場` : `第${gameState.cycle}サイクル ${gameState.fieldSuit}場`;
+
+  SoundEngine.playSE('deal_cards');
+
+  if (overlay && banner && titleEl) {
+    titleEl.innerText = cycleLabel;
+    titleEl.style.color = isFinalCycle ? '#ff7675' : '#ffeaa7';
+    banner.style.borderColor = isFinalCycle ? '#ff7675' : '#f1c40f';
+    if (subEl) {
+      subEl.innerText = gameState.isPlayerParent ? '親番スタート' : '子番スタート';
+      subEl.style.color = isFinalCycle ? '#ffeaa7' : '#2ecc71';
+    }
+
+    overlay.style.display = 'none';
+    void overlay.offsetWidth;
+    overlay.style.display = 'flex';
+
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      if (onReadyForTurn) onReadyForTurn();
+    }, 1250);
+  } else if (onReadyForTurn) {
+    onReadyForTurn();
+  }
 }
 
 function openLobbySubWindow(tab) {
@@ -1201,14 +1373,25 @@ function addFriendEntry() {
   renderFriendsEditorUI();
 }
 
+function getRoomBannerInfo(roomRule) {
+  if (roomRule === 'shiren') {
+    return { kicker: 'RULE ROOM MATCH', title: '🔥 試練の部屋 🔥', sub: '高圧リーチ展開・第2サイクルオーラス', color: '#ff7675' };
+  }
+  if (roomRule === 'damaten') {
+    return { kicker: 'RULE ROOM MATCH', title: '🧠 ダマテンの部屋 🧠', sub: 'リーチ禁止・第2サイクルオーラス', color: '#74b9ff' };
+  }
+  return { kicker: 'RULE ROOM MATCH', title: '⚔️ 勝負師の部屋 ⚔️', sub: '公式ガチンコ勝負・第2サイクルオーラス', color: '#ffeaa7' };
+}
+
 function startRoomMatch(roomRule) {
   SoundEngine.playSE('select_card');
   gameState.isOnline = true;
   gameState.mode = 'beginner';
   gameState.roomRule = roomRule;
-  const roomName = roomRule === 'shiren' ? '🔥 試練の部屋の主' : roomRule === 'damaten' ? '🧠 ダマテン部屋の主' : '⚔️ 勝負師の部屋の主';
-  document.getElementById('online-status-msg').innerText = `✨ ${roomName} が待ち構える部屋に入室中...`;
-  setTimeout(() => {
+  const info = getRoomBannerInfo(roomRule);
+  document.getElementById('online-status-msg').innerText = `✨ ${info.title} へ入室中...`;
+
+  playEntryFadeLogo(info.kicker, info.title, info.sub, info.color, () => {
     switchScreen('screen-roulette');
     document.getElementById('roulette-warning-banner').style.display = 'block';
     document.getElementById('btn-cpu-spin').style.display = 'none';
@@ -1228,7 +1411,7 @@ function startRoomMatch(roomRule) {
         applyRouletteResult(isHostSpade);
       }
     }, 90);
-  }, 800);
+  });
 }
 
 function initPeerWithRoomId(roomId, onOpenCb) {
@@ -1395,40 +1578,43 @@ function joinOnlineRoom() {
 }
 
 function startOnlineAutoRoulette(roomId) {
-  switchScreen('screen-roulette');
-  document.getElementById('roulette-warning-banner').style.display = 'block';
-  document.getElementById('btn-cpu-spin').style.display = 'none';
-  document.getElementById('roulette-result-text').innerText = '自動抽選回転中...';
-  if (gameState.isHost) {
-    let count = 0; const suits = ['♠', '♥'];
-    const suitEl = document.getElementById('roulette-suit');
-    const timer = setInterval(() => {
-      const s = suits[Math.floor(Math.random() * suits.length)];
-      suitEl.innerText = s; suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
-      SoundEngine.playSE('roulette_spin'); count++;
-      if (count > 16) {
-        clearInterval(timer);
-        const isHostSpade = Math.random() < 0.5;
-        const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
-        if (raw) {
-          const data = JSON.parse(raw);
-          data.rouletteDone = true; data.isHostSpade = isHostSpade;
-          localStorage.setItem(ONLINE_STORAGE_KEY, JSON.stringify(data));
+  const info = getRoomBannerInfo(gameState.roomRule);
+  playEntryFadeLogo(info.kicker, info.title, info.sub, info.color, () => {
+    switchScreen('screen-roulette');
+    document.getElementById('roulette-warning-banner').style.display = 'block';
+    document.getElementById('btn-cpu-spin').style.display = 'none';
+    document.getElementById('roulette-result-text').innerText = '自動抽選回転中...';
+    if (gameState.isHost) {
+      let count = 0; const suits = ['♠', '♥'];
+      const suitEl = document.getElementById('roulette-suit');
+      const timer = setInterval(() => {
+        const s = suits[Math.floor(Math.random() * suits.length)];
+        suitEl.innerText = s; suitEl.style.color = (s === '♠') ? '#3498db' : '#e74c3c';
+        SoundEngine.playSE('roulette_spin'); count++;
+        if (count > 16) {
+          clearInterval(timer);
+          const isHostSpade = Math.random() < 0.5;
+          const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+          if (raw) {
+            const data = JSON.parse(raw);
+            data.rouletteDone = true; data.isHostSpade = isHostSpade;
+            localStorage.setItem(ONLINE_STORAGE_KEY, JSON.stringify(data));
+          }
+          applyRouletteResult(isHostSpade);
         }
-        applyRouletteResult(isHostSpade);
-      }
-    }, 90);
-  } else {
-    window.guestRouletteSyncTimer = setInterval(() => {
-      const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      if (data.rouletteDone) {
-        clearInterval(window.guestRouletteSyncTimer);
-        applyRouletteResult(data.isHostSpade);
-      }
-    }, 400);
-  }
+      }, 90);
+    } else {
+      window.guestRouletteSyncTimer = setInterval(() => {
+        const raw = localStorage.getItem(ONLINE_STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data.rouletteDone) {
+          clearInterval(window.guestRouletteSyncTimer);
+          applyRouletteResult(data.isHostSpade);
+        }
+      }, 400);
+    }
+  });
 }
 
 function selectMode(mode) {
@@ -1438,12 +1624,21 @@ function selectMode(mode) {
   gameState.spadePlayer = 'YOU';
   gameState.heartPlayer = '相手';
   updateBubbleBarsUI();
-  switchScreen('screen-roulette');
-  document.getElementById('roulette-warning-banner').style.display = 'none';
-  document.getElementById('btn-cpu-spin').style.display = 'inline-block';
-  document.getElementById('btn-online-game-start').style.display = 'none';
-  document.getElementById('roulette-wait-msg').style.display = 'none';
-  document.getElementById('roulette-result-text').innerText = '「ルーレットスタート」ボタンを押してください';
+
+  const enterRoulette = () => {
+    switchScreen('screen-roulette');
+    document.getElementById('roulette-warning-banner').style.display = 'none';
+    document.getElementById('btn-cpu-spin').style.display = 'inline-block';
+    document.getElementById('btn-online-game-start').style.display = 'none';
+    document.getElementById('roulette-wait-msg').style.display = 'none';
+    document.getElementById('roulette-result-text').innerText = '「ルーレットスタート」ボタンを押してください';
+  };
+
+  if (mode === 'master') {
+    playEntryFadeLogo('MASTER CHALLENGE', '👹 鬼レンチャレンジ 👹', '10連チャン達成または第2オーラス親権消滅まで！', '#ff7675', enterRoulette);
+  } else {
+    enterRoulette();
+  }
 }
 
 function startCpuManualRoulette() {
@@ -1562,7 +1757,6 @@ function selectRuleYaku(idx) {
   const yaku = YAKU_REGISTRY[idx];
   const sampleTitleWrap = document.getElementById('rule-sample-title-wrap');
   const sampleContainer = document.getElementById('rule-sample-cards');
-  // 前のサンプルカードを必ず完全消去
   sampleContainer.innerHTML = '';
 
   if (!yaku) return;
@@ -1574,7 +1768,6 @@ function selectRuleYaku(idx) {
   document.getElementById('rule-detail-title').innerText = `${yaku.name}（${yaku.catId === 1 ? '+' + yaku.score + 'pt' : yaku.score + '点'}）`;
   document.getElementById('rule-detail-desc').innerText = `${yaku.catHeader}\n${yaku.desc}`;
 
-  // 状態役（catId === 1 または sample === null）はカードなし
   if (yaku.catId === 1 || !yaku.sample || !Array.isArray(yaku.sample) || yaku.sample.length === 0) {
     if (sampleTitleWrap) sampleTitleWrap.style.display = 'none';
     sampleContainer.style.display = 'none';
@@ -1656,15 +1849,18 @@ function initGameSession() {
   renderRivers();
   resetReachButtonUI();
 
-  if (gameState.isPlayerParent) {
-    document.getElementById('hand-status-msg').innerText = 'あなたの親番です。カードを2回タップして打牌するか和了できます。';
-    document.getElementById('btn-draw').disabled = true;
-    startTurnTimerIfNeeded();
-  } else {
-    document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
-    document.getElementById('btn-draw').disabled = true;
-    setTimeout(cpuTurnRoutine, 900);
-  }
+  // 対戦開始時：「シュシュシュシュッ！」配札SE ＋ 第1サイクル♠場／オーラスサイクル等スライドイン
+  playDealAndCycleSlideIn(() => {
+    if (gameState.isPlayerParent) {
+      document.getElementById('hand-status-msg').innerText = 'あなたの親番です。カードを2回タップして打牌するか和了できます。';
+      document.getElementById('btn-draw').disabled = true;
+      startTurnTimerIfNeeded();
+    } else {
+      document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
+      document.getElementById('btn-draw').disabled = true;
+      setTimeout(cpuTurnRoutine, 850);
+    }
+  });
 }
 
 function updateBoardUI() {
@@ -1683,7 +1879,6 @@ function updateBoardUI() {
     streakEl.style.color = '#bdc3c7';
   }
 
-  // 左＝♠側、右＝♥側 固定表示
   const spadeIsYou = (gameState.spadePlayer === 'YOU');
   document.getElementById('board-spade-player').innerText = spadeIsYou ? `♠ YOU(${gameState.playerScore}pt)` : `♠ 相手(${gameState.cpuScore}pt)`;
   document.getElementById('board-spade-role').innerText = (gameState.fieldSuit === '♠') ? (spadeIsYou && gameState.isPlayerParent || !spadeIsYou && !gameState.isPlayerParent ? '[親]' : '[子]') : '[待機]';
@@ -1932,7 +2127,6 @@ function checkCpuRonOnPlayerDiscard(discarded) {
   if (gameState.cpuHand.length !== 4 || !discarded) return false;
   const yaku = evaluateTenpaiHand([...gameState.cpuHand, discarded], false);
   if (yaku && (!yaku.requireReach || gameState.cpuIsReach)) {
-    // ロン和了は任意操作（「和了」ボタン点灯で待機）
     gameState.pendingRonCard = discarded;
     updateActionButtonsState();
     document.getElementById('hand-status-msg').innerText = '🔥 ロン和了チャンス！「和了」ボタンで和了、または「ドロー」で見送り';
@@ -1997,7 +2191,6 @@ function cpuTurnRoutine() {
   }, 850);
 }
 
-// カードなし・タイポグラフィ主体ロゴ演出
 function playTypographyLogoCutin(yaku, isHaitei, isTenchi, onDone) {
   const overlay = document.getElementById('typo-cutin-overlay');
   const mainEl = document.getElementById('typo-main-text');
@@ -2143,7 +2336,6 @@ function executeRoundEnd(winType, winnerSide, yaku, fullHand, winTile, isIppatsu
     bonusDetails.push(`阿漕JOKER -${2 * jokerCount}`);
   }
 
-  // ドラ・裏ドラ計算
   const doraTargets = [...gameState.doraCards, ...gameState.uraDoraCards].map(d => {
     if (!d || d.isJoker) return null;
     return d.val === 14 ? 2 : d.val + 1;
@@ -2158,7 +2350,6 @@ function executeRoundEnd(winType, winnerSide, yaku, fullHand, winTile, isIppatsu
     bonusDetails.push(`ドラ/裏ドラ +${doraHitCount}`);
   }
 
-  // 2連チャン目以降（streakCount >= 1）の積み棒
   if (gameState.streakCount >= 1) {
     points += gameState.streakCount;
     bonusDetails.push(`積み棒 +${gameState.streakCount}`);
@@ -2417,4 +2608,5 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-    
+
+  
