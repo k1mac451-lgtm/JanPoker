@@ -172,6 +172,43 @@
     .mini-card.reach-tile { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.85); }
     .mini-card.win-tile-mark { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.9); }
 
+    /* カットイン演出用ミニカード */
+    .cutin-motif-card {
+      width: 38px; height: 52px;
+      background: linear-gradient(165deg, #ffffff 0%, #eef2f5 100%);
+      color: #141a1f; border: 2px solid #2c3e50; border-radius: 6px;
+      display: inline-flex; flex-direction: column; justify-content: space-between;
+      padding: 3px 4px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.75);
+      opacity: 0;
+    }
+    .cutin-motif-card.red { color: #d62828; }
+    .cutin-motif-card.joker {
+      background: linear-gradient(160deg, #0b1017 0%, #192836 100%);
+      border-color: #ffd43b; color: #ffd43b; justify-content: center; align-items: center;
+      font-size: 0.65rem; font-weight: 950;
+    }
+    .cutin-motif-suit { font-size: 0.85rem; font-weight: 900; line-height: 1; align-self: flex-start; }
+    .cutin-motif-rank { font-size: 0.98rem; font-weight: 950; line-height: 1; align-self: flex-end; }
+
+    @keyframes cardSlideInLeft {
+      0% { opacity: 0; transform: translateX(-44px) rotate(-14deg) scale(0.8); }
+      65% { opacity: 1; transform: translateX(4px) rotate(2deg) scale(1.06); }
+      100% { opacity: 1; transform: translateX(0) rotate(-3deg) scale(1); }
+    }
+    @keyframes cardSlideInRight {
+      0% { opacity: 0; transform: translateX(44px) rotate(14deg) scale(0.8); }
+      65% { opacity: 1; transform: translateX(-4px) rotate(-2deg) scale(1.06); }
+      100% { opacity: 1; transform: translateX(0) rotate(3deg) scale(1); }
+    }
+    @keyframes cardFadeZoom {
+      0% { opacity: 0; transform: translateY(16px) scale(0.75); }
+      70% { opacity: 1; transform: translateY(-2px) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(0); }
+    }
+    .cutin-motif-card.anim-left { animation: cardSlideInLeft 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
+    .cutin-motif-card.anim-right { animation: cardSlideInRight 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) 0.12s forwards; }
+    .cutin-motif-card.anim-pop { animation: cardFadeZoom 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) 0.08s forwards; }
+
     #screen-game { padding: 8px 10px 16px 10px; gap: 5px; justify-content: flex-start; overflow-y: auto; }
     .speech-bubble-slot {
       height: 22px; min-height: 22px; max-height: 22px;
@@ -277,11 +314,33 @@
       box-shadow: 0 0 26px rgba(241, 196, 15, 0.5);
     }
     .cutin-banner.entry-fadein { animation: logoFadeIn 1.6s ease-in-out forwards; }
-    .cutin-banner.rare-cutin {
-      background: linear-gradient(135deg, #5c0a17 0%, #1d0736 50%, #4d2603 100%);
-      border: 3px solid #ff7675;
-      box-shadow: 0 0 36px rgba(255, 118, 117, 0.95), 0 0 60px rgba(241, 196, 15, 0.45), inset 0 0 16px rgba(255, 212, 59, 0.5);
+
+    /* 基本役：シンプル＆テンポ重視 */
+    .cutin-banner.basic-cutin {
+      background: linear-gradient(135deg, #16323a 0%, #0c1b20 100%);
+      border: 2px solid #5dade2;
+      box-shadow: 0 0 20px rgba(93, 173, 226, 0.45);
+    }
+    /* 中級役：ネオン翡翠・紫系シンプルロゴ */
+    .cutin-banner.mid-cutin {
+      background: linear-gradient(135deg, #162447 0%, #1f4068 60%, #1b1b2f 100%);
+      border: 2.5px solid #38bdf8;
+      box-shadow: 0 0 26px rgba(56, 189, 248, 0.65);
+    }
+    /* 役満級（4カード等）：重厚紅蓮・黄金 */
+    .cutin-banner.yakuman-cutin {
+      background: linear-gradient(135deg, #6e0d12 0%, #2d0914 55%, #592607 100%);
+      border: 3px solid #ff9f1a;
+      box-shadow: 0 0 34px rgba(255, 159, 26, 0.85);
       animation: ippatsuPulse 0.65s ease-out;
+    }
+    /* レア役＋カードカットイン合体：黒金・紅蓮・虹彩の別格演出 */
+    .cutin-banner.rare-card-cutin {
+      background: radial-gradient(circle at top, #3b0d24 0%, #140826 55%, #090b14 100%);
+      border: 3px solid #ffd43b;
+      outline: 2px solid #ff477e;
+      box-shadow: 0 0 40px rgba(255, 212, 59, 0.9), 0 0 65px rgba(255, 71, 126, 0.65);
+      animation: ippatsuPulse 0.68s ease-out;
     }
     .cutin-banner.ippatsu-cutin {
       background: linear-gradient(135deg, #a80c0c 0%, #7a3b00 45%, #3d0404 100%);
@@ -291,10 +350,9 @@
       animation: ippatsuPulse 0.7s ease-out;
       padding: 20px 18px;
     }
-    .cutin-banner.mid-cutin {
-      background: linear-gradient(135deg, #153642 0%, #0d1f26 100%);
-      border: 2px solid #5dade2;
-      box-shadow: 0 0 18px rgba(93, 173, 226, 0.45);
+    .cutin-card-stage {
+      display: flex; justify-content: center; align-items: center; gap: 6px;
+      min-height: 56px; margin: 6px 0 8px 0;
     }
 
     #res-details-grid {
@@ -712,7 +770,7 @@ function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false)
   }
   clearCutinTimers();
   SoundEngine.playSE(isRareStyle ? 'win_rare' : 'reach_declare');
-  banner.className = isRareStyle ? 'cutin-banner rare-cutin entry-fadein' : 'cutin-banner entry-fadein';
+  banner.className = isRareStyle ? 'cutin-banner rare-card-cutin entry-fadein' : 'cutin-banner entry-fadein';
   banner.innerHTML = `<div style="font-size:0.68rem; color:#ffd43b; font-weight:900; letter-spacing:0.12em; margin-bottom:4px;">ENTRY EVENT</div>` +
     `<div style="font-size:1.22rem; font-weight:950; letter-spacing:0.05em;">${titleText}</div>` +
     (subText ? `<div style="font-size:0.76rem; color:#ffe066; margin-top:5px; font-weight:800;">${subText}</div>` : '');
@@ -723,10 +781,81 @@ function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false)
   }, 1600);
 }
 
-const RARE_YAKU_NAMES = new Set([
-  "天地人和", "シン・AKB48", "酷使苦情", "ロイヤルストレートフラッシュ",
-  "5カード", "七三元", "黒龍", "赤龍", "ブラックジャック", "レッドクイーン"
-]);
+/* レア役モチーフカード定義（カードがロゴにカットイン・フェードインする演出用） */
+const RARE_YAKU_MOTIF_CARDS = {
+  "ブラックジャック": [
+    { suit: '♠', val: 11, anim: 'anim-left' },
+    { suit: '♣', val: 11, anim: 'anim-right' }
+  ],
+  "レッドクイーン": [
+    { suit: '♥', val: 12, anim: 'anim-left' },
+    { suit: '♦', val: 12, anim: 'anim-right' }
+  ],
+  "酷使苦情": [
+    { suit: '♠', val: 5, anim: 'anim-left' },
+    { suit: '♥', val: 9, anim: 'anim-pop' },
+    { suit: '♦', val: 4, anim: 'anim-pop' },
+    { suit: '♣', val: 9, anim: 'anim-pop' },
+    { isJoker: true, anim: 'anim-right' }
+  ],
+  "AKB48": [
+    { suit: '♠', val: 14, anim: 'anim-left' },
+    { suit: '♥', val: 13, anim: 'anim-pop' },
+    { suit: '♦', val: 4, anim: 'anim-pop' },
+    { suit: '♣', val: 8, anim: 'anim-pop' },
+    { isJoker: true, anim: 'anim-right' }
+  ],
+  "シン・AKB48": [
+    { suit: '♥', val: 14, anim: 'anim-left' },
+    { suit: '♥', val: 13, anim: 'anim-pop' },
+    { suit: '♥', val: 4, anim: 'anim-pop' },
+    { suit: '♥', val: 8, anim: 'anim-pop' },
+    { isJoker: true, anim: 'anim-right' }
+  ],
+  "ロイヤルストレートフラッシュ": [
+    { suit: '♠', val: 10, anim: 'anim-left' },
+    { suit: '♠', val: 14, anim: 'anim-right' }
+  ],
+  "5カード": [
+    { isJoker: true, anim: 'anim-left' },
+    { suit: '♠', val: 7, anim: 'anim-right' }
+  ],
+  "七三元": [
+    { suit: '♠', val: 7, anim: 'anim-left' },
+    { suit: '♥', val: 14, anim: 'anim-right' }
+  ],
+  "黒龍": [
+    { suit: '♠', val: 2, anim: 'anim-left' },
+    { suit: '♣', val: 10, anim: 'anim-right' }
+  ],
+  "赤龍": [
+    { suit: '♥', val: 2, anim: 'anim-left' },
+    { suit: '♦', val: 10, anim: 'anim-right' }
+  ]
+};
+
+function buildMotifCardsHtml(yakuName, isTenchi) {
+  let cards = RARE_YAKU_MOTIF_CARDS[yakuName];
+  if (!cards && isTenchi) {
+    cards = [
+      { suit: '♠', val: 14, anim: 'anim-left' },
+      { suit: '♥', val: 14, anim: 'anim-right' }
+    ];
+  }
+  if (!cards || cards.length === 0) return '';
+  const inner = cards.map(c => {
+    if (c.isJoker) {
+      return `<div class="cutin-motif-card joker ${c.anim}">JOKER</div>`;
+    }
+    const isRed = (c.suit === '♥' || c.suit === '♦');
+    const rankStr = c.val === 11 ? 'J' : c.val === 12 ? 'Q' : c.val === 13 ? 'K' : c.val === 14 ? 'A' : String(c.val);
+    return `<div class="cutin-motif-card ${isRed ? 'red' : ''} ${c.anim}">` +
+      `<span class="cutin-motif-suit">${c.suit}</span>` +
+      `<span class="cutin-motif-rank">${rankStr}</span>` +
+      `</div>`;
+  }).join('');
+  return `<div class="cutin-card-stage">${inner}</div>`;
+}
 
 function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   const { isTenchi = false, isIppatsu = false, isHaitei = false } = options;
@@ -736,13 +865,14 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
 
   clearCutinTimers();
 
-  const showBanner = (bannerClass, tagText, titleText, subText, seName, durationMs, afterCallback = null) => {
+  const showBanner = (bannerClass, tagText, titleText, subText, seName, durationMs, motifHtml = '', afterCallback = null) => {
     SoundEngine.playSE(seName);
     banner.className = bannerClass;
     banner.innerHTML =
-      (tagText ? `<div style="font-size:0.72rem; color:#ffd43b; font-weight:950; letter-spacing:0.12em; margin-bottom:4px;">${tagText}</div>` : '') +
-      `<div style="font-size:1.2rem; font-weight:950; letter-spacing:0.04em;">${titleText}</div>` +
-      (subText ? `<div style="font-size:0.8rem; color:#ffe066; margin-top:4px; font-weight:800;">${subText}</div>` : '');
+      (tagText ? `<div style="font-size:0.7rem; color:#ffd43b; font-weight:950; letter-spacing:0.12em; margin-bottom:3px;">${tagText}</div>` : '') +
+      motifHtml +
+      `<div style="font-size:1.18rem; font-weight:950; letter-spacing:0.04em;">${titleText}</div>` +
+      (subText ? `<div style="font-size:0.78rem; color:#ffe066; margin-top:4px; font-weight:800;">${subText}</div>` : '');
     overlay.style.display = 'flex';
     window.__cutinTimer = setTimeout(() => {
       if (afterCallback) {
@@ -753,32 +883,27 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
     }, durationMs);
   };
 
-  let baseClass = 'cutin-banner';
-  let baseTag = '';
-  let baseTitle = `${winType}和了：${yaku.name}`;
-  let baseSub = `+${effectiveScore}pt`;
+  const hasRareMotif = Boolean(RARE_YAKU_MOTIF_CARDS[yaku.name]) || isTenchi;
+  let baseClass = 'cutin-banner basic-cutin';
+  let baseTag = `BASIC / ${winType}`;
+  let baseTitle = `${winType}和了（+${effectiveScore}pt）`;
+  let baseSub = `成立役：${yaku.name}`;
   let baseSE = 'win_basic';
 
-  if (isTenchi) {
-    baseClass = 'cutin-banner rare-cutin';
-    baseTag = '✨ RARE SPECIAL / 天地人和 ✨';
-    baseTitle = `天地人和・${yaku.name}！`;
-    baseSub = `初手完成特例（+${effectiveScore}pt）`;
-    baseSE = 'win_rare';
-  } else if (RARE_YAKU_NAMES.has(yaku.name)) {
-    baseClass = 'cutin-banner rare-cutin';
-    baseTag = '👑 RARE CATEGORY / 希少役 👑';
-    baseTitle = `${yaku.name}！`;
+  if (hasRareMotif) {
+    baseClass = 'cutin-banner rare-card-cutin';
+    baseTag = isTenchi ? '✨ RARE SPECIAL / 天地人和 ✨' : '🃏 RARE CARD CUT-IN / 希少役 🃏';
+    baseTitle = isTenchi ? `天地人和・${yaku.name}！` : `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_rare';
   } else if (yaku.catId === 5) {
-    baseClass = 'cutin-banner rare-cutin';
+    baseClass = 'cutin-banner rare-card-cutin';
     baseTag = '🃏 JOKER MUST';
     baseTitle = `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_yakuman';
   } else if (yaku.catId === 4) {
-    baseClass = 'cutin-banner rare-cutin';
+    baseClass = 'cutin-banner yakuman-cutin';
     baseTag = '🔥 YAKUMAN';
     baseTitle = `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
@@ -786,7 +911,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   } else if (yaku.catId === 3) {
     baseClass = 'cutin-banner mid-cutin';
     baseTag = '◆ MIDDLE YAKU';
-    baseTitle = `${yaku.name}`;
+    baseTitle = `◆ ${yaku.name} ◆`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = 'win_mid';
   }
@@ -794,6 +919,8 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   if (isHaitei) {
     baseSub = `🌊 海底（+1pt） / ${baseSub}`;
   }
+
+  const motifHtml = buildMotifCardsHtml(yaku.name, isTenchi);
 
   if (isIppatsu) {
     showBanner(
@@ -803,6 +930,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
       `一発ボーナス確定 → 和了役演出へ`,
       'ippatsu_shout',
       2000,
+      '',
       () => {
         showBanner(
           baseClass,
@@ -811,6 +939,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
           `⚡ 一発（+1pt） / ${baseSub}`,
           baseSE,
           2000,
+          motifHtml,
           () => {
             overlay.style.display = 'none';
           }
@@ -818,7 +947,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
       }
     );
   } else {
-    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, 2000, () => {
+    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, 2000, motifHtml, () => {
       overlay.style.display = 'none';
     });
   }
@@ -870,7 +999,8 @@ function checkValidStraight(vals, numJokers) {
   return false;
 }
 
-function checkValid3Straight(vals3, numJokers) {
+/* 3枚連番の厳密判定（必ず連続する3数字のみ成立） */
+function checkValid3Straight(vals3, numJokers = 0) {
   const clean = vals3.filter(v => v > 0);
   if (clean.length + numJokers !== 3) return false;
   const unique = new Set(clean);
@@ -1010,7 +1140,7 @@ const YAKU_REGISTRY = [
   {
     name: "ニューハウス", score: 7, catId: 2, catName: "基本役", catClass: "cat-2",
     catHeader: "【要リーチ・JOKER不可❌】基本役（同スート3連番＋ペア）",
-    desc: "任意のワンペア（2枚）＋同一スートの3連番（3枚）。要リーチ・JOKER不可。",
+    desc: "任意のワンペア（同数字2枚）＋残り3枚が同一スートの連続3数字（例：4-5-6、9-10-J）。要リーチ・JOKER不可。",
     sample: [{suit:'♠',val:9},{suit:'♥',val:9},{suit:'♠',val:4},{suit:'♠',val:5},{suit:'♠',val:6}],
     jokerType: "forbidden", requireReach: true,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
