@@ -172,7 +172,6 @@
     .mini-card.reach-tile { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.85); }
     .mini-card.win-tile-mark { border: 2px solid #ff3838; box-shadow: 0 0 8px rgba(255, 56, 56, 0.9); }
 
-    /* カットイン演出用ミニカード */
     .cutin-motif-card {
       width: 38px; height: 52px;
       background: linear-gradient(165deg, #ffffff 0%, #eef2f5 100%);
@@ -203,7 +202,7 @@
     @keyframes cardFadeZoom {
       0% { opacity: 0; transform: translateY(16px) scale(0.75); }
       70% { opacity: 1; transform: translateY(-2px) scale(1.05); }
-      100% { opacity: 1; transform: translateY(0) scale(0); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     .cutin-motif-card.anim-left { animation: cardSlideInLeft 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
     .cutin-motif-card.anim-right { animation: cardSlideInRight 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) 0.12s forwards; }
@@ -315,26 +314,22 @@
     }
     .cutin-banner.entry-fadein { animation: logoFadeIn 1.6s ease-in-out forwards; }
 
-    /* 基本役：シンプル＆テンポ重視 */
     .cutin-banner.basic-cutin {
       background: linear-gradient(135deg, #16323a 0%, #0c1b20 100%);
       border: 2px solid #5dade2;
       box-shadow: 0 0 20px rgba(93, 173, 226, 0.45);
     }
-    /* 中級役：ネオン翡翠・紫系シンプルロゴ */
     .cutin-banner.mid-cutin {
       background: linear-gradient(135deg, #162447 0%, #1f4068 60%, #1b1b2f 100%);
       border: 2.5px solid #38bdf8;
       box-shadow: 0 0 26px rgba(56, 189, 248, 0.65);
     }
-    /* 役満級（4カード等）：重厚紅蓮・黄金 */
     .cutin-banner.yakuman-cutin {
       background: linear-gradient(135deg, #6e0d12 0%, #2d0914 55%, #592607 100%);
       border: 3px solid #ff9f1a;
-      box-shadow: 0 0 34px rgba(255, 159, 26, 0.85);
+      box-shadow: 0 0 34px rgba(255, 159, 16, 0.85);
       animation: ippatsuPulse 0.65s ease-out;
     }
-    /* レア役＋カードカットイン合体：黒金・紅蓮・虹彩の別格演出 */
     .cutin-banner.rare-card-cutin {
       background: radial-gradient(circle at top, #3b0d24 0%, #140826 55%, #090b14 100%);
       border: 3px solid #ffd43b;
@@ -781,7 +776,6 @@ function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false)
   }, 1600);
 }
 
-/* レア役モチーフカード定義（カードがロゴにカットイン・フェードインする演出用） */
 const RARE_YAKU_MOTIF_CARDS = {
   "ブラックジャック": [
     { suit: '♠', val: 11, anim: 'anim-left' },
@@ -999,7 +993,7 @@ function checkValidStraight(vals, numJokers) {
   return false;
 }
 
-/* 3枚連番の厳密判定（必ず連続する3数字のみ成立） */
+/* 3枚連番の厳密判定（2〜12始点または A(14)-2-3 の連続3数字のみ成立） */
 function checkValid3Straight(vals3, numJokers = 0) {
   const clean = vals3.filter(v => v > 0);
   if (clean.length + numJokers !== 3) return false;
@@ -1009,6 +1003,8 @@ function checkValid3Straight(vals3, numJokers = 0) {
     const seq = [start, start + 1, start + 2];
     if (clean.every(v => seq.includes(v))) return true;
   }
+  const aceStartSeq = [14, 2, 3];
+  if (clean.every(v => aceStartSeq.includes(v))) return true;
   return false;
 }
 
@@ -1075,7 +1071,7 @@ const YAKU_REGISTRY = [
   {
     name: "海底", score: 1, catId: 1, catName: "状態役", catClass: "cat-1",
     catHeader: "【状態加点】最後の牌での和了！",
-    desc: "山札の最後の牌（残り0枚時点）でのツモ和了で＋1pt加算。",
+    desc: "山札最後の牌（残り0枚時点）でのツモ和了で＋1pt加算。",
     sample: null, jokerType: "allowed", requireReach: false, check: () => false
   },
   {
@@ -1098,8 +1094,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ストレート", score: 4, catId: 2, catName: "基本役", catClass: "cat-2",
-    catHeader: "【要リーチ・JOKER不可❌】絵札1枚以上絡む連番5枚",
-    desc: "連番5枚（A-2-3-4-5〜10-J-Q-K-Aまで有効、A跨ぎ不可）のうち、絵札（J,Q,K,A）が1枚以上絡む混色5枚。2〜10のみは無効（同スート5枚はストレートフラッシュ）。要リーチ・JOKER不可。",
+    catHeader: "【要リーチ・JOKER不可❌】絵札1枚以上絡む混色5枚連番",
+    desc: "混色（2スート以上）で絵札（A・J・Q・K）が1枚以上絡む5枚連番（A-2-3-4-5〜10-J-Q-K-A、A跨ぎ不可）。※2〜10のみの連番は無効（同スート5枚ならストレートフラッシュ）。要リーチ・JOKER不可。",
     sample: [{suit:'♠',val:8},{suit:'♥',val:9},{suit:'♦',val:10},{suit:'♣',val:11},{suit:'♠',val:12}],
     jokerType: "forbidden", requireReach: true,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1140,7 +1136,7 @@ const YAKU_REGISTRY = [
   {
     name: "ニューハウス", score: 7, catId: 2, catName: "基本役", catClass: "cat-2",
     catHeader: "【要リーチ・JOKER不可❌】基本役（同スート3連番＋ペア）",
-    desc: "任意のワンペア（同数字2枚）＋残り3枚が同一スートの連続3数字（例：4-5-6、9-10-J）。要リーチ・JOKER不可。",
+    desc: "任意のワンペア（同数字2枚）＋残り3枚が同一スートの連続3数字（例：A-2-3、4-5-6、9-10-J）。要リーチ・JOKER不可。",
     sample: [{suit:'♠',val:9},{suit:'♥',val:9},{suit:'♠',val:4},{suit:'♠',val:5},{suit:'♠',val:6}],
     jokerType: "forbidden", requireReach: true,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
