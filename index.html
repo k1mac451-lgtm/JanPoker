@@ -1247,6 +1247,7 @@ const gameState = {
   mode: 'beginner',
   roomRule: 'shoushi',
   isOnline: false,
+  isRoomSingle: false,
   isHost: true,
   roomId: '',
   cycle: 1,
@@ -1326,6 +1327,10 @@ let resTimer = null, resTimeLeft = 30;
 let cpuActionTimer = null, cpuThinkTimer = null;
 let peerInstance = null, peerConn = null, heartbeatInterval = null;
 let currentRuleCategory = 2;
+
+function hasActiveRemotePeer() {
+  return Boolean(!gameState.isRoomSingle && peerConn && peerConn.open);
+}
 
 const beginnerAdviceList = [
   "💡 ヒント：基本役（10点以下）はリーチ宣言が和了の条件だよ！",
@@ -1422,6 +1427,7 @@ function showTitle() {
 function showModeSelect() {
   clearAllTimers();
   gameState.isOnline = false;
+  gameState.isRoomSingle = false;
   gameState.roomRule = 'shoushi';
   gameState.spadePlayer = 'YOU';
   gameState.heartPlayer = '相手';
@@ -1431,6 +1437,7 @@ function showModeSelect() {
 function showOnlineLobby() {
   clearAllTimers();
   gameState.isOnline = true;
+  gameState.isRoomSingle = false;
   switchScreen('screen-online');
 }
 
@@ -1529,7 +1536,7 @@ function bindPeerDataChannel(conn) {
       handleOpponentDiscardReceived(payload.card);
     } else if (payload.type === 'RON_PASS') {
       gameState.pendingRonCard = null;
-      if (!gameState.isOnline) {
+      if (!hasActiveRemotePeer()) {
         scheduleCpuTurn(500);
       }
     }
@@ -1554,6 +1561,7 @@ function sendPeerPayload(obj) {
 function startRoomMatch(roomRule) {
   SoundEngine.playSE('select_card');
   gameState.isOnline = true;
+  gameState.isRoomSingle = true;
   gameState.mode = 'beginner';
   gameState.roomRule = roomRule;
   const roomTitle = roomRule === 'shiren' ? '🔥 試練の部屋' : roomRule === 'damaten' ? '🧠 ダマテン部屋' : '⚔️ 勝負師の部屋';
@@ -1588,6 +1596,7 @@ function createOnlineRoom() {
   SoundEngine.playSE('select_card');
   gameState.isHost = true;
   gameState.isOnline = true;
+  gameState.isRoomSingle = false;
   gameState.roomRule = document.getElementById('host-room-rule-select').value;
   const roomId = 'JP2-' + Math.floor(1000 + Math.random() * 9000);
   gameState.roomId = roomId;
@@ -1648,6 +1657,7 @@ function joinOnlineRoom() {
   SoundEngine.playSE('select_card');
   gameState.isHost = false;
   gameState.isOnline = true;
+  gameState.isRoomSingle = false;
   gameState.roomId = roomId;
   document.getElementById('online-status-msg').innerText = 'ルームに接続中...';
 
@@ -1716,6 +1726,7 @@ function startOnlineAutoRoulette(roomId) {
 function selectMode(mode) {
   gameState.mode = mode;
   gameState.isOnline = false;
+  gameState.isRoomSingle = false;
   gameState.roomRule = 'shoushi';
   gameState.spadePlayer = 'YOU';
   gameState.heartPlayer = '相手';
@@ -1795,11 +1806,11 @@ function applyRouletteResult(isHostSpade) {
   const btnGameStart = document.getElementById('btn-online-game-start');
   const waitMsg = document.getElementById('roulette-wait-msg');
 
-  if (gameState.isOnline && gameState.isHost) {
+  if (gameState.isOnline && !gameState.isRoomSingle && gameState.isHost) {
     btnGameStart.style.display = 'inline-block';
     waitMsg.style.display = 'none';
     resultTextEl.innerHTML += '<br><span style="color:#2ecc71; font-size:0.74rem;">🚀 ゲーム開始 (♠側親) を押してスタートしてください</span>';
-  } else if (gameState.isOnline && !gameState.isHost) {
+  } else if (gameState.isOnline && !gameState.isRoomSingle && !gameState.isHost) {
     btnGameStart.style.display = 'none';
     waitMsg.style.display = 'block';
     window.guestGameStartTimer = setInterval(() => {
@@ -1851,7 +1862,7 @@ function getDoraCountForCycle() {
 }
 
 function scheduleCpuTurn(delayMs = 750) {
-  if (gameState.isOnline || gameState.isGameOver) return;
+  if (hasActiveRemotePeer() || gameState.isGameOver) return;
   clearTimeout(cpuActionTimer);
   cpuActionTimer = setTimeout(() => {
     cpuTurnRoutine();
@@ -1939,14 +1950,14 @@ function initGameSession() {
   updateActionButtons();
 
   if (gameState.isPlayerParent) {
-    if (!gameState.isOnline) triggerCpuSignalByEvent('attack');
+    if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('attack');
     document.getElementById('hand-status-msg').innerText = 'あなたの親番です。カードを2回タップして打牌するか和了できます。';
     document.getElementById('btn-draw').disabled = true;
     startTurnTimerIfNeeded();
   } else {
     document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
     document.getElementById('btn-draw').disabled = true;
-    if (!gameState.isOnline) {
+    if (!hasActiveRemotePeer()) {
       scheduleCpuTurn(850);
     } else {
       startTurnTimerIfNeeded();
@@ -1967,11 +1978,11 @@ function initSignalBar() {
       bar.querySelectorAll('.signal-chip').forEach(c => c.classList.remove('active'));
       if (item.type === 'hide' || item.text === '非表示') {
         hideSpeechBubble('bottom');
-        if (gameState.isOnline) sendPeerPayload({ type: 'SIGNAL', text: '非表示' });
+        if (hasActiveRemotePeer()) sendPeerPayload({ type: 'SIGNAL', text: '非表示' });
       } else {
         chip.classList.add('active');
         setSpeechBubble('bottom', item.text);
-        if (gameState.isOnline) {
+        if (hasActiveRemotePeer()) {
           sendPeerPayload({ type: 'SIGNAL', text: item.text });
         } else {
           setTimeout(() => {
@@ -1985,7 +1996,7 @@ function initSignalBar() {
 }
 
 function triggerCpuSignalByEvent(eventType) {
-  if (gameState.isOnline) return;
+  if (hasActiveRemotePeer()) return;
   const modePack = CPU_MODE_DIALOGUES[gameState.mode] || CPU_MODE_DIALOGUES.beginner;
   const pool = modePack[eventType] || modePack.wait;
   if (!pool || !pool.length) return;
@@ -2204,7 +2215,7 @@ function discardPlayerCard(idx) {
   updateBoardUI();
   updateActionButtons();
 
-  if (gameState.isOnline) {
+  if (hasActiveRemotePeer()) {
     sendPeerPayload({ type: 'OPPONENT_DISCARD', card: discarded });
     startTurnTimerIfNeeded();
     return;
@@ -2432,7 +2443,7 @@ function playerWin() {
   const isIppatsu = checkPlayerIppatsuEligible(winType);
   const isTenchi = (gameState.turnCount === 0);
   const isHaitei = (winType === 'ツモ' && gameState.deck.length === 0);
-  if (!gameState.isOnline) triggerCpuSignalByEvent('react');
+  if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('react');
   triggerWinCutinExclusive(winType, best.yaku, best.effectiveScore, { isTenchi, isIppatsu, isHaitei });
   executeRoundEnd(winType, 'player', best, fullHand, winTile, isIppatsu, isTenchi, isHaitei);
 }
@@ -2446,7 +2457,7 @@ function checkCpuRonOnPlayerDiscard(discarded) {
 
   const isIppatsu = gameState.cpuIsReach && !gameState.cpuReachHasTurnPassed;
   const isTenchi = (gameState.turnCount === 0);
-  if (!gameState.isOnline) triggerCpuSignalByEvent('react');
+  if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('react');
   triggerWinCutinExclusive('ロン', best.yaku, best.effectiveScore, { isTenchi, isIppatsu, isHaitei: false });
   executeRoundEnd('ロン', 'cpu', best, candidate5, discarded, isIppatsu, isTenchi, false);
   return true;
@@ -2500,7 +2511,7 @@ function chooseCpuDiscardIndex() {
 }
 
 function cpuTurnRoutine() {
-  if (gameState.isGameOver || gameState.isOnline || gameState.isCpuActing) return;
+  if (gameState.isGameOver || hasActiveRemotePeer() || gameState.isCpuActing) return;
   gameState.isCpuActing = true;
 
   if (gameState.deck.length === 0) {
@@ -2518,7 +2529,7 @@ function cpuTurnRoutine() {
   clearTimeout(cpuThinkTimer);
   cpuThinkTimer = setTimeout(() => {
     gameState.isCpuActing = false;
-    if (gameState.isGameOver || gameState.isOnline) return;
+    if (gameState.isGameOver || hasActiveRemotePeer()) return;
 
     const hand5 = gameState.cpuHand.slice(0, 5);
     const cpuBest = getBestYakuFor5(hand5, gameState.cpuIsReach);
@@ -2526,7 +2537,7 @@ function cpuTurnRoutine() {
       const isIppatsu = gameState.cpuIsReach && !gameState.cpuReachHasTurnPassed;
       const isTenchi = (gameState.turnCount === 0);
       const isHaitei = (gameState.deck.length === 0);
-      if (!gameState.isOnline) triggerCpuSignalByEvent('react');
+      if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('react');
       triggerWinCutinExclusive('ツモ', cpuBest.yaku, cpuBest.effectiveScore, { isTenchi, isIppatsu, isHaitei });
       executeRoundEnd('ツモ', 'cpu', cpuBest, [...hand5], hand5[hand5.length - 1], isIppatsu, isTenchi, isHaitei);
       return;
@@ -2548,9 +2559,9 @@ function cpuTurnRoutine() {
         gameState.cpuReachTurn = gameState.turnCount;
         gameState.cpuScore -= 1;
         gameState.kyotaku += 1;
-        if (!gameState.isOnline) triggerCpuSignalByEvent('attack');
+        if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('attack');
         triggerInfoCutinBanner('相手リーチ宣言！', '', 'reach_cutin');
-      } else if (canCpuReach && !gameState.isOnline && Math.random() < 0.45) {
+      } else if (canCpuReach && !hasActiveRemotePeer() && Math.random() < 0.45) {
         triggerCpuSignalByEvent('wait');
       }
     }
