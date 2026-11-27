@@ -194,13 +194,13 @@
       70% { opacity: 1; transform: translateY(-2px) scale(1.05); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .cutin-motif-card.anim-left { animation: cardSlideInLeft 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
-    .cutin-motif-card.anim-right { animation: cardSlideInRight 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) 0.12s forwards; }
-    .cutin-motif-card.anim-pop { animation: cardFadeZoom 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) 0.08s forwards; }
+    .cutin-motif-card.anim-left { animation: cardSlideInLeft 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
+    .cutin-motif-card.anim-right { animation: cardSlideInRight 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.14s forwards; }
+    .cutin-motif-card.anim-pop { animation: cardFadeZoom 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) 0.1s forwards; }
     @keyframes cycleSlideInBanner {
       0% { opacity: 0; transform: translate(-120%, -50%) skewX(-14deg) scale(0.85); }
-      22% { opacity: 1; transform: translate(-50%, -50%) skewX(-6deg) scale(1.06); }
-      78% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg) scale(1); }
+      18% { opacity: 1; transform: translate(-50%, -50%) skewX(-6deg) scale(1.06); }
+      84% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg) scale(1); }
       100% { opacity: 0; transform: translate(40%, -50%) skewX(8deg) scale(0.95); }
     }
     #cycle-slidein-banner {
@@ -218,7 +218,7 @@
       box-shadow: 0 0 36px rgba(255, 212, 59, 0.92), 0 10px 26px rgba(0, 0, 0, 0.85);
       text-align: center;
       white-space: nowrap;
-      animation: cycleSlideInBanner 1.35s cubic-bezier(0.18, 0.92, 0.25, 1) forwards;
+      animation: cycleSlideInBanner 2.1s cubic-bezier(0.18, 0.92, 0.25, 1) forwards;
     }
     .cycle-slide-main {
       font-size: 1.55rem;
@@ -287,6 +287,11 @@
       box-shadow: 0 0 12px rgba(255, 118, 117, 0.85); line-height: 1.15; text-align: center;
       letter-spacing: 0.02em;
     }
+    #board-timer-center-badge.paused {
+      background: linear-gradient(180deg, #f39c12 0%, #b9770e 100%);
+      border-color: #fff3b0;
+      box-shadow: 0 0 12px rgba(243, 156, 18, 0.85);
+    }
     #player-hand-container {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
       height: 86px; min-height: 86px; align-items: end; padding-top: 9px; justify-items: center;
@@ -317,9 +322,9 @@
     .signal-chip.active { background: #f1c40f; color: #111; border-color: #fff0a8; }
     @keyframes logoFadeIn {
       0% { opacity: 0; transform: scale(0.9); }
-      20% { opacity: 1; transform: scale(1.02); }
-      85% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0.92; transform: scale(0.99); }
+      16% { opacity: 1; transform: scale(1.02); }
+      88% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0.94; transform: scale(0.99); }
     }
     @keyframes ippatsuPulse {
       0% { transform: scale(0.84) rotate(-1.5deg); filter: brightness(1.35); }
@@ -337,7 +342,7 @@
       border: 2px solid #f1c40f; color: #fff; text-align: center;
       box-shadow: 0 0 26px rgba(241, 196, 15, 0.5);
     }
-    .cutin-banner.entry-fadein { animation: logoFadeIn 1.6s ease-in-out forwards; }
+    .cutin-banner.entry-fadein { animation: logoFadeIn 2.1s ease-in-out forwards; }
     .cutin-banner.basic-cutin {
       background: linear-gradient(135deg, #16323a 0%, #0c1b20 100%);
       border: 2px solid #5dade2;
@@ -352,21 +357,21 @@
       background: linear-gradient(135deg, #6e0d12 0%, #2d0914 55%, #592607 100%);
       border: 3px solid #ff9f1a;
       box-shadow: 0 0 34px rgba(255, 159, 16, 0.85);
-      animation: ippatsuPulse 0.65s ease-out;
+      animation: ippatsuPulse 0.7s ease-out;
     }
     .cutin-banner.rare-card-cutin {
       background: radial-gradient(circle at top, #3b0d24 0%, #140826 55%, #090b14 100%);
       border: 3px solid #ffd43b;
       outline: 2px solid #ff477e;
       box-shadow: 0 0 40px rgba(255, 212, 59, 0.9), 0 0 65px rgba(255, 71, 126, 0.65);
-      animation: ippatsuPulse 0.68s ease-out;
+      animation: ippatsuPulse 0.72s ease-out;
     }
     .cutin-banner.ippatsu-cutin {
       background: linear-gradient(135deg, #a80c0c 0%, #7a3b00 45%, #3d0404 100%);
       border: 3.5px solid #ffd43b;
       outline: 2px solid #ff3838;
       box-shadow: 0 0 42px rgba(255, 212, 59, 1), 0 0 70px rgba(255, 56, 56, 0.92), inset 0 0 20px rgba(255, 243, 176, 0.65);
-      animation: ippatsuPulse 0.7s ease-out;
+      animation: ippatsuPulse 0.75s ease-out;
       padding: 20px 18px;
     }
     #special-logo-banner {
@@ -388,7 +393,7 @@
       color: #fef08a;
       font-size: 1.05rem;
       font-weight: 950;
-      animation: logoFadeIn 1.35s ease-in-out forwards;
+      animation: logoFadeIn 2.05s ease-in-out forwards;
     }
     .cutin-card-stage {
       display: flex; justify-content: center; align-items: center; gap: 6px;
@@ -487,7 +492,7 @@
   <div id="screen-online" class="screen" style="justify-content: center; align-items: center; text-align: center; gap: 7px;">
     <h3 class="screen-header-title" style="color: #5dade2;">通信＆ルール部屋ロビー</h3>
     <div style="font-size: 0.69rem; color: #ff7675; font-weight: bold; background: rgba(255,118,117,0.12); border: 1px solid rgba(255,118,117,0.4); padding: 4px 8px; border-radius: 5px; width: 100%;">
-      ⚠️ 通信モード全般では30秒の制限時間が適用されます！
+      ⚠️ 通信モード全般では30秒の制限時間が適用されます（※演出中はロスタイムとして一時停止）
     </div>
     <div class="panel-card">
       <div style="font-size: 0.71rem; color: #f1c40f; font-weight: bold; margin-bottom: 5px;">各ルール部屋へ参戦（主と対戦・30秒制限）</div>
@@ -852,24 +857,66 @@ const SoundEngine = {
   }
 };
 
+/* ===== 演出ウェイト（最低2秒）＆通信30秒タイマーロスタイム除外管理 ===== */
+let activeCutinLocks = 0;
+
+function syncTimerPauseBadgeUI() {
+  const badge = document.getElementById('board-timer-center-badge');
+  if (!badge) return;
+  if (!gameState.isOnline) {
+    badge.style.display = 'none';
+    badge.classList.remove('paused');
+    return;
+  }
+  badge.style.display = 'inline-block';
+  if (activeCutinLocks > 0) {
+    badge.classList.add('paused');
+    badge.innerText = `⏸ ${Math.max(0, turnTimeLeft)}s`;
+  } else {
+    badge.classList.remove('paused');
+    badge.innerText = `⏱ ${Math.max(0, turnTimeLeft)}s`;
+  }
+}
+
+function beginCutinLossTimeLock() {
+  activeCutinLocks++;
+  syncTimerPauseBadgeUI();
+}
+
+function endCutinLossTimeLock() {
+  activeCutinLocks = Math.max(0, activeCutinLocks - 1);
+  syncTimerPauseBadgeUI();
+}
+
+function resetCutinLossTimeLocks() {
+  activeCutinLocks = 0;
+  syncTimerPauseBadgeUI();
+}
+
 function clearCutinTimers() {
   clearTimeout(window.__cutinTimer);
   clearTimeout(window.__cutinFollowTimer);
   clearTimeout(window.__specialLogoTimer);
   clearTimeout(window.__cycleSlideTimer);
+  resetCutinLossTimeLocks();
 }
 
-function showSpecialLogoBanner(text, durationMs = 1350) {
+function showSpecialLogoBanner(text, durationMs = 2050) {
+  const safeDuration = Math.max(2000, durationMs);
   const el = document.getElementById('special-logo-banner');
   if (!el || !text) return;
   clearTimeout(window.__specialLogoTimer);
+  beginCutinLossTimeLock();
   el.style.display = 'none';
   el.innerText = text;
+  el.style.animation = 'none';
   void el.offsetWidth;
+  el.style.animation = `logoFadeIn ${(safeDuration / 1000).toFixed(2)}s ease-in-out forwards`;
   el.style.display = 'block';
   window.__specialLogoTimer = setTimeout(() => {
     el.style.display = 'none';
-  }, durationMs);
+    endCutinLossTimeLock();
+  }, safeDuration);
 }
 
 function playCycleStartSlideInAndDealSE(onComplete) {
@@ -883,18 +930,22 @@ function playCycleStartSlideInAndDealSE(onComplete) {
   SoundEngine.playSE('deal_shushu');
   if (banner && mainEl && subEl) {
     clearTimeout(window.__cycleSlideTimer);
+    beginCutinLossTimeLock();
     mainEl.innerText = displayText;
     mainEl.style.color = isOrasu ? '#ff7675' : '#fff8c4';
     subEl.innerText = isOrasu
       ? '🔥 表ドラ2枚・裏ドラ2枚！シュシュシュシュッ！'
       : '🃏 シュシュシュシュッ！配札スタート';
     banner.style.display = 'none';
+    banner.style.animation = 'none';
     void banner.offsetWidth;
+    banner.style.animation = 'cycleSlideInBanner 2.1s cubic-bezier(0.18, 0.92, 0.25, 1) forwards';
     banner.style.display = 'block';
     window.__cycleSlideTimer = setTimeout(() => {
       banner.style.display = 'none';
+      endCutinLossTimeLock();
       if (onComplete) onComplete();
-    }, 1350);
+    }, 2100);
   } else if (onComplete) {
     onComplete();
   }
@@ -908,16 +959,19 @@ function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false)
     return;
   }
   clearCutinTimers();
+  beginCutinLossTimeLock();
   SoundEngine.playSE(isRareStyle ? 'win_rare' : 'reach_declare');
   banner.className = isRareStyle ? 'cutin-banner rare-card-cutin entry-fadein' : 'cutin-banner entry-fadein';
+  banner.style.animation = 'logoFadeIn 2.1s ease-in-out forwards';
   banner.innerHTML = `<div style="font-size:0.68rem; color:#ffd43b; font-weight:900; letter-spacing:0.12em; margin-bottom:4px;">ENTRY EVENT</div>` +
     `<div style="font-size:1.22rem; font-weight:950; letter-spacing:0.05em;">${titleText}</div>` +
     (subText ? `<div style="font-size:0.76rem; color:#ffe066; margin-top:5px; font-weight:800;">${subText}</div>` : '');
   overlay.style.display = 'flex';
   window.__cutinTimer = setTimeout(() => {
     overlay.style.display = 'none';
+    endCutinLossTimeLock();
     if (onComplete) onComplete();
-  }, 1600);
+  }, 2100);
 }
 
 const RARE_YAKU_MOTIF_CARDS = {
@@ -1037,11 +1091,14 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   const banner = document.getElementById('cutin-banner');
   if (!overlay || !banner) return;
   clearCutinTimers();
+  beginCutinLossTimeLock();
 
   const showBanner = (bannerClass, tagText, titleText, subText, seName, durationMs, motifHtml = '', afterCallback = null, logoBadgeText = '') => {
+    const safeMs = Math.max(2000, durationMs);
     if (seName) SoundEngine.playSE(seName);
-    if (logoBadgeText) showSpecialLogoBanner(logoBadgeText, Math.min(durationMs, 1400));
+    if (logoBadgeText) showSpecialLogoBanner(logoBadgeText, safeMs);
     banner.className = bannerClass;
+    banner.style.animation = '';
     banner.innerHTML =
       (tagText ? `<div style="font-size:0.7rem; color:#ffd43b; font-weight:950; letter-spacing:0.12em; margin-bottom:3px;">${tagText}</div>` : '') +
       motifHtml +
@@ -1053,8 +1110,9 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
         afterCallback();
       } else {
         overlay.style.display = 'none';
+        endCutinLossTimeLock();
       }
-    }, durationMs);
+    }, safeMs);
   };
 
   const individualSpec = getIndividualYakuSpec(yaku.name, isTenchi);
@@ -1099,8 +1157,9 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   const motifHtml = buildMotifCardsHtml(yaku.name, isTenchi);
   const finishCutin = () => {
     overlay.style.display = 'none';
+    endCutinLossTimeLock();
     if (isHaitei && !individualSpec) {
-      showSpecialLogoBanner('🌊 海底撈月 和了！', 1100);
+      showSpecialLogoBanner('🌊 海底撈月 和了！', 2050);
     }
   };
 
@@ -1111,7 +1170,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
       `一発${winType}宣言！（+1pt）`,
       `一発SE確定 → ${individualSpec ? '個別役演出へ' : '和了役演出へ'}`,
       'ippatsu_shout',
-      1750,
+      2050,
       '',
       () => {
         showBanner(
@@ -1120,7 +1179,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
           baseTitle,
           `⚡ 一発（+1pt） / ${baseSub}`,
           baseSE,
-          1950,
+          2250,
           motifHtml,
           finishCutin,
           logoBadge
@@ -1129,7 +1188,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
       '⚡ 一発確定！'
     );
   } else {
-    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, 1950, motifHtml, finishCutin, logoBadge);
+    showBanner(baseClass, baseTag, baseTitle, baseSub, baseSE, 2250, motifHtml, finishCutin, logoBadge);
   }
 }
 
@@ -1138,14 +1197,17 @@ function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare
   const banner = document.getElementById('cutin-banner');
   if (!overlay || !banner) return;
   clearCutinTimers();
+  beginCutinLossTimeLock();
   SoundEngine.playSE(seName);
   banner.className = 'cutin-banner';
+  banner.style.animation = '';
   banner.innerHTML = `<div style="font-size:1.1rem; font-weight:900;">${titleText}</div>` +
     (subText ? `<div style="font-size:0.76rem; color:#ffe066; margin-top:3px; font-weight:800;">${subText}</div>` : '');
   overlay.style.display = 'flex';
   window.__cutinTimer = setTimeout(() => {
     overlay.style.display = 'none';
-  }, 1200);
+    endCutinLossTimeLock();
+  }, 2050);
 }
 
 /* ===== 役判定エンジン（精査・厳密化版） ===== */
@@ -1637,6 +1699,7 @@ const gameState = {
   cpuReachTileIndex: null,
   cpuIsReach: false,
   isColdWinTriggered: false,
+  endedByHeartParentFlow: false,
   isGameOver: false,
   pendingRonCard: null,
   isCpuActing: false
@@ -2028,6 +2091,7 @@ function clearAllTimers() {
   clearInterval(window.guestRouletteSyncTimer);
   clearInterval(window.guestGameStartTimer);
   clearInterval(heartbeatInterval);
+  resetCutinLossTimeLocks();
   gameState.isCpuActing = false;
 }
 
@@ -2182,7 +2246,7 @@ function startRoomMatch(roomRule) {
   gameState.mode = 'beginner';
   gameState.roomRule = roomRule;
   const roomTitle = roomRule === 'shiren' ? '🔥 試練の部屋' : roomRule === 'damaten' ? '🧠 ダマテン部屋' : '⚔️ 勝負師の部屋';
-  const roomSub = roomRule === 'shiren' ? '【要リーチ基本役のみ】主と対戦（30秒制限）' : roomRule === 'damaten' ? '【リーチ禁止】主と対戦（30秒制限）' : '【公式ガチンコ勝負】主と対戦（30秒制限）';
+  const roomSub = roomRule === 'shiren' ? '【要リーチ基本役のみ】主と対戦（30秒制限・演出中停止）' : roomRule === 'damaten' ? '【リーチ禁止】主と対戦（30秒制限・演出中停止）' : '【公式ガチンコ勝負】主と対戦（30秒制限・演出中停止）';
   document.getElementById('online-status-msg').innerText = `✨ ${roomTitle} へ入室中...`;
   playPreEntryFadeIn(roomTitle, roomSub, () => {
     switchScreen('screen-roulette');
@@ -2291,7 +2355,7 @@ function joinOnlineRoom() {
 
 function startOnlineAutoRoulette(roomId) {
   const ruleLabel = gameState.roomRule === 'shiren' ? '🔥 試練の部屋' : gameState.roomRule === 'damaten' ? '🧠 ダマテン部屋' : '⚔️ 勝負師の部屋';
-  playPreEntryFadeIn(`ONLINE MATCH / ${ruleLabel}`, '通信モード・30秒制限ルール', () => {
+  playPreEntryFadeIn(`ONLINE MATCH / ${ruleLabel}`, '通信モード・30秒制限ルール（演出中停止）', () => {
     switchScreen('screen-roulette');
     document.getElementById('roulette-warning-banner').style.display = 'block';
     document.getElementById('btn-cpu-spin').style.display = 'none';
@@ -2348,6 +2412,7 @@ function selectMode(mode) {
   gameState.kyotaku = 0;
   gameState.cycle = 1;
   gameState.fieldSuit = '♠';
+  gameState.endedByHeartParentFlow = false;
   gameState.isGameOver = false;
   const modeTitle = mode === 'master'
     ? '👹 鬼レンチャレンジ 👹'
@@ -2403,6 +2468,7 @@ function applyRouletteResult(isHostSpade) {
   gameState.playerScore = 30;
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
+  gameState.endedByHeartParentFlow = false;
   gameState.isGameOver = false;
   const suitEl = document.getElementById('roulette-suit');
   suitEl.innerText = isYouSpade ? '♠' : '♥';
@@ -2509,6 +2575,7 @@ function initGameSession() {
   gameState.cpuReachTileIndex = null;
   gameState.cpuIsReach = false;
   gameState.isColdWinTriggered = false;
+  gameState.endedByHeartParentFlow = false;
   gameState.pendingRonCard = null;
   gameState.isCpuActing = false;
   const pRiver = document.getElementById('player-river-scroll');
@@ -2640,19 +2707,24 @@ function applyIncomingSignal(text) {
   setSpeechBubble('top', text);
 }
 
+/* 演出中（activeCutinLocks > 0）はロスタイムとして30秒カウントを消費しない */
 function startTurnTimerIfNeeded() {
   clearInterval(turnTimer);
   const timerBadge = document.getElementById('board-timer-center-badge');
   if (!gameState.isOnline) {
     timerBadge.style.display = 'none';
+    timerBadge.classList.remove('paused');
     return;
   }
-  timerBadge.style.display = 'inline-block';
   turnTimeLeft = 30;
-  timerBadge.innerText = `⏱ ${turnTimeLeft}s`;
+  syncTimerPauseBadgeUI();
   turnTimer = setInterval(() => {
+    if (activeCutinLocks > 0) {
+      syncTimerPauseBadgeUI();
+      return;
+    }
     turnTimeLeft--;
-    timerBadge.innerText = `⏱ ${Math.max(0, turnTimeLeft)}s`;
+    syncTimerPauseBadgeUI();
     if (turnTimeLeft === 3 || turnTimeLeft === 2 || turnTimeLeft === 1) {
       SoundEngine.playSE('timer_warning_pip');
     } else if (turnTimeLeft <= 0) {
@@ -3211,10 +3283,72 @@ function cpuTurnRoutine() {
   }, 850);
 }
 
+/* 第2サイクル（オーラス）・♥場の親流れで確実にゲーム終了させるヘルパー */
+function finalizeCycleOrEndOnHeartParentFlow() {
+  gameState.streakCount = 0;
+  if (gameState.cycle >= 2 && gameState.fieldSuit === '♥') {
+    gameState.isGameOver = true;
+    gameState.endedByHeartParentFlow = true;
+    return;
+  }
+  switchFieldSuit();
+}
+
+function switchFieldSuit() {
+  const prof = getPlayerProfile();
+  if (gameState.fieldSuit === '♠') {
+    gameState.fieldSuit = '♥';
+    gameState.isPlayerParent = (gameState.heartPlayer === prof.nickname || gameState.heartPlayer === 'YOU');
+  } else {
+    gameState.cycle++;
+    if (gameState.cycle > 2) {
+      gameState.isGameOver = true;
+      return;
+    }
+    gameState.fieldSuit = '♠';
+    gameState.isPlayerParent = (gameState.spadePlayer === prof.nickname || gameState.spadePlayer === 'YOU');
+  }
+}
+
+function applyRoundParentAndStreak(winner) {
+  gameState.endedByHeartParentFlow = false;
+  const isOrasuHeart = (gameState.cycle >= 2 && gameState.fieldSuit === '♥');
+  if (winner === 'player') {
+    if (gameState.isPlayerParent) {
+      if (isOrasuHeart) {
+        gameState.streakCount = 0;
+      } else {
+        gameState.streakCount++;
+      }
+    } else {
+      finalizeCycleOrEndOnHeartParentFlow();
+    }
+  } else {
+    if (!gameState.isPlayerParent) {
+      if (isOrasuHeart) {
+        gameState.streakCount = 0;
+      } else {
+        gameState.streakCount++;
+      }
+    } else {
+      finalizeCycleOrEndOnHeartParentFlow();
+    }
+  }
+}
+
+function checkMasterChallengeCondition() {
+  gameState.isColdWinTriggered = false;
+  if (gameState.mode === 'master' && gameState.streakCount >= 10) {
+    gameState.isColdWinTriggered = true;
+    gameState.isGameOver = true;
+  }
+}
+
 function handleDrawGame() {
   clearAllTimers();
   SoundEngine.playSE('player_lose_pt');
   const prof = getPlayerProfile();
+  gameState.endedByHeartParentFlow = false;
   const checkTenpai = (h) => h.length === 4
     ? checkIsTenpaiFor4(h, true)
     : h.some((_, i) => checkIsTenpaiFor4(h.filter((_, idx) => idx !== i), true));
@@ -3222,13 +3356,14 @@ function handleDrawGame() {
   const cTenpai = checkTenpai(gameState.cpuHand);
   const parentTenpai = gameState.isPlayerParent ? pTenpai : cTenpai;
   if (!parentTenpai) {
-    gameState.streakCount = 0;
-    switchFieldSuit();
+    finalizeCycleOrEndOnHeartParentFlow();
   }
   checkMasterChallengeCondition();
-  document.getElementById('res-title').innerText = 'リザルト（流局）';
-  document.getElementById('res-subtitle').innerText = parentTenpai ? '親テンパイ（親権継続・連チャン維持）' : '親ノーテン（親権流出）';
-  document.getElementById('res-streak-banner').innerHTML = (parentTenpai && gameState.streakCount > 0)
+  document.getElementById('res-title').innerText = gameState.endedByHeartParentFlow ? 'リザルト（ハート親流れ・オーラス終了）' : 'リザルト（流局）';
+  document.getElementById('res-subtitle').innerText = gameState.endedByHeartParentFlow
+    ? '第2サイクル♥場 親流れによりゲーム終了'
+    : (parentTenpai ? '親テンパイ（親権継続・連チャン維持）' : '親ノーテン（親権流出）');
+  document.getElementById('res-streak-banner').innerHTML = (!gameState.endedByHeartParentFlow && parentTenpai && gameState.streakCount > 0)
     ? `◎ ${gameState.streakCount}連チャン維持中` : '';
   document.getElementById('res-hand-container').innerHTML = '';
   renderResultDoraDisclosure();
@@ -3255,29 +3390,6 @@ function renderResultDoraDisclosure() {
     el.style.boxShadow = '0 0 6px rgba(241, 196, 15, 0.8)';
     doraCont.appendChild(el);
   });
-}
-
-function switchFieldSuit() {
-  if (gameState.fieldSuit === '♠') {
-    gameState.fieldSuit = '♥';
-    gameState.isPlayerParent = (gameState.heartPlayer !== '相手');
-  } else {
-    gameState.cycle++;
-    if (gameState.cycle > 2) {
-      gameState.isGameOver = true;
-      return;
-    }
-    gameState.fieldSuit = '♠';
-    gameState.isPlayerParent = (gameState.spadePlayer !== '相手');
-  }
-}
-
-function checkMasterChallengeCondition() {
-  gameState.isColdWinTriggered = false;
-  if (gameState.mode === 'master' && gameState.streakCount >= 10) {
-    gameState.isColdWinTriggered = true;
-    gameState.isGameOver = true;
-  }
 }
 
 function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppatsu = false, isTenchi = false, isHaitei = false) {
@@ -3334,26 +3446,17 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   if (winner === 'player') {
     gameState.playerScore += totalGain;
     gameState.cpuScore -= points;
-    if (gameState.isPlayerParent) {
-      gameState.streakCount++;
-    } else {
-      gameState.streakCount = 0;
-      switchFieldSuit();
-    }
   } else {
     gameState.cpuScore += totalGain;
     gameState.playerScore -= points;
     SoundEngine.playSE('player_lose_pt');
-    if (!gameState.isPlayerParent) {
-      gameState.streakCount++;
-    } else {
-      gameState.streakCount = 0;
-      switchFieldSuit();
-    }
   }
+  applyRoundParentAndStreak(winner);
   checkMasterChallengeCondition();
-  document.getElementById('res-title').innerText = (winner === 'player') ? `🎉 ${winType}和了！` : `💥 相手が${winType}和了`;
-  document.getElementById('res-subtitle').innerText = `成立役：${yaku.name}（${yaku.score}点）`;
+  document.getElementById('res-title').innerText = gameState.endedByHeartParentFlow
+    ? '🏁 ハート親流れ・オーラス終了'
+    : ((winner === 'player') ? `🎉 ${winType}和了！` : `💥 相手が${winType}和了`);
+  document.getElementById('res-subtitle').innerText = `成立役：${yaku.name}（${yaku.score}点）` + (gameState.endedByHeartParentFlow ? ' / 第2サイクル♥場親流れ' : '');
   const streakBanner = document.getElementById('res-streak-banner');
   if (gameState.mode === 'master') {
     const s = gameState.streakCount;
@@ -3396,11 +3499,13 @@ function handleResultScreenDisplay() {
     nextBtn.style.display = 'none';
     rematchBtn.style.display = 'none';
   } else if (gameState.mode === 'master' && gameState.isGameOver) {
-    document.getElementById('res-title').innerText = '💀 鬼レンチャレンジ終了';
+    document.getElementById('res-title').innerText = gameState.endedByHeartParentFlow
+      ? '💀 ハート親流れ・鬼レンチャレンジ終了'
+      : '💀 鬼レンチャレンジ終了';
     endingEl.innerText = 'お疲れ様でした';
     nextBtn.style.display = 'none';
     rematchBtn.style.display = 'none';
-  } else if (gameState.isGameOver || gameState.cycle > 2) {
+  } else if (gameState.isGameOver || gameState.endedByHeartParentFlow || gameState.cycle > 2) {
     gameState.isGameOver = true;
     endingEl.innerText = 'お疲れ様でした';
     nextBtn.style.display = 'none';
@@ -3446,6 +3551,7 @@ function startResTimerIfNeeded() {
   resTimeLeft = 30;
   badge.innerText = `⏱ 次の操作まで: ${resTimeLeft}秒`;
   resTimer = setInterval(() => {
+    if (activeCutinLocks > 0) return;
     resTimeLeft--;
     badge.innerText = `⏱ 次の操作まで: ${Math.max(0, resTimeLeft)}秒`;
     if (resTimeLeft === 3 || resTimeLeft === 2 || resTimeLeft === 1) {
@@ -3473,9 +3579,9 @@ function openRuleModal(mode = 'yaku') {
     document.getElementById('rule-yaku-header').innerText = '【 基本ルール・サイクル進行 】';
     document.getElementById('rule-yaku-title').innerText = '2人打ち ジャンポーカー概要';
     document.getElementById('rule-yaku-desc').innerHTML =
-      '・1サイクルは「♠先親 → ♥後親」で親権が流れるまで進行します。<br>' +
+      '・1サイクルは「♠先親 → ♥後親」で親権が流れるまで進行し、第2サイクル♥場の親流れでゲーム終了となります。<br>' +
       '・全モード第2サイクルがオーラス（表ドラ2枚・裏ドラ2枚）です。<br>' +
-      '・リーチ後の相手捨て札（一発ロン）と宣言後最初の自分のツモ（一発ツモ）で「一発（+1pt）」が成立します。<br>' +
+      '・演出表示時間は最低2秒確保し、通信30秒タイマーは演出中をロスタイムとして一時停止します。<br>' +
       '・基本役（10点以下）は要リーチ・JOKER不可。中級役以上はJOKERワイルドカード補完（使用時-2pt／JOKER必須役は免除）です。';
     document.getElementById('rule-sample-label').style.display = 'none';
     document.getElementById('rule-sample-cards').style.display = 'none';
