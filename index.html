@@ -197,6 +197,43 @@
     .cutin-motif-card.anim-left { animation: cardSlideInLeft 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
     .cutin-motif-card.anim-right { animation: cardSlideInRight 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) 0.12s forwards; }
     .cutin-motif-card.anim-pop { animation: cardFadeZoom 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) 0.08s forwards; }
+    @keyframes cycleSlideInBanner {
+      0% { opacity: 0; transform: translate(-120%, -50%) skewX(-14deg) scale(0.85); }
+      22% { opacity: 1; transform: translate(-50%, -50%) skewX(-6deg) scale(1.06); }
+      78% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(40%, -50%) skewX(8deg) scale(0.95); }
+    }
+    #cycle-slidein-banner {
+      display: none;
+      position: fixed;
+      top: 44%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 250;
+      pointer-events: none;
+      padding: 14px 26px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(10, 26, 32, 0.97) 0%, rgba(120, 26, 22, 0.97) 100%);
+      border: 3px solid #ffd43b;
+      box-shadow: 0 0 36px rgba(255, 212, 59, 0.92), 0 10px 26px rgba(0, 0, 0, 0.85);
+      text-align: center;
+      white-space: nowrap;
+      animation: cycleSlideInBanner 1.35s cubic-bezier(0.18, 0.92, 0.25, 1) forwards;
+    }
+    .cycle-slide-main {
+      font-size: 1.55rem;
+      font-weight: 950;
+      color: #fff8c4;
+      letter-spacing: 0.08em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85), 0 0 18px rgba(255, 193, 7, 0.8);
+    }
+    .cycle-slide-sub {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #7ef9ff;
+      margin-top: 3px;
+      letter-spacing: 0.05em;
+    }
     #screen-game { padding: 8px 10px 16px 10px; gap: 5px; justify-content: flex-start; overflow-y: auto; }
     .speech-bubble-slot {
       height: 22px; min-height: 22px; max-height: 22px;
@@ -361,9 +398,9 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px;
       text-align: left; font-size: 0.72rem; line-height: 1.4;
     }
-    #rule-modal {
-      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-      z-index: 150; align-items: center; justify-content: center; padding: 12px;
+    #rule-modal, #extra-modal {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.86);
+      z-index: 160; align-items: center; justify-content: center; padding: 12px;
     }
     .rule-modal-card {
       width: 100%; max-width: 392px; max-height: 88dvh; background: #102327;
@@ -392,24 +429,37 @@
       display: flex; flex-direction: row; justify-content: center; align-items: center;
       gap: 6px; flex-wrap: nowrap; width: 100%; margin-top: 2px;
     }
+    .friend-item-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
+      background: #0b181b; border: 1px solid #254850; border-radius: 6px; padding: 6px 8px; font-size: 0.72rem;
+    }
   </style>
 </head>
 <body>
 <div id="game-wrapper">
   <div id="cutin-overlay"><div id="cutin-banner" class="cutin-banner"></div></div>
   <div id="special-logo-banner"></div>
+  <div id="cycle-slidein-banner">
+    <div id="cycle-slide-main" class="cycle-slide-main">第1サイクル ♠場</div>
+    <div id="cycle-slide-sub" class="cycle-slide-sub">配札完了・対局開始！</div>
+  </div>
   <!-- 1. タイトル画面 -->
   <div id="screen-title" class="screen active">
     <div style="font-size: 0.96rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px;">２人打ち</div>
     <div style="font-size: 2.05rem; font-weight: 900; color: #fff; letter-spacing: 2px; text-shadow: 0 3px 10px rgba(0,0,0,0.6);">ジャンポーカー</div>
     <div style="font-size: 0.98rem; color: #f1c40f; font-weight: 900; letter-spacing: 2px;">〜 ジャンP２ 〜</div>
     <div style="font-size: 0.76rem; color: #2ecc71; font-weight: 800;">『麻雀✕ポーカーの融合したオリジナル５枚役！』</div>
+    <div id="title-nickname-badge" style="font-size: 0.72rem; color: #ffeaa7; font-weight: 800; background: rgba(41, 128, 185, 0.22); border: 1px solid rgba(93, 173, 226, 0.5); border-radius: 999px; padding: 3px 12px;">
+      👤 プレイヤー: <span id="title-nickname-val">プレイヤー</span>
+    </div>
     <div class="credit-box">制作／ボドゲ厨房：美理慈庵<br>企画：料理長K</div>
-    <button id="btn-start-cpu" class="btn-gold" style="width: 100%; max-width: 310px; height: 44px; font-size: 0.95rem;">🎮 CPU対戦スタート</button>
-    <button id="btn-start-online" class="btn-gold" style="width: 100%; max-width: 310px; height: 44px; font-size: 0.95rem; background: linear-gradient(180deg, #3498db 0%, #1f6391 100%); border-color: #5dade2; color: #fff;">🌐 通信・ルール部屋へ参戦</button>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 310px;">
-      <button id="btn-open-yaku" class="btn-gold" style="height: 36px; font-size: 0.82rem;">📜 役一覧確認</button>
-      <button id="btn-open-manual" class="btn-gold" style="height: 36px; font-size: 0.82rem;">📖 jp2マニュアル</button>
+    <button id="btn-start-cpu" class="btn-gold" style="width: 100%; max-width: 310px; height: 42px; font-size: 0.92rem;">🎮 CPU対戦スタート</button>
+    <button id="btn-start-online" class="btn-gold" style="width: 100%; max-width: 310px; height: 42px; font-size: 0.92rem; background: linear-gradient(180deg, #3498db 0%, #1f6391 100%); border-color: #5dade2; color: #fff;">🌐 通信・ルール部屋へ参戦</button>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; max-width: 310px;">
+      <button id="btn-open-yaku" class="btn-gold" style="height: 34px; font-size: 0.78rem;">📜 役一覧確認</button>
+      <button id="btn-open-manual" class="btn-gold" style="height: 34px; font-size: 0.78rem;">📖 jp2マニュアル</button>
+      <button id="btn-open-profile" class="btn-gold" style="height: 34px; font-size: 0.78rem; background: linear-gradient(180deg, #2ecc71 0%, #1e8449 100%); border-color: #82e0aa; color: #fff;">👤 名前・友達リスト</button>
+      <button id="btn-open-bubble-edit" class="btn-gold" style="height: 34px; font-size: 0.78rem; background: linear-gradient(180deg, #9b59b6 0%, #6c3483 100%); border-color: #d2b4de; color: #fff;">💬 吹き出し編集</button>
     </div>
   </div>
   <!-- 2. CPU対戦モード選択画面 -->
@@ -460,6 +510,7 @@
         <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
           <button onclick="copyOnlineRoomId();" style="background: #2980b9; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 0.66rem; font-weight: bold; cursor: pointer;">📋 ID＆招待URLコピー</button>
           <button onclick="shareOnlineRoomInvite();" style="background: #27ae60; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 0.66rem; font-weight: bold; cursor: pointer;">📤 招待共有</button>
+          <button onclick="saveCurrentRoomToFriends();" style="background: #8e44ad; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 0.66rem; font-weight: bold; cursor: pointer;">⭐ 友達登録</button>
         </div>
       </div>
     </div>
@@ -469,6 +520,10 @@
         <input id="online-join-input" type="text" placeholder="例: JP2-1234" style="flex: 1; background: #0b1619; color: #fff; border: 1px solid #2ecc71; border-radius: 5px; padding: 5px 8px; font-size: 0.76rem;" />
         <button onclick="joinOnlineRoom();" style="background: #27ae60; color: #fff; border: none; border-radius: 5px; padding: 0 11px; font-size: 0.76rem; font-weight: bold; cursor: pointer;">参加する</button>
       </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%;">
+      <button onclick="SoundEngine.playSE('select_card'); openExtraModal('profile');" style="background: #163a2b; border: 1px solid #2ecc71; color: #a9dfbf; border-radius: 6px; padding: 5px; font-size: 0.7rem; font-weight: 800; cursor: pointer;">👤 ニックネーム・友達リスト</button>
+      <button onclick="SoundEngine.playSE('select_card'); openExtraModal('bubble');" style="background: #2c1838; border: 1px solid #af7ac5; color: #e8daef; border-radius: 6px; padding: 5px; font-size: 0.7rem; font-weight: 800; cursor: pointer;">💬 吹き出しエディット</button>
     </div>
     <div id="online-status-msg" style="font-size: 0.71rem; color: #f9d423; min-height: 16px; font-weight: bold;"></div>
     <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.82rem;">＜ タイトルに戻る</button>
@@ -601,6 +656,50 @@
       </div>
     </div>
   </div>
+  <!-- ニックネーム・友達リスト＆吹き出しエディットモーダル -->
+  <div id="extra-modal">
+    <div class="rule-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4 id="extra-modal-title" style="color: #f1c40f; font-size: 0.96rem; font-weight: 900;">ニックネーム・友達リスト</h4>
+        <button onclick="closeExtraModal();" style="background: #c0392b; color: #fff; border: none; border-radius: 6px; padding: 5px 11px; font-size: 0.74rem; font-weight: bold; cursor: pointer;">閉じる</button>
+      </div>
+      <!-- プロフィール＆友達リストパネル -->
+      <div id="extra-profile-panel" style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="panel-card" style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="font-size: 0.72rem; color: #5dade2; font-weight: 800;">自分のニックネーム＆自動ID</div>
+          <div style="display: flex; gap: 6px;">
+            <input id="input-my-nickname" type="text" maxlength="12" placeholder="ニックネーム（最大12文字）" style="flex: 1; background: #0b1619; color: #fff; border: 1px solid #5dade2; border-radius: 5px; padding: 5px 8px; font-size: 0.76rem;" />
+            <button onclick="saveMyNickname();" style="background: #27ae60; color: #fff; border: none; border-radius: 5px; padding: 0 10px; font-size: 0.74rem; font-weight: bold; cursor: pointer;">保存</button>
+          </div>
+          <div style="font-size: 0.66rem; color: #a3e4d7; display: flex; justify-content: space-between; align-items: center;">
+            <span>自動ID: <strong id="my-auto-player-id" style="color: #f1c40f;">-</strong></span>
+            <button onclick="copyMyInviteLink();" style="background: #2980b9; color: #fff; border: none; border-radius: 4px; padding: 2px 7px; font-size: 0.64rem; font-weight: bold; cursor: pointer;">招待URLコピー</button>
+          </div>
+        </div>
+        <div class="panel-card" style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 0.72rem; color: #f1c40f; font-weight: 800;">友達リスト（ワンタップ呼出・参加）</div>
+          <div style="display: flex; gap: 4px;">
+            <input id="input-friend-name" type="text" maxlength="12" placeholder="友達の名前" style="flex: 1; min-width: 0; background: #0b1619; color: #fff; border: 1px solid #2e5961; border-radius: 5px; padding: 5px 6px; font-size: 0.72rem;" />
+            <input id="input-friend-id" type="text" maxlength="16" placeholder="ルーム/友達ID" style="flex: 1; min-width: 0; background: #0b1619; color: #fff; border: 1px solid #2e5961; border-radius: 5px; padding: 5px 6px; font-size: 0.72rem;" />
+            <button onclick="addFriendEntry();" style="background: #f1c40f; color: #111; border: none; border-radius: 5px; padding: 0 8px; font-size: 0.72rem; font-weight: 900; cursor: pointer;">追加</button>
+          </div>
+          <div id="friends-list-container" style="display: flex; flex-direction: column; gap: 5px; max-height: 155px; overflow-y: auto;"></div>
+        </div>
+      </div>
+      <!-- 吹き出しエディットパネル -->
+      <div id="extra-bubble-panel" style="display: none; flex-direction: column; gap: 8px;">
+        <div class="panel-card" style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 0.72rem; color: #e8daef; font-weight: 800;">カスタム吹き出し編集（各最大10文字・シグナルバーに即反映）</div>
+          <div id="bubble-custom-inputs" style="display: flex; flex-direction: column; gap: 5px;"></div>
+          <div style="display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px;">
+            <button onclick="resetBubblePresets();" style="background: #34495e; color: #ecf0f1; border: none; border-radius: 5px; padding: 5px 10px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">初期値に戻す</button>
+            <button onclick="saveBubblePresets();" style="background: #9b59b6; color: #fff; border: none; border-radius: 5px; padding: 5px 12px; font-size: 0.72rem; font-weight: 900; cursor: pointer;">💾 保存して反映</button>
+          </div>
+        </div>
+      </div>
+      <div id="extra-modal-status" style="font-size: 0.7rem; color: #2ecc71; font-weight: bold; min-height: 16px; text-align: center;"></div>
+    </div>
+  </div>
 </div>
 <script>
 const SoundEngine = {
@@ -617,7 +716,7 @@ const SoundEngine = {
         this.ctx.resume().catch(() => {});
       }
       if (this.ctx && !this.noiseBuffer) {
-        const len = Math.floor(this.ctx.sampleRate * 0.4);
+        const len = Math.floor(this.ctx.sampleRate * 0.5);
         const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
         const data = buf.getChannelData(0);
         for (let i = 0; i < len; i++) {
@@ -672,6 +771,19 @@ const SoundEngine = {
       src.stop(now + dur + 0.01);
     } catch (e) {}
   },
+  playDealShushu() {
+    // 「シュシュシュシュッ！」と連続でカードが配られるディールSE
+    const offsets = [0, 0.075, 0.15, 0.225, 0.305];
+    offsets.forEach((d, idx) => {
+      const isLast = (idx === offsets.length - 1);
+      const dur = isLast ? 0.11 : 0.068;
+      const startF = 1200 + idx * 180;
+      const endF = isLast ? 4600 : 3200 + idx * 140;
+      const vol = isLast ? 0.28 : 0.21;
+      this.filteredNoise(dur, 'bandpass', startF, endF, vol, d, 1.9);
+      this.tone(420 + idx * 65, dur * 0.8, 'triangle', isLast ? 0.11 : 0.06, d, 880 + idx * 90);
+    });
+  },
   playSE(name, extra = {}) {
     const nowMs = Date.now();
     const minGap = (name === 'roulette_spin' || name === 'roulette_tick') ? 35 : 90;
@@ -681,6 +793,9 @@ const SoundEngine = {
     this.lastSEMap[name] = nowMs;
 
     switch (name) {
+      case 'deal_shushu':
+        this.playDealShushu();
+        break;
       case 'select_card':
         this.filteredNoise(0.065, 'bandpass', 1900, 1150, 0.22, 0, 2.2);
         this.tone(420, 0.04, 'triangle', 0.06, 0.01, 290);
@@ -744,6 +859,7 @@ function clearCutinTimers() {
   clearTimeout(window.__cutinTimer);
   clearTimeout(window.__cutinFollowTimer);
   clearTimeout(window.__specialLogoTimer);
+  clearTimeout(window.__cycleSlideTimer);
 }
 
 function showSpecialLogoBanner(text, durationMs = 1350) {
@@ -757,6 +873,34 @@ function showSpecialLogoBanner(text, durationMs = 1350) {
   window.__specialLogoTimer = setTimeout(() => {
     el.style.display = 'none';
   }, durationMs);
+}
+
+function playCycleStartSlideInAndDealSE(onComplete) {
+  const banner = document.getElementById('cycle-slidein-banner');
+  const mainEl = document.getElementById('cycle-slide-main');
+  const subEl = document.getElementById('cycle-slide-sub');
+  const isOrasu = gameState.cycle >= 2;
+  const cycleName = isOrasu ? 'オーラスサイクル' : `第${gameState.cycle}サイクル`;
+  const mySeatSuit = gameState.isPlayerParent ? gameState.fieldSuit : (gameState.fieldSuit === '♠' ? '♥' : '♠');
+  const displayText = `${cycleName} ${mySeatSuit}場`;
+  SoundEngine.playSE('deal_shushu');
+  if (banner && mainEl && subEl) {
+    clearTimeout(window.__cycleSlideTimer);
+    mainEl.innerText = displayText;
+    mainEl.style.color = isOrasu ? '#ff7675' : '#fff8c4';
+    subEl.innerText = isOrasu
+      ? '🔥 表ドラ2枚・裏ドラ2枚！シュシュシュシュッ！'
+      : '🃏 シュシュシュシュッ！配札スタート';
+    banner.style.display = 'none';
+    void banner.offsetWidth;
+    banner.style.display = 'block';
+    window.__cycleSlideTimer = setTimeout(() => {
+      banner.style.display = 'none';
+      if (onComplete) onComplete();
+    }, 1350);
+  } else if (onComplete) {
+    onComplete();
+  }
 }
 
 function playPreEntryFadeIn(titleText, subText, onComplete, isRareStyle = false) {
@@ -897,7 +1041,6 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}) {
   if (!overlay || !banner) return;
   clearCutinTimers();
 
-  // 優先順：1.一発専用演出 → 2.個別役／天地人和 → 3.カテゴリ別演出（役満/JOKER/中級/基本） → 4.海底補助表示
   const showBanner = (bannerClass, tagText, titleText, subText, seName, durationMs, motifHtml = '', afterCallback = null, logoBadgeText = '') => {
     if (seName) SoundEngine.playSE(seName);
     if (logoBadgeText) showSpecialLogoBanner(logoBadgeText, Math.min(durationMs, 1400));
@@ -1039,7 +1182,6 @@ function checkValidStraight(vals, numJokers) {
   return false;
 }
 
-/* 3枚連番の厳密判定（2〜12始点または A(14)-2-3 の連続3数字のみ成立） */
 function checkValid3Straight(vals3, numJokers = 0) {
   const clean = vals3.filter(v => v > 0);
   if (clean.length + numJokers !== 3) return false;
@@ -1461,6 +1603,15 @@ const gameState = {
 </script>
 <script>
 const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
+const PROFILE_STORAGE_KEY = 'JP2_PLAYER_PROFILE_v1';
+const FRIENDS_STORAGE_KEY = 'JP2_FRIENDS_LIST_v1';
+const BUBBLE_CUSTOM_STORAGE_KEY = 'JP2_CUSTOM_BUBBLES_v1';
+const DEFAULT_CUSTOM_BUBBLES = [
+  "ここが勝負所だ！",
+  "ダマテン警戒中…",
+  "一発ツモ狙うぜ",
+  "ナイス一打！"
+];
 const BASE_SIGNAL_LIST = [
   { text: "通ればリーチ…", type: "attack" },
   { text: "いい感じ！", type: "attack" },
@@ -1496,6 +1647,258 @@ let resTimer = null, resTimeLeft = 30;
 let cpuActionTimer = null, cpuThinkTimer = null;
 let peerInstance = null, peerConn = null, heartbeatInterval = null;
 let currentRuleCategory = 2;
+
+function getPlayerProfile() {
+  try {
+    const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.playerId) {
+        return {
+          nickname: (parsed.nickname || 'プレイヤー').slice(0, 12),
+          playerId: parsed.playerId
+        };
+      }
+    }
+  } catch (e) {}
+  const generated = {
+    nickname: 'プレイヤー',
+    playerId: 'JP2-' + Math.floor(100000 + Math.random() * 900000)
+  };
+  try { localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(generated)); } catch (e) {}
+  return generated;
+}
+
+function saveMyNickname() {
+  const input = document.getElementById('input-my-nickname');
+  const st = document.getElementById('extra-modal-status');
+  if (!input) return;
+  const trimmed = input.value.trim().slice(0, 12) || 'プレイヤー';
+  const prof = getPlayerProfile();
+  prof.nickname = trimmed;
+  try { localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(prof)); } catch (e) {}
+  SoundEngine.playSE('signal_notify');
+  syncProfileBadges();
+  if (st) st.innerText = `✅ ニックネーム「${trimmed}」を保存しました`;
+}
+
+function syncProfileBadges() {
+  const prof = getPlayerProfile();
+  const titleVal = document.getElementById('title-nickname-val');
+  if (titleVal) titleVal.innerText = prof.nickname;
+  const idEl = document.getElementById('my-auto-player-id');
+  if (idEl) idEl.innerText = prof.playerId;
+  const nickInput = document.getElementById('input-my-nickname');
+  if (nickInput && document.activeElement !== nickInput) {
+    nickInput.value = prof.nickname;
+  }
+}
+
+function copyMyInviteLink() {
+  const prof = getPlayerProfile();
+  const st = document.getElementById('extra-modal-status');
+  const link = getInviteUrl(prof.playerId);
+  const text = `${prof.nickname}（ID: ${prof.playerId}）のジャンP2招待URL: ${link}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      if (st) st.innerText = '📋 招待URLをコピーしました';
+    }).catch(() => {});
+  }
+}
+
+function getFriendsList() {
+  try {
+    const raw = localStorage.getItem(FRIENDS_STORAGE_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+    }
+  } catch (e) {}
+  return [];
+}
+
+function saveFriendsList(arr) {
+  try { localStorage.setItem(FRIENDS_STORAGE_KEY, JSON.stringify(arr)); } catch (e) {}
+}
+
+function addFriendEntry(presetName = '', presetId = '') {
+  const nameInput = document.getElementById('input-friend-name');
+  const idInput = document.getElementById('input-friend-id');
+  const st = document.getElementById('extra-modal-status');
+  const name = (presetName || (nameInput ? nameInput.value : '') || '').trim().slice(0, 12);
+  const roomOrFriendId = (presetId || (idInput ? idInput.value : '') || '').trim().slice(0, 16);
+  if (!name || !roomOrFriendId) {
+    if (st) st.innerText = '❌ 友達の名前とIDの両方を入力してください';
+    return;
+  }
+  const list = getFriendsList();
+  const existingIdx = list.findIndex(item => item.id === roomOrFriendId);
+  if (existingIdx >= 0) {
+    list[existingIdx].name = name;
+  } else {
+    list.unshift({ name, id: roomOrFriendId });
+  }
+  saveFriendsList(list);
+  if (nameInput) nameInput.value = '';
+  if (idInput) idInput.value = '';
+  SoundEngine.playSE('signal_notify');
+  renderFriendsList();
+  if (st) st.innerText = `⭐ 「${name}」を友達リストに登録しました`;
+}
+
+function removeFriendEntry(idx) {
+  const list = getFriendsList();
+  if (idx < 0 || idx >= list.length) return;
+  list.splice(idx, 1);
+  saveFriendsList(list);
+  SoundEngine.playSE('select_card');
+  renderFriendsList();
+}
+
+function joinFromFriend(friendId) {
+  if (!friendId) return;
+  closeExtraModal();
+  showOnlineLobby();
+  const joinInput = document.getElementById('online-join-input');
+  if (joinInput) joinInput.value = friendId;
+  joinOnlineRoom();
+}
+
+function saveCurrentRoomToFriends() {
+  const roomId = (document.getElementById('online-room-id-val').innerText || gameState.roomId || '').trim();
+  const st = document.getElementById('online-status-msg');
+  if (!roomId || roomId === '-') {
+    if (st) st.innerText = '❌ 先にルームを開設してください';
+    return;
+  }
+  const list = getFriendsList();
+  const label = `ルーム(${roomId})`;
+  if (!list.some(x => x.id === roomId)) {
+    list.unshift({ name: label, id: roomId });
+    saveFriendsList(list);
+  }
+  SoundEngine.playSE('signal_notify');
+  if (st) st.innerText = `⭐ ルーム ${roomId} を友達リストへ保存しました`;
+}
+
+function renderFriendsList() {
+  const cont = document.getElementById('friends-list-container');
+  if (!cont) return;
+  const list = getFriendsList();
+  if (list.length === 0) {
+    cont.innerHTML = '<div style="font-size:0.68rem; color:#8fa8ad; text-align:center; padding:8px;">登録された友達はまだいません</div>';
+    return;
+  }
+  cont.innerHTML = '';
+  list.forEach((f, idx) => {
+    const row = document.createElement('div');
+    row.className = 'friend-item-row';
+    const info = document.createElement('div');
+    info.innerHTML = `<strong style="color:#fff;">${f.name}</strong> <span style="color:#5dade2; font-size:0.66rem;">(${f.id})</span>`;
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex; gap:4px;';
+    const joinBtn = document.createElement('button');
+    joinBtn.innerText = '参戦';
+    joinBtn.style.cssText = 'background:#27ae60; color:#fff; border:none; border-radius:4px; padding:3px 7px; font-size:0.64rem; font-weight:bold; cursor:pointer;';
+    joinBtn.onclick = () => joinFromFriend(f.id);
+    const delBtn = document.createElement('button');
+    delBtn.innerText = '削除';
+    delBtn.style.cssText = 'background:#7f231c; color:#fff; border:none; border-radius:4px; padding:3px 6px; font-size:0.64rem; font-weight:bold; cursor:pointer;';
+    delBtn.onclick = () => removeFriendEntry(idx);
+    btns.appendChild(joinBtn);
+    btns.appendChild(delBtn);
+    row.appendChild(info);
+    row.appendChild(btns);
+    cont.appendChild(row);
+  });
+}
+
+function getCustomBubbles() {
+  try {
+    const raw = localStorage.getItem(BUBBLE_CUSTOM_STORAGE_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length === 4) {
+        return arr.map(s => String(s || '').trim().slice(0, 10));
+      }
+    }
+  } catch (e) {}
+  return [...DEFAULT_CUSTOM_BUBBLES];
+}
+
+function buildBubbleInputs() {
+  const cont = document.getElementById('bubble-custom-inputs');
+  if (!cont) return;
+  const bubbles = getCustomBubbles();
+  cont.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const line = document.createElement('div');
+    line.style.cssText = 'display:flex; align-items:center; gap:6px;';
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:0.68rem; color:#f1c40f; font-weight:800; min-width:54px;';
+    lbl.innerText = `カスタム${i + 1}`;
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.maxLength = 10;
+    inp.id = `custom-bubble-input-${i}`;
+    inp.value = bubbles[i] || '';
+    inp.placeholder = '最大10文字';
+    inp.style.cssText = 'flex:1; background:#0b1619; color:#fff; border:1px solid #9b59b6; border-radius:5px; padding:4px 7px; font-size:0.74rem;';
+    line.appendChild(lbl);
+    line.appendChild(inp);
+    cont.appendChild(line);
+  }
+}
+
+function saveBubblePresets() {
+  const st = document.getElementById('extra-modal-status');
+  const nextArr = [];
+  for (let i = 0; i < 4; i++) {
+    const inp = document.getElementById(`custom-bubble-input-${i}`);
+    const val = (inp ? inp.value : '').trim().slice(0, 10);
+    nextArr.push(val || DEFAULT_CUSTOM_BUBBLES[i]);
+  }
+  try { localStorage.setItem(BUBBLE_CUSTOM_STORAGE_KEY, JSON.stringify(nextArr)); } catch (e) {}
+  SoundEngine.playSE('signal_notify');
+  initSignalBar();
+  if (st) st.innerText = '✅ カスタム吹き出し（各最大10文字）を保存・反映しました';
+}
+
+function resetBubblePresets() {
+  try { localStorage.setItem(BUBBLE_CUSTOM_STORAGE_KEY, JSON.stringify(DEFAULT_CUSTOM_BUBBLES)); } catch (e) {}
+  buildBubbleInputs();
+  initSignalBar();
+  SoundEngine.playSE('select_card');
+  const st = document.getElementById('extra-modal-status');
+  if (st) st.innerText = '↩ 吹き出しテンプレートを初期値に戻しました';
+}
+
+function openExtraModal(tab = 'profile') {
+  const modal = document.getElementById('extra-modal');
+  const profPanel = document.getElementById('extra-profile-panel');
+  const bubPanel = document.getElementById('extra-bubble-panel');
+  const titleEl = document.getElementById('extra-modal-title');
+  const st = document.getElementById('extra-modal-status');
+  if (st) st.innerText = '';
+  syncProfileBadges();
+  renderFriendsList();
+  buildBubbleInputs();
+  if (tab === 'bubble') {
+    if (titleEl) titleEl.innerText = '💬 吹き出しエディット';
+    if (profPanel) profPanel.style.display = 'none';
+    if (bubPanel) bubPanel.style.display = 'flex';
+  } else {
+    if (titleEl) titleEl.innerText = '👤 ニックネーム・友達リスト';
+    if (profPanel) profPanel.style.display = 'flex';
+    if (bubPanel) bubPanel.style.display = 'none';
+  }
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeExtraModal() {
+  const modal = document.getElementById('extra-modal');
+  if (modal) modal.style.display = 'none';
+}
 
 function hasActiveRemotePeer() {
   return Boolean(!gameState.isRoomSingle && peerConn && peerConn.open);
@@ -1589,6 +1992,7 @@ function clearAllTimers() {
 
 function showTitle() {
   clearAllTimers();
+  syncProfileBadges();
   switchScreen('screen-title');
 }
 
@@ -1597,7 +2001,8 @@ function showModeSelect() {
   gameState.isOnline = false;
   gameState.isRoomSingle = false;
   gameState.roomRule = 'shoushi';
-  gameState.spadePlayer = 'YOU';
+  const prof = getPlayerProfile();
+  gameState.spadePlayer = prof.nickname;
   gameState.heartPlayer = '相手';
   switchScreen('screen-mode');
 }
@@ -1606,6 +2011,7 @@ function showOnlineLobby() {
   clearAllTimers();
   gameState.isOnline = true;
   gameState.isRoomSingle = false;
+  syncProfileBadges();
   switchScreen('screen-online');
 }
 
@@ -1888,7 +2294,8 @@ function selectMode(mode) {
   gameState.isOnline = false;
   gameState.isRoomSingle = false;
   gameState.roomRule = 'shoushi';
-  gameState.spadePlayer = 'YOU';
+  const prof = getPlayerProfile();
+  gameState.spadePlayer = prof.nickname;
   gameState.heartPlayer = '相手';
   gameState.playerScore = 30;
   gameState.cpuScore = 30;
@@ -1940,13 +2347,14 @@ function startCpuManualRoulette() {
 }
 
 function applyRouletteResult(isHostSpade) {
+  const prof = getPlayerProfile();
   const isYouSpade = gameState.isOnline ? (gameState.isHost ? isHostSpade : !isHostSpade) : isHostSpade;
-  gameState.spadePlayer = isYouSpade ? 'YOU' : '相手';
-  gameState.heartPlayer = isYouSpade ? '相手' : 'YOU';
+  gameState.spadePlayer = isYouSpade ? prof.nickname : '相手';
+  gameState.heartPlayer = isYouSpade ? '相手' : prof.nickname;
   gameState.cycle = 1;
   gameState.fieldSuit = '♠';
   gameState.streakCount = 0;
-  gameState.isPlayerParent = (gameState.spadePlayer === 'YOU');
+  gameState.isPlayerParent = isYouSpade;
   gameState.playerScore = 30;
   gameState.cpuScore = 30;
   gameState.kyotaku = 0;
@@ -1956,8 +2364,8 @@ function applyRouletteResult(isHostSpade) {
   suitEl.style.color = isYouSpade ? '#3498db' : '#e74c3c';
   const resultTextEl = document.getElementById('roulette-result-text');
   resultTextEl.innerHTML = isYouSpade
-    ? '♠（青）当選：YOUが♠席・先親スタート！'
-    : '♥（赤）当選：YOUが♥席・子スタート（相手が♠先親）';
+    ? `♠（青）当選：${prof.nickname}が♠席・先親スタート！`
+    : `♥（赤）当選：${prof.nickname}が♥席・子スタート（相手が♠先親）`;
   const btnGameStart = document.getElementById('btn-online-game-start');
   const waitMsg = document.getElementById('roulette-wait-msg');
   if (gameState.isOnline && !gameState.isRoomSingle && gameState.isHost) {
@@ -2095,27 +2503,36 @@ function initGameSession() {
   renderRivers();
   resetReachButtonUI();
   updateActionButtons();
-  if (gameState.isPlayerParent) {
-    if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('attack');
-    document.getElementById('hand-status-msg').innerText = 'あなたの親番です。カードを2回タップして打牌するか和了できます。';
-    document.getElementById('btn-draw').disabled = true;
-    startTurnTimerIfNeeded();
-  } else {
-    document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
-    document.getElementById('btn-draw').disabled = true;
-    if (!hasActiveRemotePeer()) {
-      scheduleCpuTurn(850);
-    } else {
+  document.getElementById('btn-draw').disabled = true;
+
+  playCycleStartSlideInAndDealSE(() => {
+    if (gameState.isGameOver) return;
+    if (gameState.isPlayerParent) {
+      if (!hasActiveRemotePeer()) triggerCpuSignalByEvent('attack');
+      document.getElementById('hand-status-msg').innerText = 'あなたの親番です。カードを2回タップして打牌するか和了できます。';
       startTurnTimerIfNeeded();
+    } else {
+      document.getElementById('hand-status-msg').innerText = '子スタート（相手の初手待機中）...';
+      if (!hasActiveRemotePeer()) {
+        scheduleCpuTurn(750);
+      } else {
+        startTurnTimerIfNeeded();
+      }
     }
-  }
+  });
 }
 
 function initSignalBar() {
   const bar = document.getElementById('signal-bar');
   bar.style.display = 'flex';
   bar.innerHTML = '';
-  BASE_SIGNAL_LIST.forEach(item => {
+  const customBubbles = getCustomBubbles();
+  const signalItems = [
+    ...BASE_SIGNAL_LIST.slice(0, 10),
+    ...customBubbles.filter(Boolean).map(txt => ({ text: `★${txt}`, rawText: txt, type: 'custom' })),
+    BASE_SIGNAL_LIST[10]
+  ];
+  signalItems.forEach(item => {
     const chip = document.createElement('button');
     chip.className = 'signal-chip';
     chip.innerText = item.text;
@@ -2126,10 +2543,11 @@ function initSignalBar() {
         hideSpeechBubble('bottom');
         if (hasActiveRemotePeer()) sendPeerPayload({ type: 'SIGNAL', text: '非表示' });
       } else {
+        const sendText = item.rawText || item.text;
         chip.classList.add('active');
-        setSpeechBubble('bottom', item.text);
+        setSpeechBubble('bottom', sendText);
         if (hasActiveRemotePeer()) {
-          sendPeerPayload({ type: 'SIGNAL', text: item.text });
+          sendPeerPayload({ type: 'SIGNAL', text: sendText });
         } else {
           setTimeout(() => {
             triggerCpuSignalByEvent(item.type === 'attack' ? 'wait' : 'react');
@@ -2160,8 +2578,9 @@ function setSpeechBubble(pos, text) {
     txt.innerText = '';
     return;
   }
+  const prof = getPlayerProfile();
   row.style.display = 'flex';
-  txt.innerText = (pos === 'top' ? '💬 相手: ' : '💬 YOU: ') + text;
+  txt.innerText = (pos === 'top' ? '💬 相手: ' : `💬 ${prof.nickname}: `) + text;
 }
 
 function hideSpeechBubble(pos) {
@@ -2205,6 +2624,7 @@ function startTurnTimerIfNeeded() {
 }
 
 function updateBoardUI() {
+  const prof = getPlayerProfile();
   const isOrasuCycle = (gameState.cycle >= 2);
   const cycleText = isOrasuCycle ? `第${gameState.cycle}サイクル(オーラス)` : `第${gameState.cycle}サイクル`;
   const mySeatSuit = gameState.isPlayerParent ? gameState.fieldSuit : (gameState.fieldSuit === '♠' ? '♥' : '♠');
@@ -2214,13 +2634,13 @@ function updateBoardUI() {
   document.getElementById('board-dora-label').innerText = `表ドラ(${doraNum}枚)`;
   document.getElementById('board-kyotaku').innerText = `${gameState.kyotaku}pt`;
   document.getElementById('board-deck-count').innerText = String(gameState.deck.length);
-  const spadeScore = (gameState.spadePlayer === 'YOU') ? gameState.playerScore : gameState.cpuScore;
-  const heartScore = (gameState.heartPlayer === 'YOU') ? gameState.playerScore : gameState.cpuScore;
+  const spadeIsYou = gameState.spadePlayer === prof.nickname || gameState.spadePlayer === 'YOU';
+  const spadeScore = spadeIsYou ? gameState.playerScore : gameState.cpuScore;
+  const heartScore = spadeIsYou ? gameState.cpuScore : gameState.playerScore;
   document.getElementById('board-spade-player').innerText = `♠${gameState.spadePlayer}`;
   document.getElementById('board-spade-score').innerText = `${spadeScore}pt`;
   document.getElementById('board-heart-player').innerText = `♥${gameState.heartPlayer}`;
   document.getElementById('board-heart-score').innerText = `${heartScore}pt`;
-  const spadeIsYou = gameState.spadePlayer === 'YOU';
   const youIsParent = gameState.isPlayerParent;
   document.getElementById('board-spade-role').innerText = (spadeIsYou ? youIsParent : !youIsParent) ? '[親]' : '[子]';
   document.getElementById('board-heart-role').innerText = (!spadeIsYou ? youIsParent : !youIsParent) ? '[親]' : '[子]';
@@ -2724,6 +3144,7 @@ function cpuTurnRoutine() {
 function handleDrawGame() {
   clearAllTimers();
   SoundEngine.playSE('player_lose_pt');
+  const prof = getPlayerProfile();
   const checkTenpai = (h) => h.length === 4
     ? checkIsTenpaiFor4(h, true)
     : h.some((_, i) => checkIsTenpaiFor4(h.filter((_, idx) => idx !== i), true));
@@ -2741,9 +3162,9 @@ function handleDrawGame() {
     ? `◎ ${gameState.streakCount}連チャン維持中` : '';
   document.getElementById('res-hand-container').innerHTML = '';
   renderResultDoraDisclosure();
-  document.getElementById('res-details-grid').innerHTML = `<div>・${pTenpai ? 'YOU テンパイ' : 'YOU ノーテン'}</div><div>・${cTenpai ? '相手 テンパイ' : '相手 ノーテン'}</div>`;
+  document.getElementById('res-details-grid').innerHTML = `<div>・${pTenpai ? `${prof.nickname} テンパイ` : `${prof.nickname} ノーテン`}</div><div>・${cTenpai ? '相手 テンパイ' : '相手 ノーテン'}</div>`;
   document.getElementById('res-total-score-badge').innerText = '【 総合収支 】 平局';
-  document.getElementById('res-total-pt').innerText = `👤 YOU: ${gameState.playerScore}pt vs 相手: ${gameState.cpuScore}pt`;
+  document.getElementById('res-total-pt').innerText = `👤 ${prof.nickname}: ${gameState.playerScore}pt vs 相手: ${gameState.cpuScore}pt`;
   handleResultScreenDisplay();
 }
 
@@ -2769,7 +3190,7 @@ function renderResultDoraDisclosure() {
 function switchFieldSuit() {
   if (gameState.fieldSuit === '♠') {
     gameState.fieldSuit = '♥';
-    gameState.isPlayerParent = (gameState.heartPlayer === 'YOU');
+    gameState.isPlayerParent = (gameState.heartPlayer !== '相手');
   } else {
     gameState.cycle++;
     if (gameState.cycle > 2) {
@@ -2777,7 +3198,7 @@ function switchFieldSuit() {
       return;
     }
     gameState.fieldSuit = '♠';
-    gameState.isPlayerParent = (gameState.spadePlayer === 'YOU');
+    gameState.isPlayerParent = (gameState.spadePlayer !== '相手');
   }
 }
 
@@ -2795,6 +3216,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   clearTimeout(cpuActionTimer);
   clearTimeout(cpuThinkTimer);
   gameState.isCpuActing = false;
+  const prof = getPlayerProfile();
   const yaku = bestObj.yaku;
   let points = bestObj.effectiveScore;
   const bonusList = [];
@@ -2802,7 +3224,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   const winnerIsParent = (winner === 'player') ? gameState.isPlayerParent : !gameState.isPlayerParent;
   const winnerIsReach = (winner === 'player') ? gameState.isPlayerReach : gameState.cpuIsReach;
   const isDoubleReach = (winner === 'player') ? gameState.isDoubleReach : false;
-  const mySuit = (winner === 'player') ? (gameState.spadePlayer === 'YOU' ? '♠' : '♥') : (gameState.spadePlayer === '相手' ? '♠' : '♥');
+  const mySuit = (winner === 'player') ? (gameState.spadePlayer !== '相手' ? '♠' : '♥') : (gameState.spadePlayer === '相手' ? '♠' : '♥');
   if (isDoubleReach) {
     points += 3;
     bonusList.push('ダブルリーチ +3pt');
@@ -2888,7 +3310,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   gridEl.style.gridTemplateColumns = detailItems.length >= 4 ? '1fr 1fr' : '1fr';
   gridEl.innerHTML = detailItems.map(item => `<div>${item}</div>`).join('');
   document.getElementById('res-total-score-badge').innerText = `【 総合収支 】 ${winner === 'player' ? '+' : '-'}${totalGain} pt`;
-  document.getElementById('res-total-pt').innerText = `👤 YOU: ${gameState.playerScore}pt vs 相手: ${gameState.cpuScore}pt`;
+  document.getElementById('res-total-pt').innerText = `👤 ${prof.nickname}: ${gameState.playerScore}pt vs 相手: ${gameState.cpuScore}pt`;
   handleResultScreenDisplay();
 }
 
@@ -3047,6 +3469,11 @@ function selectRuleYaku(idx) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  getPlayerProfile();
+  syncProfileBadges();
+  renderFriendsList();
+  buildBubbleInputs();
+  initSignalBar();
   switchScreen('screen-title');
   document.body.addEventListener('click', () => { SoundEngine.init(); }, { once: true });
   const btnCpu = document.getElementById('btn-start-cpu');
@@ -3075,6 +3502,20 @@ window.addEventListener('DOMContentLoaded', () => {
     btnManual.addEventListener('click', () => {
       SoundEngine.playSE('select_card');
       openRuleModal('manual');
+    });
+  }
+  const btnProfile = document.getElementById('btn-open-profile');
+  if (btnProfile) {
+    btnProfile.addEventListener('click', () => {
+      SoundEngine.playSE('select_card');
+      openExtraModal('profile');
+    });
+  }
+  const btnBubbleEdit = document.getElementById('btn-open-bubble-edit');
+  if (btnBubbleEdit) {
+    btnBubbleEdit.addEventListener('click', () => {
+      SoundEngine.playSE('select_card');
+      openExtraModal('bubble');
     });
   }
   try {
