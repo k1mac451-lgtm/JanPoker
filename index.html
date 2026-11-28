@@ -531,55 +531,8 @@
     </div>
     <div class="panel-card">
       <div style="font-size: 0.71rem; color: #f1c40f; font-weight: bold; margin-bottom: 5px;">各ルール部屋へ参戦（主と対戦・対人戦と同一30秒環境）</div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
-        <button onclick="startRoomMatch('shiren');" style="background: #3b1c12; border: 1px solid #e67e22; color: #fff; border-radius: 6px; padding: 6px 4px; font-size: 0.68rem; font-weight: bold; cursor: pointer;">🔥 試練の部屋</button>
-        <button onclick="startRoomMatch('damaten');" style="background: #132e26; border: 1px solid #1abc9c; color: #fff; border-radius: 6px; padding: 6px 4px; font-size: 0.68rem; font-weight: bold; cursor: pointer;">🧠 ダマテン部屋</button>
-        <button onclick="startRoomMatch('shoushi');" style="background: #2b1526; border: 1px solid #e84393; color: #fff; border-radius: 6px; padding: 6px 4px; font-size: 0.68rem; font-weight: bold; cursor: pointer;">⚔️ 勝負師の部屋</button>
-      </div>
-    </div>
-    <div class="panel-card" style="display: flex; flex-direction: column; gap: 5px;">
-      <div style="font-size: 0.71rem; color: #5dade2; font-weight: bold;">【通信対戦ホスト】ルール選択して作成</div>
-      <select id="host-room-rule-select" style="background: #0c191c; color: #fff; border: 1px solid #3498db; border-radius: 5px; padding: 5px 8px; font-size: 0.74rem;">
-        <option value="shoushi">⚔️ 勝負師の部屋（公式ガチンコ勝負）</option>
-        <option value="shiren">🔥 試練の部屋（要リーチ基本役のみ）</option>
-        <option value="damaten">🧠 ダマテンの部屋（リーチ禁止）</option>
-      </select>
-      <button class="btn-gold" onclick="createOnlineRoom();" style="height: 34px; font-size: 0.8rem;">通信ルームを開設する</button>
-      <div id="online-room-id-box" style="display: none; flex-direction: column; gap: 4px; background: #0b1619; border: 1px solid #f1c40f; border-radius: 6px; padding: 5px;">
-        <div style="font-size: 0.71rem; color: #f1c40f;">ルームID: <strong id="online-room-id-val" style="font-size: 0.86rem; letter-spacing: 0.06em;">-</strong></div>
-        <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
-          <button onclick="copyOnlineRoomId();" style="background: #2980b9; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 0.66rem; font-weight: bold; cursor: pointer;">📋 ID＆招待URLコピー</button>
-          <button onclick="shareOnlineRoomInvite();" style="background: #27ae60; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 0.66rem; font-weight: bold; cursor: pointer;">📤 招待共有</button>
-          <button onclick="saveCurrentRoomToFriends();" style="background: #8e44ad; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 0.66rem; font-weight: bold; cursor: pointer;">⭐ 友達登録</button>
-        </div>
-      </div>
-    </div>
-    <div class="panel-card" style="display: flex; flex-direction: column; gap: 5px;">
-      <div style="font-size: 0.71rem; color: #2ecc71; font-weight: bold;">【通信対戦ゲスト】IDでルームに参加</div>
-      <div style="display: flex; gap: 6px;">
-        <input id="online-join-input" type="text" placeholder="例: JP2-1234" style="flex: 1; background: #0b1619; color: #fff; border: 1px solid #2ecc71; border-radius: 5px; padding: 5px 8px; font-size: 0.76rem;" />
-        <button onclick="joinOnlineRoom();" style="background: #27ae60; color: #fff; border: none; border-radius: 5px; padding: 0 11px; font-size: 0.76rem; font-weight: bold; cursor: pointer;">参加する</button>
-      </div>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%;">
-      <button onclick="SoundEngine.playSE('select_card'); openExtraModal('profile');" style="background: #163a2b; border: 1px solid #2ecc71; color: #a9dfbf; border-radius: 6px; padding: 5px; font-size: 0.7rem; font-weight: 800; cursor: pointer;">👤 ニックネーム・友達リスト</button>
-      <button onclick="SoundEngine.playSE('select_card'); openExtraModal('bubble');" style="background: #2c1838; border: 1px solid #af7ac5; color: #e8daef; border-radius: 6px; padding: 5px; font-size: 0.7rem; font-weight: 800; cursor: pointer;">💬 吹き出しエディット</button>
-    </div>
-    <div id="online-status-msg" style="font-size: 0.71rem; color: #f9d423; min-height: 16px; font-weight: bold;"></div>
-    <button onclick="SoundEngine.playSE('select_card'); showTitle();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.82rem;">＜ タイトルに戻る</button>
-  </div>
-  <!-- 4. 場所決めルーレット画面 -->
-  <div id="screen-roulette" class="screen" style="justify-content: center; align-items: center; text-align: center; gap: 10px;">
-    <h3 class="screen-header-title">場所決めルーレット（2択）</h3>
-    <div id="roulette-warning-banner" style="display: none; font-size: 0.7rem; color: #ff7675; font-weight: bold;">⚠️ 通信モード全般：30秒制限タイマー適用（演出中ロスタイム停止）</div>
-    <div id="roulette-suit" style="font-size: 4rem; font-weight: 900; color: #3498db; line-height: 1.1;">♠</div>
-    <div id="roulette-result-text" style="font-size: 0.82rem; color: #ecf0f1; font-weight: bold; min-height: 34px;">「ルーレットスタート」を押してください</div>
-    <button id="btn-cpu-spin" class="btn-gold" onclick="startCpuManualRoulette();" style="padding: 9px 20px; font-size: 0.9rem;">ルーレットスタート</button>
-    <button id="btn-online-game-start" class="btn-gold" onclick="confirmOnlineGameStart();" style="display: none; padding: 9px 20px; font-size: 0.9rem;">🚀 ゲーム開始</button>
-    <div id="roulette-wait-msg" style="display: none; font-size: 0.76rem; color: #5dade2; font-weight: bold;">ホストがゲームを開始するのを待っています...</div>
-    <button onclick="showModeSelect();" style="background: transparent; color: #bdc3c7; border: none; cursor: pointer; font-size: 0.8rem;">＜ モード選択へ戻る</button>
-  </div>
-    <!-- 5. メイン対戦画面 -->
+      <div style="display: grid; grid-template-columns
+          <!-- 5. メイン対戦画面 -->
   <div id="screen-game" class="screen">
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 9px; background: #162a2d; border-radius: 5px; border: 1px solid #244348; flex-shrink: 0;">
       <span id="opponent-label" style="font-size: 0.76rem; color: #e74c3c; font-weight: bold;">相手手札</span>
@@ -1840,9 +1793,7 @@ const gameState = {
   pendingRonCard: null,
   isCpuActing: false
 };
-</script>
-<script>
-const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
+  const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
 const PROFILE_STORAGE_KEY = 'JP2_PLAYER_PROFILE_v1';
 const FRIENDS_STORAGE_KEY = 'JP2_FRIENDS_LIST_v1';
 const BUBBLE_CUSTOM_STORAGE_KEY = 'JP2_CUSTOM_BUBBLES_v1';
