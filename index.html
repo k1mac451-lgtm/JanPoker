@@ -234,7 +234,27 @@
       margin-top: 3px;
       letter-spacing: 0.05em;
     }
-    /* 対戦画面：2行拡張吹き出し＆下部の空き差分調整 */
+    /* 鬼レンチャン 段階ステップアップ演出（2・4・6・8・10連チャン） */
+    @keyframes renchanStepBurst {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.72); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      82% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.14); }
+    }
+    #renchan-step-banner {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 245;
+      pointer-events: none;
+      text-align: center;
+      white-space: nowrap;
+      padding: 10px 22px;
+      border-radius: 14px;
+      animation: renchanStepBurst 2.15s cubic-bezier(0.18, 0.92, 0.25, 1) forwards;
+    }
     #screen-game { padding: 6px 10px 4px 10px; gap: 4px; justify-content: flex-start; overflow-y: auto; }
     .speech-bubble-slot {
       height: 36px; min-height: 36px; max-height: 36px;
@@ -458,6 +478,7 @@
 <div id="game-wrapper">
   <div id="cutin-overlay"><div id="cutin-banner" class="cutin-banner"></div></div>
   <div id="special-logo-banner"></div>
+  <div id="renchan-step-banner"></div>
   <div id="cycle-slidein-banner">
     <div id="cycle-slide-main" class="cycle-slide-main">第1サイクル ♠場</div>
     <div id="cycle-slide-sub" class="cycle-slide-sub">配札完了・対局開始！</div>
@@ -626,7 +647,7 @@
   </div>
   <!-- 6. リザルト画面 -->
   <div id="screen-result" class="screen" style="justify-content: center; align-items: center; text-align: center; gap: 6px;">
-    <div id="res-streak-banner" style="min-height: 22px; font-weight: 900;"></div>
+    <div id="res-streak-banner" style="min-height: 26px; font-weight: 900; display: flex; align-items: center; justify-content: center;"></div>
     <h3 id="res-title" class="screen-header-title">リザルト</h3>
     <div id="res-subtitle" style="font-size: 0.8rem; color: #ecf0f1; font-weight: bold;"></div>
     <div id="res-hand-container" style="display: flex; gap: 4px; justify-content: center; flex-wrap: nowrap; min-height: 80px; align-items: center;"></div>
@@ -716,8 +737,8 @@
       <div id="extra-modal-status" style="font-size: 0.7rem; color: #2ecc71; font-weight: bold; min-height: 16px;"></div>
     </div>
   </div>
-</div>　
-  <script>
+</div>
+<script>
 const SoundEngine = {
   ctx: null,
   noiseBuffer: null,
@@ -787,7 +808,7 @@ const SoundEngine = {
       src.stop(now + dur + 0.01);
     } catch (e) {}
   },
-  playDealShushu() {
+  playDealSwish() {
     const offsets = [0, 0.075, 0.15, 0.225, 0.305];
     offsets.forEach((d, idx) => {
       const isLast = (idx === offsets.length - 1);
@@ -808,7 +829,7 @@ const SoundEngine = {
     this.lastSEMap[name] = nowMs;
     switch (name) {
       case 'deal_shushu':
-        this.playDealShushu();
+        this.playDealSwish();
         break;
       case 'select_card':
         this.filteredNoise(0.065, 'bandpass', 1900, 1150, 0.22, 0, 2.2);
@@ -869,6 +890,19 @@ const SoundEngine = {
   }
 };
 
+/* 全角マイナス記号（−）を統一使用するスコアフォーマッタ */
+function formatSignedPt(num) {
+  const n = Number(num) || 0;
+  if (n < 0) return `−${Math.abs(n)}pt`;
+  if (n > 0) return `+${n}pt`;
+  return `0pt`;
+}
+
+function formatRawPt(num) {
+  const n = Number(num) || 0;
+  return n < 0 ? `−${Math.abs(n)}pt` : `${n}pt`;
+}
+
 /* ===== 演出ウェイト（最低2秒以上）＆通信30秒タイマーロスタイム除外管理 ===== */
 let activeCutinLocks = 0;
 
@@ -910,6 +944,7 @@ function clearCutinTimers() {
   clearTimeout(window.__cutinFollowTimer);
   clearTimeout(window.__specialLogoTimer);
   clearTimeout(window.__cycleSlideTimer);
+  clearTimeout(window.__renchanStepTimer);
   resetCutinLossTimeLocks();
 }
 
@@ -931,6 +966,78 @@ function showSpecialLogoBanner(text, durationMs = 2150) {
   }, safeDuration);
 }
 
+/* 鬼レンチャレンジ：2・4・6・8・10連チャン段階ステップアップ演出 */
+function showRenchanStepUpBanner(streak) {
+  if (gameState.mode !== 'master' || streak < 2) return;
+  const el = document.getElementById('renchan-step-banner');
+  if (!el) return;
+  clearTimeout(window.__renchanStepTimer);
+  beginCutinLossTimeLock();
+
+  let tier = {
+    fontSize: '1.15rem',
+    color: '#ffe066',
+    bg: 'linear-gradient(135deg, rgba(120, 53, 15, 0.96), rgba(30, 41, 59, 0.96))',
+    border: '2.5px solid #fbbf24',
+    shadow: '0 0 22px rgba(251, 191, 36, 0.78)',
+    label: `🔥 ${streak}連チャン突破！ 🔥`
+  };
+  if (streak >= 10) {
+    tier = {
+      fontSize: '1.68rem',
+      color: '#fff9db',
+      bg: 'linear-gradient(135deg, rgba(185, 28, 28, 0.98), rgba(146, 64, 14, 0.98))',
+      border: '3.5px solid #ffd43b',
+      shadow: '0 0 46px rgba(255, 212, 59, 1), 0 0 70px rgba(255, 56, 56, 0.95)',
+      label: `👑 10連チャン完全制覇！ 👑`
+    };
+  } else if (streak >= 8) {
+    tier = {
+      fontSize: '1.52rem',
+      color: '#ffedd5',
+      bg: 'linear-gradient(135deg, rgba(153, 27, 27, 0.97), rgba(124, 45, 18, 0.97))',
+      border: '3px solid #ff7654',
+      shadow: '0 0 38px rgba(255, 118, 84, 0.95), 0 0 54px rgba(255, 212, 59, 0.75)',
+      label: `⚡👹 8連チャン覚醒！ 👹⚡`
+    };
+  } else if (streak >= 6) {
+    tier = {
+      fontSize: '1.38rem',
+      color: '#fef08a',
+      bg: 'linear-gradient(135deg, rgba(136, 19, 55, 0.97), rgba(120, 53, 15, 0.97))',
+      border: '3px solid #fb7185',
+      shadow: '0 0 32px rgba(251, 113, 133, 0.9)',
+      label: `💥🔥 6連チャン突入！ 🔥💥`
+    };
+  } else if (streak >= 4) {
+    tier = {
+      fontSize: '1.26rem',
+      color: '#fde047',
+      bg: 'linear-gradient(135deg, rgba(124, 45, 18, 0.96), rgba(30, 27, 75, 0.96))',
+      border: '2.5px solid #fb923c',
+      shadow: '0 0 28px rgba(251, 146, 60, 0.85)',
+      label: `🔥✨ 4連チャン加速！ ✨🔥`
+    };
+  }
+
+  SoundEngine.playSE(streak >= 6 ? 'win_yakuman' : 'win_mid');
+  el.style.display = 'none';
+  el.style.fontSize = tier.fontSize;
+  el.style.color = tier.color;
+  el.style.background = tier.bg;
+  el.style.border = tier.border;
+  el.style.boxShadow = tier.shadow;
+  el.innerText = tier.label;
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'renchanStepBurst 2.15s cubic-bezier(0.18, 0.92, 0.25, 1) forwards';
+  el.style.display = 'block';
+  window.__renchanStepTimer = setTimeout(() => {
+    el.style.display = 'none';
+    endCutinLossTimeLock();
+  }, 2150);
+}
+
 function playCycleStartSlideInAndDealSE(onComplete) {
   const banner = document.getElementById('cycle-slidein-banner');
   const mainEl = document.getElementById('cycle-slide-main');
@@ -945,8 +1052,8 @@ function playCycleStartSlideInAndDealSE(onComplete) {
     mainEl.innerText = displayText;
     mainEl.style.color = isOrasu ? '#ff7675' : '#fff8c4';
     subEl.innerText = isOrasu
-      ? `🔥 ${gameState.fieldSuit}親番・表ドラ2枚＆裏ドラ2枚！配札開始！`
-      : `🃏 ${gameState.fieldSuit}親番・シュシュシュシュッ！配札スタート`;
+      ? `🔥 ${gameState.fieldSuit}親番・表ドラ2枚＆裏ドラ2枚！配札開始`
+      : `🃏 ${gameState.fieldSuit}親番・配札スタート`;
     banner.style.display = 'none';
     banner.style.animation = 'none';
     void banner.offsetWidth;
@@ -1133,7 +1240,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}, o
   const individualSpec = getIndividualYakuSpec(yaku.name, isTenchi);
   let baseClass = 'cutin-banner basic-cutin';
   let baseTag = `BASIC / ${winType}`;
-  let baseTitle = `${winType}和了（+${effectiveScore}pt）`;
+  let baseTitle = `${winType}和了（${formatSignedPt(effectiveScore)}）`;
   let baseSub = `成立役：${yaku.name}`;
   let baseSE = (winner === 'cpu') ? null : 'win_basic';
   let logoBadge = '';
@@ -1142,26 +1249,26 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}, o
     baseClass = individualSpec.bannerClass;
     baseTag = individualSpec.tagText;
     baseTitle = isTenchi ? `天地人和・${yaku.name}！` : `${yaku.name}！`;
-    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSub = `${winType}和了（${formatSignedPt(effectiveScore)}）`;
     baseSE = (winner === 'cpu') ? null : individualSpec.seName;
     logoBadge = individualSpec.logoBadge;
   } else if (yaku.catId === 5) {
     baseClass = 'cutin-banner rare-card-cutin';
     baseTag = '🃏 JOKER MUST（−2pt免除）';
     baseTitle = `${yaku.name}！`;
-    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSub = `${winType}和了（${formatSignedPt(effectiveScore)}）`;
     baseSE = (winner === 'cpu') ? null : 'win_joker';
   } else if (yaku.catId === 4) {
     baseClass = 'cutin-banner yakuman-cutin';
     baseTag = '🔥 YAKUMAN';
     baseTitle = `${yaku.name}！`;
-    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSub = `${winType}和了（${formatSignedPt(effectiveScore)}）`;
     baseSE = (winner === 'cpu') ? null : 'win_yakuman';
   } else if (yaku.catId === 3) {
     baseClass = 'cutin-banner mid-cutin';
     baseTag = '◆ MIDDLE YAKU';
     baseTitle = `◆ ${yaku.name} ◆`;
-    baseSub = `${winType}和了（+${effectiveScore}pt）`;
+    baseSub = `${winType}和了（${formatSignedPt(effectiveScore)}）`;
     baseSE = (winner === 'cpu') ? null : 'win_mid';
   }
 
@@ -1228,7 +1335,7 @@ function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare
   }, 2100);
 }
 
-/* ===== 役判定エンジン＆JOKER制約厳密化 ===== */
+/* ===== 役判定エンジン＆ブラックジャック・連番精査 ===== */
 const FIVE_STRAIGHT_SEQUENCES = [
   [14, 2, 3, 4, 5],
   [2, 3, 4, 5, 6],
@@ -1271,6 +1378,7 @@ function checkValidStraight(vals, numJokers = 0) {
   return FIVE_STRAIGHT_SEQUENCES.some(seq => clean.every(v => seq.includes(v)));
 }
 
+/* 3枚連番判定：A-2-3 / 2-3-4 / ... / Q-K-A（A跨ぎK-A-2などは除外） */
 function checkValid3Straight(vals3, numJokers = 0) {
   const clean = vals3.filter(v => v > 0);
   if (clean.length + numJokers !== 3) return false;
@@ -1333,6 +1441,56 @@ function canFormFullHouseWithJokers(vals, numJokers, requireFaceCard = false) {
       if (otherVals.length === 0 && (extraFromTrip + extraFromPair + needTrip + needPair) <= numJokers) {
         return true;
       }
+    }
+  }
+  return false;
+}
+
+/* ブラックジャック判定：黒スート（♠・♣）のみで構成され、J(11)が2枚＋残り3枚が黒3連番 */
+function checkBlackJackHand(cards, jokers, normals) {
+  if (!Array.isArray(cards) || cards.length !== 5) return false;
+  if (!normals.every(c => c.suit === '♠' || c.suit === '♣')) return false;
+  const blackJs = normals.filter(c => c.val === 11);
+  if (blackJs.length + jokers.length < 2) return false;
+
+  for (let jForPair = Math.max(0, 2 - blackJs.length); jForPair <= jokers.length; jForPair++) {
+    const useBlackJs = Math.min(blackJs.length, 2 - jForPair);
+    const temp = [...normals];
+    let removedJ = 0;
+    for (let i = temp.length - 1; i >= 0 && removedJ < useBlackJs; i--) {
+      if (temp[i].val === 11) {
+        temp.splice(i, 1);
+        removedJ++;
+      }
+    }
+    const jForSeq = jokers.length - jForPair;
+    if (temp.length + jForSeq === 3 && checkValid3Straight(temp.map(c => c.val), jForSeq)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/* レッドクイーン判定：赤スート（♥・♦）のみで構成され、Q(12)が2枚＋残り3枚が赤3連番 */
+function checkRedQueenHand(cards, jokers, normals) {
+  if (!Array.isArray(cards) || cards.length !== 5) return false;
+  if (!normals.every(c => c.suit === '♥' || c.suit === '♦')) return false;
+  const redQs = normals.filter(c => c.val === 12);
+  if (redQs.length + jokers.length < 2) return false;
+
+  for (let jForPair = Math.max(0, 2 - redQs.length); jForPair <= jokers.length; jForPair++) {
+    const useRedQs = Math.min(redQs.length, 2 - jForPair);
+    const temp = [...normals];
+    let removedQ = 0;
+    for (let i = temp.length - 1; i >= 0 && removedQ < useRedQs; i--) {
+      if (temp[i].val === 12) {
+        temp.splice(i, 1);
+        removedQ++;
+      }
+    }
+    const jForSeq = jokers.length - jForPair;
+    if (temp.length + jForSeq === 3 && checkValid3Straight(temp.map(c => c.val), jForSeq)) {
+      return true;
     }
   }
   return false;
@@ -1478,64 +1636,24 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ブラックジャック", score: 12, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】黒Jペア＋黒混合3連番",
-    desc: "黒J（J=11）のペア ＋ 黒スート（♠・♣混合可）の3連番（A跨ぎ不可）。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】黒Jペア＋黒混合3連番",
+    desc: "黒J（J=11）のペア ＋ 黒スート（♠・♣混合可）の3連番（A跨ぎ不可）。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:2},{suit:'♣',val:3},{suit:'♠',val:4}],
     jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals) => {
-      if (cards.length !== 5) return false;
-      if (!normals.every(c => c.suit === '♠' || c.suit === '♣')) return false;
-      const blackJs = normals.filter(c => c.val === 11).length;
-      if (blackJs + jokers.length < 2) return false;
-      for (let jForPair = Math.max(0, 2 - blackJs); jForPair <= jokers.length; jForPair++) {
-        const temp = [...normals];
-        let jPairLeft = jForPair;
-        for (let i = temp.length - 1; i >= 0 && jPairLeft > 0; i--) {
-          if (temp[i].val === 11) {
-            temp.splice(i, 1);
-            jPairLeft--;
-          }
-        }
-        const jForSeq = jokers.length - jForPair;
-        if (temp.length + jForSeq === 3 && checkValid3Straight(temp.map(c => c.val), jForSeq)) {
-          return true;
-        }
-      }
-      return false;
-    }
+    check: (cards, jokers, normals) => checkBlackJackHand(cards, jokers, normals)
   },
   {
     name: "レッドクイーン", score: 12, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】赤Qペア＋赤混合3連番",
-    desc: "赤Q（Q=12）のペア ＋ 赤スート（♥・♦混合可）の3連番（A跨ぎ不可）。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】赤Qペア＋赤混合3連番",
+    desc: "赤Q（Q=12）のペア ＋ 赤スート（♥・♦混合可）の3連番（A跨ぎ不可）。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:5},{suit:'♦',val:6},{suit:'♥',val:7}],
     jokerType: "allowed", requireReach: false,
-    check: (cards, jokers, normals) => {
-      if (cards.length !== 5) return false;
-      if (!normals.every(c => c.suit === '♥' || c.suit === '♦')) return false;
-      const redQs = normals.filter(c => c.val === 12).length;
-      if (redQs + jokers.length < 2) return false;
-      for (let jForPair = Math.max(0, 2 - redQs); jForPair <= jokers.length; jForPair++) {
-        const temp = [...normals];
-        let jPairLeft = jForPair;
-        for (let i = temp.length - 1; i >= 0 && jPairLeft > 0; i--) {
-          if (temp[i].val === 12) {
-            temp.splice(i, 1);
-            jPairLeft--;
-          }
-        }
-        const jForSeq = jokers.length - jForPair;
-        if (temp.length + jForSeq === 3 && checkValid3Straight(temp.map(c => c.val), jForSeq)) {
-          return true;
-        }
-      }
-      return false;
-    }
+    check: (cards, jokers, normals) => checkRedQueenHand(cards, jokers, normals)
   },
   {
     name: "ツーペイコウ", score: 13, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】JJQKK または QQKAA の2パターンのみ",
-    desc: "絵札ペアをジョイントする形は JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】JJQKK または QQKAA の2パターンのみ",
+    desc: "絵札ペアをジョイントする形は JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:13}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1545,8 +1663,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "トイハウス", score: 14, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】絵札のみのフルハウス",
-    desc: "絵札（J,Q,K,A）のみで構成されたフルハウス形式。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】絵札のみのフルハウス",
+    desc: "絵札（J,Q,K,A）のみで構成されたフルハウス形式。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♠',val:13},{suit:'♥',val:13},{suit:'♦',val:12},{suit:'♣',val:12},{suit:'♠',val:12}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1556,8 +1674,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ストレートフラッシュ", score: 15, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】同スート連番5枚",
-    desc: "同じスートの連番5枚（ロイヤルストレートフラッシュ除く）。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】同スート連番5枚",
+    desc: "同じスートの連番5枚（ロイヤルストレートフラッシュ除く）。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♥',val:4},{suit:'♥',val:5},{suit:'♥',val:6},{suit:'♥',val:7},{suit:'♥',val:8}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1568,8 +1686,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "黒龍", score: 18, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】黒スート偶数5枚",
-    desc: "♠または♣の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】黒スート偶数5枚",
+    desc: "♠または♣の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♠',val:2},{suit:'♠',val:4},{suit:'♠',val:6},{suit:'♠',val:8},{suit:'♠',val:10}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1580,8 +1698,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "赤龍", score: 18, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】赤スート偶数5枚",
-    desc: "♥または♦の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】赤スート偶数5枚",
+    desc: "♥または♦の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♥',val:2},{suit:'♥',val:4},{suit:'♥',val:6},{suit:'♥',val:8},{suit:'♥',val:10}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1605,8 +1723,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "七三元", score: 21, catId: 4, catName: "役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】777とAAの特殊フルハウス",
-    desc: "7×3 と A(14)×2 の構成。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】777とAAの特殊フルハウス",
+    desc: "7×3 と A(14)×2 の構成。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:14},{suit:'♠',val:14}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1622,8 +1740,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ロイヤルストレートフラッシュ", score: 30, catId: 4, catName: "役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】同一スート10・J・Q・K・A",
-    desc: "同じスートで 10・J・Q・K・A を揃える最高峰の役満。JOKER使用時は「阿漕なJOKER」として-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(−2pt)】同一スート10・J・Q・K・A",
+    desc: "同じスートで 10・J・Q・K・A を揃える最高峰の役満。JOKER使用時は「阿漕なJOKER」として−2pt。",
     sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:14}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1633,8 +1751,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "AKB48", score: 24, catId: 5, catName: "JOKER", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】A・K・4・8＋JOKER",
-    desc: "スート問わず A(14), K(13), 4, 8 ＋ JOKER の5枚。JOKER必須役のため-2点免除。",
+    catHeader: "【ダマテン可・JOKER必須(−2pt免除)】A・K・4・8＋JOKER",
+    desc: "スート問わず A(14), K(13), 4, 8 ＋ JOKER の5枚。JOKER必須役のため−2点免除。",
     sample: [{suit:'♠',val:14},{suit:'♥',val:13},{suit:'',val:0,isJoker:true},{suit:'♦',val:4},{suit:'♣',val:8}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1643,8 +1761,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "5カード", score: 25, catId: 5, catName: "JOKER", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】同数字4枚＋JOKER",
-    desc: "同じ数字4枚＋JOKERの5枚。JOKER必須役のため-2点免除。",
+    catHeader: "【ダマテン可・JOKER必須(−2pt免除)】同数字4枚＋JOKER",
+    desc: "同じ数字4枚＋JOKERの5枚。JOKER必須役のため−2点免除。",
     sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:7},{suit:'',val:0,isJoker:true}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1656,8 +1774,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "酷使苦情", score: 29, catId: 5, catName: "JOKER", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】各スート1枚ずつ＋JOKER（5949ジョー）",
-    desc: "5・9・4・9（各1枚）かつ4スート（♠・♥・♦・♣）コンプリート ＋ JOKERの5枚（コク・シ・ク・ジョー）。JOKER必須役のため-2点免除。",
+    catHeader: "【ダマテン可・JOKER必須(−2pt免除)】各スート1枚ずつ＋JOKER（5949ジョー）",
+    desc: "5・9・4・9（各1枚）かつ4スート（♠・♥・♦・♣）コンプリート ＋ JOKERの5枚（コク・シ・ク・ジョー）。JOKER必須役のため−2点免除。",
     sample: [{suit:'♠',val:5},{suit:'♥',val:9},{suit:'♦',val:4},{suit:'♣',val:9},{suit:'',val:0,isJoker:true}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1666,8 +1784,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "シン・AKB48", score: 48, catId: 5, catName: "JOKER", catClass: "cat-5",
-    catHeader: "【ダマテン可・JOKER必須(-2pt免除)】♥のA・K・4・8＋JOKER",
-    desc: "通常牌4枚がすべて ♥ で A(14)・K(13)・4・8 ＋ JOKER の5枚。JOKER必須役のため-2点免除。",
+    catHeader: "【ダマテン可・JOKER必須(−2pt免除)】♥のA・K・4・8＋JOKER",
+    desc: "通常牌4枚がすべて ♥ で A(14)・K(13)・4・8 ＋ JOKER の5枚。JOKER必須役のため−2点免除。",
     sample: [{suit:'♥',val:14},{suit:'♥',val:13},{suit:'',val:0,isJoker:true},{suit:'♥',val:4},{suit:'♥',val:8}],
     jokerType: "required", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -2050,7 +2168,7 @@ function hasActiveRemotePeer() {
 }
 
 const beginnerAdviceList = [
-  "💡 ヒント：10点以下の基本役と4カードにはJOKERは使えないよ！",
+  "💡 ヒント：10点以下の基本役と4カード（4カード＋JOKERは5カードへ）にはJOKERは使えないよ！",
   "💡 ヒント：捨て札のJOKERはJOKER必須役のみロン対象（他は無効）！",
   "💡 ヒント：11点以上の役でJOKERを使うと「阿漕なJOKER」で−2pt！",
   "💡 ヒント：JOKER必須役は−2pt免除！ドラ・裏ドラはJOKER無効！",
@@ -2803,15 +2921,15 @@ function updateBoardUI() {
   document.getElementById('board-streak-label').innerText = `(${gameState.streakCount}連チャン)`;
   const doraNum = getDoraCountForCycle();
   document.getElementById('board-dora-label').innerText = `表ドラ(${doraNum}枚)`;
-  document.getElementById('board-kyotaku').innerText = `${gameState.kyotaku}pt`;
+  document.getElementById('board-kyotaku').innerText = formatRawPt(gameState.kyotaku);
   document.getElementById('board-deck-count').innerText = String(gameState.deck.length);
   const spadeIsYou = (gameState.spadePlayer === prof.nickname || gameState.spadePlayer === 'YOU');
   const spadeScore = spadeIsYou ? gameState.playerScore : gameState.cpuScore;
   const heartScore = spadeIsYou ? gameState.cpuScore : gameState.playerScore;
   document.getElementById('board-spade-player').innerText = `♠${gameState.spadePlayer}`;
-  document.getElementById('board-spade-score').innerText = `${spadeScore}pt`;
+  document.getElementById('board-spade-score').innerText = formatRawPt(spadeScore);
   document.getElementById('board-heart-player').innerText = `♥${gameState.heartPlayer}`;
-  document.getElementById('board-heart-score').innerText = `${heartScore}pt`;
+  document.getElementById('board-heart-score').innerText = formatRawPt(heartScore);
   const isSpadeField = (gameState.fieldSuit === '♠');
   document.getElementById('board-spade-role').innerText = isSpadeField ? '[先親]' : '[子]';
   document.getElementById('board-heart-role').innerText = !isSpadeField ? '[後親]' : '[子]';
@@ -3040,7 +3158,6 @@ function isAKB48Tenpai4(hand4) {
   return nVals.every(v => akbVals.includes(v));
 }
 
-/* 捨て札（河）でのJOKER制約：捨て札にJOKERがある場合、JOKER必須役のみ対象（他は無効・ロン不可） */
 function canRonOnDiscardedCard(card) {
   if (!card || isFuritenOnCard(card)) return false;
   if (card.isJoker) {
@@ -3464,8 +3581,8 @@ function handleDrawGame() {
   document.getElementById('res-details-grid').innerHTML = `<div>・${pTenpai ? `${prof.nickname} テンパイ` : `${prof.nickname} ノーテン`}</div><div>・${cTenpai ? '相手 テンパイ' : '相手 ノーテン'}</div>`;
   document.getElementById('res-total-score-badge').innerText = '【 総合収支 】 平局（0 pt）';
   document.getElementById('res-total-pt').innerText = gameState.mode === 'master'
-    ? `🔥 鬼レン進捗: ${gameState.streakCount} / 10連チャン（参考点: ${gameState.playerScore}pt vs ${gameState.cpuScore}pt）`
-    : `👤 ${prof.nickname}: ${gameState.playerScore}pt vs 相手: ${gameState.cpuScore}pt`;
+    ? `🔥 鬼レン進捗: ${gameState.streakCount} / 10連チャン（参考点: ${formatRawPt(gameState.playerScore)} vs ${formatRawPt(gameState.cpuScore)}）`
+    : `👤 ${prof.nickname}: ${formatRawPt(gameState.playerScore)} vs 相手: ${formatRawPt(gameState.cpuScore)}`;
   handleResultScreenDisplay();
 }
 
@@ -3498,8 +3615,8 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   const yaku = bestObj.yaku;
   let points = bestObj.effectiveScore;
   const bonusList = [];
-  if (bestObj.jokerPenalty < 0) bonusList.push(`阿漕なJOKER ${bestObj.jokerPenalty}pt`);
-  else if (yaku.jokerType === 'required' && exactHand5.some(c => c.isJoker)) bonusList.push('JOKER必須役(-2pt免除)');
+  if (bestObj.jokerPenalty < 0) bonusList.push(`阿漕なJOKER −2pt`);
+  else if (yaku.jokerType === 'required' && exactHand5.some(c => c.isJoker)) bonusList.push('JOKER必須役(−2pt免除)');
   const winnerIsParent = (winner === 'player') ? gameState.isPlayerParent : !gameState.isPlayerParent;
   const winnerIsReach = (winner === 'player') ? gameState.isPlayerReach : gameState.cpuIsReach;
   const isDoubleReach = (winner === 'player') ? gameState.isDoubleReach : gameState.cpuIsDoubleReach;
@@ -3560,11 +3677,24 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   const streakBanner = document.getElementById('res-streak-banner');
   if (gameState.mode === 'master') {
     const s = gameState.streakCount;
-    const stepSize = s >= 10 ? '1.36rem' : s >= 8 ? '1.24rem' : s >= 6 ? '1.14rem' : s >= 4 ? '1.06rem' : '0.98rem';
-    const stepColor = s >= 8 ? '#ff4757' : s >= 4 ? '#ff9f43' : '#feca57';
-    streakBanner.innerHTML = s >= 2
-      ? `<span style="font-size:${stepSize}; color:${stepColor}; text-shadow:0 0 10px rgba(255,159,67,0.65);">🔥 ${s}連チャン達成！ 🔥</span>`
-      : `<span>現在 ${s}連チャン（オーラスサイクルまでチャンス・目標10連チャン）</span>`;
+    let badgeHtml = '';
+    if (s >= 10) {
+      badgeHtml = `<span style="font-size:1.42rem; color:#fff9db; background:linear-gradient(90deg,#c0392b,#e67e22); padding:3px 12px; border-radius:999px; border:2px solid #ffd43b; box-shadow:0 0 22px rgba(255,212,59,0.95);">👑 10連チャン完全制覇！ 👑</span>`;
+    } else if (s >= 8) {
+      badgeHtml = `<span style="font-size:1.34rem; color:#ffedd5; background:linear-gradient(90deg,#991b1b,#c2410c); padding:3px 12px; border-radius:999px; border:2px solid #ff7654; box-shadow:0 0 18px rgba(255,118,84,0.9);">⚡👹 8連チャン覚醒！ 👹⚡</span>`;
+    } else if (s >= 6) {
+      badgeHtml = `<span style="font-size:1.24rem; color:#fef08a; background:linear-gradient(90deg,#881337,#9a3412); padding:3px 10px; border-radius:999px; border:2px solid #fb7185; box-shadow:0 0 16px rgba(251,113,133,0.85);">💥🔥 6連チャン突入！ 🔥💥</span>`;
+    } else if (s >= 4) {
+      badgeHtml = `<span style="font-size:1.14rem; color:#fde047; background:rgba(124,45,18,0.85); padding:2px 10px; border-radius:999px; border:1.5px solid #fb923c; box-shadow:0 0 12px rgba(251,146,60,0.75);">🔥✨ 4連チャン加速！ ✨🔥</span>`;
+    } else if (s >= 2) {
+      badgeHtml = `<span style="font-size:1.05rem; color:#ffe066; background:rgba(120,53,15,0.75); padding:2px 9px; border-radius:999px; border:1.5px solid #fbbf24; box-shadow:0 0 10px rgba(251,191,36,0.65);">🔥 ${s}連チャン突破！ 🔥</span>`;
+    } else {
+      badgeHtml = `<span style="font-size:0.84rem; color:#feca57;">現在 ${s}連チャン（オーラスサイクルまでチャンス・目標10連チャン）</span>`;
+    }
+    streakBanner.innerHTML = badgeHtml;
+    if (s >= 2 && s % 2 === 0) {
+      showRenchanStepUpBanner(s);
+    }
   } else {
     streakBanner.innerHTML = gameState.streakCount > 0 ? `◎ ${gameState.streakCount}連チャン中` : '';
   }
@@ -3587,10 +3717,11 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   const gridEl = document.getElementById('res-details-grid');
   gridEl.style.gridTemplateColumns = detailItems.length >= 4 ? '1fr 1fr' : '1fr';
   gridEl.innerHTML = detailItems.map(item => `<div>${item}</div>`).join('');
-  document.getElementById('res-total-score-badge').innerText = `【 上がり集計 】 ${winner === 'player' ? '+' : '-'}${totalGain} pt`;
+  const signedDelta = (winner === 'player') ? totalGain : -totalGain;
+  document.getElementById('res-total-score-badge').innerText = `【 上がり集計 】 ${formatSignedPt(signedDelta)}`;
   document.getElementById('res-total-pt').innerText = gameState.mode === 'master'
-    ? `🔥 鬼レン記録: ${gameState.streakCount}連チャン（参考スコア ${prof.nickname}:${gameState.playerScore}pt / 相手:${gameState.cpuScore}pt）`
-    : `👤 ${prof.nickname}: ${gameState.playerScore}pt vs 相手: ${gameState.cpuScore}pt`;
+    ? `🔥 鬼レン記録: ${gameState.streakCount}連チャン（参考スコア ${prof.nickname}:${formatRawPt(gameState.playerScore)} / 相手:${formatRawPt(gameState.cpuScore)}）`
+    : `👤 ${prof.nickname}: ${formatRawPt(gameState.playerScore)} vs 相手: ${formatRawPt(gameState.cpuScore)}`;
   handleResultScreenDisplay();
 }
 
