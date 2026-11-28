@@ -703,7 +703,8 @@
       <div id="extra-modal-status" style="font-size: 0.7rem; color: #2ecc71; font-weight: bold; min-height: 16px;"></div>
     </div>
   </div>
-  <script>
+</div>
+<script>
 const SoundEngine = {
   ctx: null,
   noiseBuffer: null,
@@ -1133,7 +1134,7 @@ function triggerWinCutinExclusive(winType, yaku, effectiveScore, options = {}, o
     logoBadge = individualSpec.logoBadge;
   } else if (yaku.catId === 5) {
     baseClass = 'cutin-banner rare-card-cutin';
-    baseTag = '🃏 JOKER MUST';
+    baseTag = '🃏 JOKER MUST（−2pt免除）';
     baseTitle = `${yaku.name}！`;
     baseSub = `${winType}和了（+${effectiveScore}pt）`;
     baseSE = (winner === 'cpu') ? null : 'win_joker';
@@ -1214,7 +1215,7 @@ function triggerInfoCutinBanner(titleText, subText = '', seName = 'reach_declare
   }, 2100);
 }
 
-/* ===== 役判定エンジン（精査・厳密化版） ===== */
+/* ===== 役判定エンジン＆JOKER制約厳密化 ===== */
 const FIVE_STRAIGHT_SEQUENCES = [
   [14, 2, 3, 4, 5],
   [2, 3, 4, 5, 6],
@@ -1464,8 +1465,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ブラックジャック", score: 12, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】黒Jペア＋黒混合3連番",
-    desc: "黒J（J=11）のペア ＋ 黒スート（♠・♣混合可）の3連番（A跨ぎ不可）。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】黒Jペア＋黒混合3連番",
+    desc: "黒J（J=11）のペア ＋ 黒スート（♠・♣混合可）の3連番（A跨ぎ不可）。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♠',val:11},{suit:'♣',val:11},{suit:'♠',val:2},{suit:'♣',val:3},{suit:'♠',val:4}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals) => {
@@ -1492,8 +1493,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "レッドクイーン", score: 12, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】赤Qペア＋赤混合3連番",
-    desc: "赤Q（Q=12）のペア ＋ 赤スート（♥・♦混合可）の3連番（A跨ぎ不可）。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】赤Qペア＋赤混合3連番",
+    desc: "赤Q（Q=12）のペア ＋ 赤スート（♥・♦混合可）の3連番（A跨ぎ不可）。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♥',val:12},{suit:'♦',val:12},{suit:'♥',val:5},{suit:'♦',val:6},{suit:'♥',val:7}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals) => {
@@ -1520,8 +1521,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ツーペイコウ", score: 13, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】JJQKK または QQKAA の2パターンのみ",
-    desc: "絵札ペアをジョイントする形は JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】JJQKK または QQKAA の2パターンのみ",
+    desc: "絵札ペアをジョイントする形は JJQKK（11,11,12,13,13）または QQKAA（12,12,13,14,14）の2パターンのみ。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♠',val:11},{suit:'♥',val:11},{suit:'♦',val:12},{suit:'♣',val:13},{suit:'♠',val:13}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1531,8 +1532,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "トイハウス", score: 14, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】絵札のみのフルハウス",
-    desc: "絵札（J,Q,K,A）のみで構成されたフルハウス形式。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】絵札のみのフルハウス",
+    desc: "絵札（J,Q,K,A）のみで構成されたフルハウス形式。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♠',val:13},{suit:'♥',val:13},{suit:'♦',val:12},{suit:'♣',val:12},{suit:'♠',val:12}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1542,8 +1543,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ストレートフラッシュ", score: 15, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】同スート連番5枚",
-    desc: "同じスートの連番5枚（ロイヤルストレートフラッシュ除く）。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】同スート連番5枚",
+    desc: "同じスートの連番5枚（ロイヤルストレートフラッシュ除く）。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♥',val:4},{suit:'♥',val:5},{suit:'♥',val:6},{suit:'♥',val:7},{suit:'♥',val:8}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1554,8 +1555,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "黒龍", score: 18, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】黒スート偶数5枚",
-    desc: "♠または♣の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】黒スート偶数5枚",
+    desc: "♠または♣の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♠',val:2},{suit:'♠',val:4},{suit:'♠',val:6},{suit:'♠',val:8},{suit:'♠',val:10}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1566,8 +1567,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "赤龍", score: 18, catId: 3, catName: "中級役", catClass: "cat-3",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】赤スート偶数5枚",
-    desc: "♥または♦の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】赤スート偶数5枚",
+    desc: "♥または♦の偶数（2,4,6,8,10）で構成された5枚。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♥',val:2},{suit:'♥',val:4},{suit:'♥',val:6},{suit:'♥',val:8},{suit:'♥',val:10}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1578,8 +1579,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "4カード", score: 20, catId: 4, catName: "役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・JOKER不可❌】役満級役",
-    desc: "同じ数字4枚＋任意の1枚。4カードのみJOKER不可。",
+    catHeader: "【ダマテン可・JOKER不可❌】役満級役（4カード＋JOKERは5カードへ）",
+    desc: "同じ数字4枚＋任意の1枚。4カードはJOKER不可（同じ数字4枚＋JOKERは「5カード（25点）」として扱います）。",
     sample: [{suit:'♠',val:9},{suit:'♥',val:9},{suit:'♦',val:9},{suit:'♣',val:9},{suit:'♠',val:2}],
     jokerType: "forbidden", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1591,8 +1592,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "七三元", score: 21, catId: 4, catName: "役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】777とAAの特殊フルハウス",
-    desc: "7×3 と A(14)×2 の構成。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】777とAAの特殊フルハウス",
+    desc: "7×3 と A(14)×2 の構成。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♠',val:7},{suit:'♥',val:7},{suit:'♦',val:7},{suit:'♣',val:14},{suit:'♠',val:14}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals) => {
@@ -1608,8 +1609,8 @@ const YAKU_REGISTRY = [
   },
   {
     name: "ロイヤルストレートフラッシュ", score: 30, catId: 4, catName: "役満", catClass: "cat-4",
-    catHeader: "【ダマテン可・JOKER可(-2pt)】同一スート10・J・Q・K・A",
-    desc: "同じスートで 10・J・Q・K・A を揃える最高峰の役満。JOKER使用時は-2pt。",
+    catHeader: "【ダマテン可・阿漕JOKER(-2pt)】同一スート10・J・Q・K・A",
+    desc: "同じスートで 10・J・Q・K・A を揃える最高峰の役満。JOKER使用時は「阿漕なJOKER」として-2pt。",
     sample: [{suit:'♠',val:10},{suit:'♠',val:11},{suit:'♠',val:12},{suit:'♠',val:13},{suit:'♠',val:14}],
     jokerType: "allowed", requireReach: false,
     check: (cards, jokers, normals, vals, suits, uniqueSuits) => {
@@ -1709,7 +1710,6 @@ const gameState = {
   isCpuActing: false
 };
 </script>
-</div>
 <script>
 const ONLINE_STORAGE_KEY = 'JP2_ONLINE_ROOM_DATA_v8';
 const PROFILE_STORAGE_KEY = 'JP2_PLAYER_PROFILE_v1';
@@ -2036,11 +2036,11 @@ function hasActiveRemotePeer() {
 }
 
 const beginnerAdviceList = [
-  "💡 ヒント：基本役（10点以下）はリーチ宣言が和了の条件だよ！",
-  "💡 ヒント：中級役・役満はリーチなし（ダマテン）でも和了できるよ！",
-  "💡 ヒント：リーチ後の相手捨て札と次ドローは「一発（+1pt）」のチャンス！",
-  "💡 ヒント：A・K・4・8＋JOKERが揃えばAKB48（24点・-2pt免除）！",
-  "💡 ヒント：相手捨て牌でロンできる時は「和了」が赤点灯するよ！"
+  "💡 ヒント：10点以下の基本役と4カードにはJOKERは使えないよ！",
+  "💡 ヒント：捨て札のJOKERはJOKER必須役のみロン対象（他は無効）！",
+  "💡 ヒント：11点以上の役でJOKERを使うと「阿漕なJOKER」で−2pt！",
+  "💡 ヒント：JOKER必須役は−2pt免除！ドラ・裏ドラはJOKER無効！",
+  "💡 ヒント：リーチ後の相手捨て札と次ドローは「一発（+1pt）」のチャンス！"
 ];
 
 function getRandomBeginnerAdvice() {
@@ -2207,8 +2207,8 @@ function handleOpponentDiscardReceived(card) {
   SoundEngine.playSE('discard_card');
   renderRivers();
   updateBoardUI();
-  if (gameState.playerHand.length === 4 && !isFuritenOnCard(card)) {
-    const ronCheck = getBestYakuFor5([...gameState.playerHand, card], gameState.isPlayerReach);
+  if (gameState.playerHand.length === 4 && canRonOnDiscardedCard(card)) {
+    const ronCheck = getBestYakuFor5([...gameState.playerHand, card], gameState.isPlayerReach, true);
     if (ronCheck) {
       gameState.pendingRonCard = card;
       const ippatsuHint = gameState.playerIppatsuEligible ? '【一発ロンチャンス！】' : '';
@@ -2908,7 +2908,6 @@ function discardPlayerCard(idx) {
     gameState.isPlayerReachPending = false;
     gameState.isPlayerReach = true;
     gameState.playerReachTurn = gameState.turnCount;
-    /* リーチ直後の相手打牌（チャンス1）と自分の次ドロー（チャンス2）まで一発権利有効 */
     gameState.playerIppatsuEligible = true;
     gameState.playerReachTileIndex = gameState.playerRiver.length;
     gameState.playerScore -= 1;
@@ -2923,7 +2922,6 @@ function discardPlayerCard(idx) {
     resetReachButtonUI();
     document.getElementById('btn-reach').disabled = true;
   } else {
-    /* リーチ後の次ドロー牌を捨てた時点で一発権利消滅 */
     if (gameState.isPlayerReach) {
       gameState.playerIppatsuEligible = false;
     }
@@ -3027,7 +3025,18 @@ function isAKB48Tenpai4(hand4) {
   return nVals.every(v => akbVals.includes(v));
 }
 
-function getBestYakuFor5(cards5, isReachActive) {
+/* 捨て札（河）でのJOKER制約：捨て札にJOKERがある場合、JOKER必須役のみ対象（他は無効・ロン不可） */
+function canRonOnDiscardedCard(card) {
+  if (!card || isFuritenOnCard(card)) return false;
+  if (card.isJoker) {
+    const candidate5 = [...gameState.playerHand, card];
+    const best = getBestYakuFor5(candidate5, gameState.isPlayerReach, true);
+    return Boolean(best && best.yaku && best.yaku.jokerType === 'required');
+  }
+  return true;
+}
+
+function getBestYakuFor5(cards5, isReachActive, isDiscardedWinTile = false) {
   if (!cards5 || cards5.length !== 5) return null;
   const jokers = cards5.filter(c => c.isJoker);
   const normals = cards5.filter(c => !c.isJoker);
@@ -3037,8 +3046,12 @@ function getBestYakuFor5(cards5, isReachActive) {
   let best = null;
   for (const yaku of YAKU_REGISTRY) {
     if (yaku.catId === 1) continue;
-    if (yaku.jokerType === 'forbidden' && jokers.length > 0) continue;
+    /* 10点以下の基本役と4カード（catId 2 or name === '4カード'）はJOKER完全不可 */
+    if ((yaku.jokerType === 'forbidden' || yaku.catId === 2 || yaku.name === '4カード') && jokers.length > 0) continue;
+    /* JOKER必須役はJOKERが1枚必須 */
     if (yaku.jokerType === 'required' && jokers.length === 0) continue;
+    /* 捨て札でのロン和了時、JOKERが含まれる場合はJOKER必須役のみ有効 */
+    if (isDiscardedWinTile && jokers.length > 0 && yaku.jokerType !== 'required') continue;
     if (yaku.requireReach && !isReachActive) continue;
     if (gameState.isOnline && gameState.roomRule === 'shiren' && yaku.catId !== 2) continue;
     let matched = false;
@@ -3048,6 +3061,7 @@ function getBestYakuFor5(cards5, isReachActive) {
       matched = false;
     }
     if (matched) {
+      /* 阿漕なJOKER：JOKER可（11点以上・非必須役）でJOKER使用時は-2pt。JOKER必須役は-2pt免除 */
       const jokerPenalty = (yaku.jokerType === 'allowed' && jokers.length > 0) ? -2 : 0;
       const effectiveScore = yaku.score + jokerPenalty;
       if (!best || effectiveScore > best.effectiveScore || (effectiveScore === best.effectiveScore && yaku.score > best.yaku.score)) {
@@ -3067,7 +3081,7 @@ function checkIsTenpaiFor4(hand4, isReachActive) {
     for (let v = 2; v <= 14; v++) candidates.push({ suit: s, val: v, isJoker: false });
   }
   candidates.push({ suit: '', val: 0, isJoker: true });
-  return candidates.some(cand => Boolean(getBestYakuFor5([...hand4, cand], isReachActive)));
+  return candidates.some(cand => Boolean(getBestYakuFor5([...hand4, cand], isReachActive, false)));
 }
 
 function isFuritenOnCard(card) {
@@ -3081,16 +3095,16 @@ function isFuritenOnCard(card) {
 function updateActionButtons() {
   const handLen = gameState.playerHand.length;
   let canWin = false;
-  if (gameState.pendingRonCard && handLen === 4) {
+  if (gameState.pendingRonCard && handLen === 4 && canRonOnDiscardedCard(gameState.pendingRonCard)) {
     const candidate5 = [...gameState.playerHand, gameState.pendingRonCard];
-    const best = getBestYakuFor5(candidate5, gameState.isPlayerReach);
-    if (best && !isFuritenOnCard(gameState.pendingRonCard)) canWin = true;
+    const best = getBestYakuFor5(candidate5, gameState.isPlayerReach, true);
+    if (best) canWin = true;
   } else if (handLen === 5) {
-    const best = getBestYakuFor5(gameState.playerHand, gameState.isPlayerReach);
+    const best = getBestYakuFor5(gameState.playerHand, gameState.isPlayerReach, false);
     if (best) canWin = true;
   } else if (handLen === 4 && gameState.selectedCardIdx !== null && gameState.selectedCardIdx < 4) {
     const picked = gameState.playerHand[gameState.selectedCardIdx];
-    const best = getBestYakuFor5([...gameState.playerHand, picked], gameState.isPlayerReach);
+    const best = getBestYakuFor5([...gameState.playerHand, picked], gameState.isPlayerReach, false);
     if (best) canWin = true;
   }
   const btnWin = document.getElementById('btn-win');
@@ -3145,10 +3159,12 @@ function playerWin() {
   let fullHand = null;
   let winTile = null;
   let winType = 'ツモ';
-  if (gameState.pendingRonCard && handLen === 4 && !isFuritenOnCard(gameState.pendingRonCard)) {
+  let isDiscardedRon = false;
+  if (gameState.pendingRonCard && handLen === 4 && canRonOnDiscardedCard(gameState.pendingRonCard)) {
     winTile = gameState.pendingRonCard;
     fullHand = [...gameState.playerHand, winTile];
     winType = 'ロン';
+    isDiscardedRon = true;
     gameState.pendingRonCard = null;
   } else if (handLen === 5) {
     fullHand = [...gameState.playerHand];
@@ -3159,7 +3175,7 @@ function playerWin() {
   } else {
     return;
   }
-  const best = getBestYakuFor5(fullHand, gameState.isPlayerReach);
+  const best = getBestYakuFor5(fullHand, gameState.isPlayerReach, isDiscardedRon);
   if (!best) return;
   const isIppatsu = checkPlayerIppatsuEligible(winType);
   const isTenchi = (gameState.turnCount === 0);
@@ -3176,9 +3192,15 @@ function playerWin() {
 
 function checkCpuRonOnPlayerDiscard(discarded) {
   if (!discarded || gameState.cpuHand.length < 4) return false;
+  if (discarded.isJoker) {
+    const base4 = gameState.cpuHand.slice(0, 4);
+    const candidate5 = [...base4, discarded];
+    const bestJoker = getBestYakuFor5(candidate5, gameState.cpuIsReach, true);
+    if (!bestJoker || !bestJoker.yaku || bestJoker.yaku.jokerType !== 'required') return false;
+  }
   const base4 = gameState.cpuHand.slice(0, 4);
   const candidate5 = [...base4, discarded];
-  const best = getBestYakuFor5(candidate5, gameState.cpuIsReach);
+  const best = getBestYakuFor5(candidate5, gameState.cpuIsReach, true);
   if (!best) return false;
   const isIppatsu = checkCpuIppatsuEligible('ロン');
   const isTenchi = (gameState.turnCount === 0);
@@ -3202,7 +3224,6 @@ function chooseCpuDiscardIndex() {
 
   const persona = getActiveAiPersonaKey();
 
-  /* テンパイに取れる牌があれば優先打牌（JOKERは原則残す） */
   if (!gameState.cpuIsReach) {
     for (let i = 0; i < hand.length; i++) {
       if (hand[i].isJoker) continue;
@@ -3212,7 +3233,6 @@ function chooseCpuDiscardIndex() {
     }
   }
 
-  /* 試練の部屋：基本役（10点以下・JOKER不可）特化 */
   if (persona === 'shiren') {
     const jokerIdx = hand.findIndex(c => c.isJoker);
     if (jokerIdx !== -1) return jokerIdx;
@@ -3221,7 +3241,6 @@ function chooseCpuDiscardIndex() {
     }
   }
 
-  /* ダマテン部屋：中級役以上（絵札・ペア・同スート）特化、JOKER最優先温存 */
   if (persona === 'damaten') {
     for (let i = 0; i < hand.length; i++) {
       if (hand[i].isJoker) continue;
@@ -3229,7 +3248,6 @@ function chooseCpuDiscardIndex() {
     }
   }
 
-  /* 勝負師の部屋・鬼レンチャレンジ：高打点・レア役（A,K,Q,J,10,4,8,5,9,7）＆JOKER温存 */
   if (persona === 'master' || persona === 'shoushi') {
     const keepVals = new Set([14, 13, 12, 11, 10, 4, 8, 5, 9, 7]);
     for (let i = 0; i < hand.length; i++) {
@@ -3238,7 +3256,6 @@ function chooseCpuDiscardIndex() {
     }
   }
 
-  /* メインモード：河の安全度と手役バランスを見る策士 */
   if (persona === 'main') {
     const lastPlayerCard = gameState.playerRiver[gameState.playerRiver.length - 1];
     const isLowDeck = gameState.deck.length <= 12;
@@ -3250,7 +3267,6 @@ function chooseCpuDiscardIndex() {
     }
   }
 
-  /* ビギナー：JOKER温存しつつ低数字から素直に打牌 */
   for (let i = hand.length - 1; i >= 0; i--) {
     if (!hand[i].isJoker && hand[i].val <= 9) return i;
   }
@@ -3279,7 +3295,7 @@ function cpuTurnRoutine() {
     gameState.isCpuActing = false;
     if (gameState.isGameOver || hasActiveRemotePeer()) return;
     const hand5 = gameState.cpuHand.slice(0, 5);
-    const cpuBest = getBestYakuFor5(hand5, gameState.cpuIsReach);
+    const cpuBest = getBestYakuFor5(hand5, gameState.cpuIsReach, false);
     if (cpuBest && hand5.length === 5) {
       const isIppatsu = checkCpuIppatsuEligible('ツモ');
       const isTenchi = (gameState.turnCount === 0);
@@ -3339,8 +3355,8 @@ function cpuTurnRoutine() {
     renderCpuMiniHand();
     renderRivers();
     updateBoardUI();
-    if (gameState.playerHand.length === 4 && !isFuritenOnCard(discarded)) {
-      const ronCheck = getBestYakuFor5([...gameState.playerHand, discarded], gameState.isPlayerReach);
+    if (gameState.playerHand.length === 4 && canRonOnDiscardedCard(discarded)) {
+      const ronCheck = getBestYakuFor5([...gameState.playerHand, discarded], gameState.isPlayerReach, true);
       if (ronCheck) {
         gameState.pendingRonCard = discarded;
         const ippatsuHint = checkPlayerIppatsuEligible('ロン') ? '【一発ロンチャンス（1回目）！】' : '';
@@ -3374,7 +3390,6 @@ function advanceFieldOnParentFlow() {
   const prof = getPlayerProfile();
   gameState.streakCount = 0;
 
-  /* 鬼レンチャレンジ特別ルール：プレイヤーの親権消滅＝即チャレンジ失敗（ゲームオーバー） */
   if (gameState.mode === 'master') {
     if (isPlayerSpadeSeat() && gameState.fieldSuit === '♠') {
       gameState.isGameOver = true;
@@ -3389,12 +3404,10 @@ function advanceFieldOnParentFlow() {
     }
   }
 
-  /* 通常進行：♠場（先親）が流れたら同サイクルの♥場（後親）へ移行 */
   if (gameState.fieldSuit === '♠') {
     gameState.fieldSuit = '♥';
     gameState.isPlayerParent = (gameState.heartPlayer === prof.nickname || gameState.heartPlayer === 'YOU');
   } else {
-    /* ♥場（後親）が流れた時点で「先親・後親の消化完了＝1サイクル終了」 */
     if (gameState.cycle >= 2) {
       gameState.isGameOver = true;
       gameState.endedByHeartParentFlow = true;
@@ -3466,7 +3479,7 @@ function renderResultDoraDisclosure() {
   doraCont.innerHTML = '';
   const omoteLabel = document.createElement('span');
   omoteLabel.style.cssText = 'font-size:0.65rem; color:#f9d423; font-weight:800;';
-  omoteLabel.innerText = '表:';
+  omoteLabel.innerText = '表(JOKER無効):';
   doraCont.appendChild(omoteLabel);
   gameState.doraCards.forEach(d => doraCont.appendChild(createCardElement(d, false, true, null)));
   const uraLabel = document.createElement('span');
@@ -3490,7 +3503,8 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
   const yaku = bestObj.yaku;
   let points = bestObj.effectiveScore;
   const bonusList = [];
-  if (bestObj.jokerPenalty < 0) bonusList.push(`JOKER使用 ${bestObj.jokerPenalty}pt`);
+  if (bestObj.jokerPenalty < 0) bonusList.push(`阿漕なJOKER ${bestObj.jokerPenalty}pt`);
+  else if (yaku.jokerType === 'required' && exactHand5.some(c => c.isJoker)) bonusList.push('JOKER必須役(-2pt免除)');
   const winnerIsParent = (winner === 'player') ? gameState.isPlayerParent : !gameState.isPlayerParent;
   const winnerIsReach = (winner === 'player') ? gameState.isPlayerReach : gameState.cpuIsReach;
   const isDoubleReach = (winner === 'player') ? gameState.isDoubleReach : gameState.cpuIsDoubleReach;
@@ -3509,6 +3523,7 @@ function executeRoundEnd(winType, winner, bestObj, exactHand5, winTile, isIppats
     const tenchi = YAKU_REGISTRY.find(y => y.name === '天地人和');
     if (tenchi) { points += tenchi.score; bonusList.push(`天地人和 +${tenchi.score}pt`); }
   }
+  /* ドラ／裏ドラのJOKERは無効（d.isJoker === true はドラ・スートドラともにカウントしない） */
   let doraHits = 0;
   let suitDoraHits = 0;
   exactHand5.forEach(c => {
@@ -3683,13 +3698,13 @@ function openRuleModal(mode = 'yaku') {
     document.getElementById('rule-category-panels').style.display = 'none';
     document.getElementById('menu-slide-guide-text').style.display = 'none';
     document.getElementById('rule-menu-bar').innerHTML = '';
-    document.getElementById('rule-yaku-header').innerText = '【 基本ルール・サイクル進行 】';
+    document.getElementById('rule-yaku-header').innerText = '【 基本ルール・JOKER制約・サイクル進行 】';
     document.getElementById('rule-yaku-title').innerText = '2人打ち ジャンポーカー概要';
     document.getElementById('rule-yaku-desc').innerHTML =
-      '・1サイクルは「♠先親 → ♥後親」の親権消化で完結し、第2サイクル（オーラスサイクル）♥場の親流れでゲーム終了となります。<br>' +
-      '・オーラスサイクルは表ドラ2枚・裏ドラ2枚にパワーアップします。<br>' +
-      '・鬼レンチャレンジではスコア勝敗ではなく10連チャン達成が目的となり、自分の親権（♠先親または♥後親）が途切れた時点で即チャレンジ失敗となります。<br>' +
-      '・リーチ後は相手捨て札（一発ロン）と次ドロー（一発ツモ）の2チャンスで一発（+1pt）が成立します。';
+      '・JOKERはオールマイティですが、10点以下の基本役と4カード（4カード＋JOKERは5カードへ）には使用不可です。<br>' +
+      '・捨て札（河）のJOKERはJOKER必須役のみロン対象で、それ以外は無効となります。ドラ・裏ドラでのJOKERも無効です。<br>' +
+      '・11点以上の非必須役でJOKERを使うと「阿漕なJOKER（−2pt）」となり、JOKER必須役は−2pt免除されます。<br>' +
+      '・1サイクルは「♠先親 → ♥後親」で進行し、オーラスサイクルは表ドラ2・裏ドラ2です。鬼レンチャレンジは10連チャン達成で制覇、自分の親権消滅で即失敗となります。';
     document.getElementById('rule-sample-label').style.display = 'none';
     document.getElementById('rule-sample-cards').style.display = 'none';
   } else {
